@@ -33,3 +33,5 @@
 
 # Paths
 /vendor/*
+/.vscode/*
+/build/*
