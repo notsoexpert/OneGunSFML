@@ -1,16 +1,18 @@
 #pragma once
 
-#include "system/onegungame.hpp"
+#include "system/constants.hpp"
 
 namespace Player {
     constexpr sf::Vector2i Size{64, 64};
+    constexpr sf::Vector2i CollisionSize{32, 32}; // Collision size for the player sprite
+    constexpr sf::Vector2i CollisionOffset{-16, -16}; // Offset for collision detection
     constexpr sf::Vector2f Start{OneGunGame::DefaultWindowSize.x / 2.0f, static_cast<float>(OneGunGame::DefaultWindowSize.y)};
     constexpr float DefaultMoveSpeed = 5.0f;
 
     struct Data {
-        sf::Clock m_FireClock; // Clock to manage fire rate
-        sf::Clock m_DashClock; // Clock to manage dash duration
-        sf::Clock m_InvincibilityClock; // Clock to manage invincibility duration
+        sf::Clock m_FireClock{}; // Clock to manage fire rate
+        sf::Clock m_DashClock{}; // Clock to manage dash duration
+        sf::Clock m_InvincibilityClock{}; // Clock to manage invincibility duration
         sf::Vector2f m_LastDirection{}; // Last direction the player moved in
 
         float m_MaxHealth = 100.0f; // Player's health
@@ -19,7 +21,7 @@ namespace Player {
         float m_CurrentEnergy = 100.0f; // Player's current energy
 
         float m_BaseDamage = 1.0f; // Base damage dealt by the player
-        float m_FireRate = 0.5f; // Player's fire rate
+        float m_FireRate = 0.1f; // Player's fire rate
 
         float m_MoveAcceleration = 0.5f; // Player's movement acceleration
         float m_MoveSpeed = DefaultMoveSpeed; // Player's movement speed

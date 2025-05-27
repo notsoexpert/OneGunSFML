@@ -1,8 +1,6 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "actors/player.hpp"
-
 namespace OneGunGame {
 
     struct {
@@ -29,7 +27,37 @@ namespace OneGunGame {
     struct Renderable {
         sf::Sprite Sprite;
         int DrawOrder;
-        Renderable(const sf::Texture& texture, int drawOrder = 0) : Sprite(texture), DrawOrder(drawOrder) {}
+        Renderable(const sf::Texture& texture, int drawOrder = 0) : 
+            Sprite(texture), 
+            DrawOrder(drawOrder) 
+        {}
+    };
+
+    struct Collidable {
+        sf::IntRect CollisionRect;
+        entt::entity Source;
+        Collidable(const sf::IntRect& rect, entt::entity source = entt::null) : 
+            CollisionRect(rect),
+            Source(source) 
+        {}
+    };
+
+    struct Collision {
+        entt::entity EntityA;
+        entt::entity EntityB;
+        Collision(entt::entity a, entt::entity b) : 
+            EntityA(a), 
+            EntityB(b) 
+        {}
+    };
+
+    struct Lifetime {
+        sf::Time Duration;
+        sf::Clock Clock;
+        Lifetime(sf::Time duration) : 
+            Duration(duration), 
+            Clock() 
+        {}
     };
 
     using Velocity = sf::Vector2f;
@@ -97,15 +125,8 @@ namespace OneGunGame {
         
         Registry.clear();
 
-        Entities.Background = Registry.create();
-        Registry.emplace<Renderable>(Entities.Background, Textures.BackgroundTexture, 100);
-
-        Entities.Player = Registry.create();
-        auto& playerSprite = Registry.emplace<Renderable>(Entities.Player, Textures.SpriteSheetTexture, 10).Sprite;
-        playerSprite.setTextureRect({{0, 0}, Player::Size});
-        playerSprite.setOrigin({Player::Size.x / 2.0f, Player::Size.y / 2.0f});
-        playerSprite.setPosition(Player::Start);
-        Registry.emplace<Velocity>(Entities.Player, 0.0f, 0.0f);
+        Entities.Background = CreateBackground();
+        Entities.Player = CreatePlayer();
 
         return 0;
     }
@@ -131,10 +152,40 @@ namespace OneGunGame {
         sf::Vector2f inputVector = GetInputVector();
         Registry.get<Velocity>(Entities.Player) = inputVector * Player::DefaultMoveSpeed;
         
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+            // auto& playerData = Registry.get<Player::Data>(Entities.Player);
+            // if (playerData.m_CanDash && playerData.m_DashClock.getElapsedTime().asSeconds() >= playerData.m_DashCooldown) {
+            //     playerData.m_CanDash = false;
+            //     playerData.m_DashClock.restart();
+            //     Registry.get<Velocity>(Entities.Player) *= playerData.m_DashSpeed;
+            //     playerData.m_DashClock.restart();
+            // }
+            // DASH
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
+            auto &playerData = Registry.get<Player::Data>(Entities.Player);
+            if (playerData.m_FireClock.getElapsedTime().asSeconds() >= playerData.m_FireRate) {
+                playerData.m_FireClock.restart();
+                spdlog::trace("Player firing projectile");
+                auto projectile = CreateProjectile(Projectile::Type::Bullet3, Registry.get<Renderable>(Entities.Player).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, Entities.Player);
+                Entities.Projectiles.push_back(projectile);
+            }
+        }
+        
         Registry.view<Renderable, Velocity>().each([](auto entity, Renderable& renderable, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.x, velocity.y);
             renderable.Sprite.move(velocity);
+        });
+
+        Registry.view<Lifetime>().each([](auto entity, Lifetime& lifetime) {
+            if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
+                spdlog::trace("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
+                if (std::find(Entities.Projectiles.begin(), Entities.Projectiles.end(), entity) != Entities.Projectiles.end()) {
+                    Entities.Projectiles.erase(std::remove(Entities.Projectiles.begin(), Entities.Projectiles.end(), entity));
+                }
+                Registry.destroy(entity);
+            }
         });
     }
 
@@ -148,6 +199,38 @@ namespace OneGunGame {
         });
         
         Context.Window.display();
+    }
+
+    entt::entity CreateBackground() {
+        entt::entity entity = Registry.create();
+        Registry.emplace<Renderable>(entity, Textures.BackgroundTexture, 100);
+        return entity;
+    }
+
+    entt::entity CreatePlayer() {
+        entt::entity entity = Registry.create();
+        auto& playerSprite = Registry.emplace<Renderable>(entity, Textures.SpriteSheetTexture, 10).Sprite;
+        playerSprite.setTextureRect({{0, 0}, Player::Size});
+        playerSprite.setOrigin({Player::Size.x / 2.0f, Player::Size.y / 2.0f});
+        playerSprite.setPosition(Player::Start);
+        Registry.emplace<Velocity>(entity, 0.0f, 0.0f);
+        Registry.emplace<Collidable>(entity, sf::IntRect{Player::CollisionOffset, Player::CollisionSize});
+        Registry.emplace<Player::Data>(entity);
+        return entity;
+    }
+    
+    entt::entity CreateProjectile(Projectile::Type type, const sf::Vector2f& position, const sf::Vector2f& direction, entt::entity source) {
+        entt::entity entity = Registry.create();
+        auto &projectileSprite = Registry.emplace<Renderable>(entity, Textures.SpriteSheetTexture, 25).Sprite;
+        auto &preset = Projectile::Presets.at(type);
+        projectileSprite.setTextureRect(preset.TextureRect);
+        projectileSprite.setOrigin({preset.TextureRect.size.x / 2.0f, preset.TextureRect.size.y / 2.0f});
+        projectileSprite.setPosition(position);
+        Registry.emplace<Velocity>(entity, direction * preset.Speed);
+        Registry.emplace<Collidable>(entity, preset.CollisionRect, source);
+        auto &lifetime = Registry.emplace<Lifetime>(entity, sf::seconds(preset.Lifetime));
+        lifetime.Clock.restart();
+        return entity;
     }
 
     sf::Vector2u GetWindowSize() {
