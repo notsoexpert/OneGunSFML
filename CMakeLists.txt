@@ -25,7 +25,15 @@ add_executable(OneGunSFML ${sources} ${data})
 target_precompile_headers(OneGunSFML PRIVATE src/main/pch.hpp)
 
 # Just for example add some compiler flags.
-target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  target_compile_options(OneGunSFML PUBLIC -std=c++23 -stdlib=libc++ -Wall -Wextra -Werror)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
+elseif(MSVC)
+  target_compile_options(OneGunSFML PUBLIC /std:c++23 /W4 /WX /permissive- /Zc:__cplusplus)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+  target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
+endif()
 
 # This allows to include files relative to the root of the src directory with a <> pair
 target_include_directories(OneGunSFML PUBLIC src/main)
