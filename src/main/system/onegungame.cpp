@@ -32,7 +32,7 @@ namespace OneGunGame {
         Renderable(const sf::Texture& texture, int drawOrder = 0) : Sprite(texture), DrawOrder(drawOrder) {}
     };
 
-    typedef sf::Vector2f Velocity;
+    using Velocity = sf::Vector2f;
 
     static entt::registry Registry;
 
@@ -113,8 +113,6 @@ namespace OneGunGame {
     }
 
     std::expected<int, std::string> Run() {
-        spdlog::info("Running OneGunGame...");
-
         while (Context.Window.isOpen()) {
             Update();
             Registry.sort<Renderable>([](const Renderable& a, const Renderable& b) {
@@ -126,31 +124,14 @@ namespace OneGunGame {
     }
 
     std::expected<int, std::string> Cleanup() {
-        spdlog::info("Cleaning up OneGunGame...");
         return 0;
     }
 
     void Update() {
         Context.Window.handleEvents(EventHandlers.OnClose, EventHandlers.KeyPressed);
-        
 
-        sf::Vector2f inputVector(0.0f, 0.0f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-            inputVector.x -= 1.0f;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-            inputVector.x += 1.0f;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-            inputVector.y -= 1.0f;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-            inputVector.y += 1.0f;
-        }
-        if (inputVector != sf::Vector2f(0.0f, 0.0f)) {
-            inputVector = inputVector / std::sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y) * Player::DefaultMoveSpeed;
-        }
-        Registry.get<Velocity>(Entities.Player) = inputVector;
+        sf::Vector2f inputVector = GetInputVector();
+        Registry.get<Velocity>(Entities.Player) = inputVector * Player::DefaultMoveSpeed;
         
         Registry.view<Renderable, Velocity>().each([](auto entity, Renderable& renderable, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
@@ -173,5 +154,25 @@ namespace OneGunGame {
 
     sf::Vector2u GetWindowSize() {
         return Context.Window.getSize();
+    }
+
+    sf::Vector2f GetInputVector() {
+        sf::Vector2f inputVector(0.0f, 0.0f);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            inputVector.x -= 1.0f;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            inputVector.x += 1.0f;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+            inputVector.y -= 1.0f;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            inputVector.y += 1.0f;
+        }
+        if (inputVector != sf::Vector2f(0.0f, 0.0f)) {
+            inputVector = inputVector / std::sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y);
+        }
+        return inputVector;
     }
 }

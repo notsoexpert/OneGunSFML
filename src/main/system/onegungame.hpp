@@ -13,6 +13,7 @@ namespace OneGunGame {
     std::expected<int, std::string> Run();
     std::expected<int, std::string> Cleanup();
 
+    sf::Vector2f GetInputVector();
     sf::Vector2u GetWindowSize();
 
     void Update();

@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include <expected>
+#include <array>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
