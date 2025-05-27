@@ -8,7 +8,7 @@ project(OneGunSFMLProject)            # this sets the project name
 # These instructions search the directory tree when cmake is
 # invoked and put all files that match the pattern in the variables 
 # `sources` and `data`.
-file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp)
+file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp src/main/actors/*.hpp src/main/actors/*.cpp src/main/system/*.hpp src/main/system/*.cpp)
 file(GLOB_RECURSE sources_test src/test/*.cpp)
 file(GLOB_RECURSE data assets/*)
 # You can use set(sources src/main.cpp) etc if you don't want to
@@ -22,14 +22,18 @@ file(GLOB_RECURSE data assets/*)
 # files are invisible when they are not explicitly part of the project.
 add_executable(OneGunSFML ${sources} ${data})
 
+target_precompile_headers(OneGunSFML PRIVATE src/main/pch.hpp)
+
 # Just for example add some compiler flags.
-target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra)
+target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 
 # This allows to include files relative to the root of the src directory with a <> pair
 target_include_directories(OneGunSFML PUBLIC src/main)
 target_include_directories(OneGunSFML PUBLIC vendor/SFML/include)
 target_include_directories(OneGunSFML PUBLIC vendor/spdlog/include)
 target_include_directories(OneGunSFML PUBLIC vendor/glm/glm)
+target_include_directories(OneGunSFML PUBLIC vendor/entt/single_include)
+
 
 # This copies all resource files in the build directory.
 # We need this, because we want to work with paths relative to the executable.
@@ -44,6 +48,7 @@ file(COPY ${data} DESTINATION assets)
 add_subdirectory(vendor/SFML)
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glm)
+add_subdirectory(vendor/entt)
 #find_package(SFML COMPONENTS window graphics audio REQUIRED)
 #find_package(spdlog REQUIRED)
 #find_package(glm REQUIRED)
@@ -55,7 +60,10 @@ target_link_libraries(OneGunSFML PUBLIC
   sfml-system
   spdlog
   glm
+  EnTT
 )
+
+
 
 ###############################################################################
 ## testing ####################################################################
