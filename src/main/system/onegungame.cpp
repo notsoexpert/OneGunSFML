@@ -77,14 +77,12 @@ namespace OneGunGame {
         Context.Window = {sf::VideoMode(DefaultWindowSize), WindowTitle, DefaultWindowStyle, DefaultWindowState, DefaultContextSettings};
         Context.Window.setFramerateLimit(DefaultFrameRateLimit);
 
-        if (!Textures.BackgroundTexture.loadFromFile("../assets/textures/bg1.png")) {
-            spdlog::info("Failed to load background texture");
-            return -1;
+        if (!Textures.BackgroundTexture.loadFromFile("./assets/textures/bg1.png")) {
+            return std::unexpected<std::string>("Failed to load background texture");
         }
         Textures.BackgroundTexture.setSmooth(true);
-        if (!Textures.SpriteSheetTexture.loadFromFile("../assets/textures/sprites.png")) {
-            spdlog::info("Failed to load sprite sheet texture");
-            return -1;
+        if (!Textures.SpriteSheetTexture.loadFromFile("./assets/textures/sprites.png")) {
+            return std::unexpected<std::string>("Failed to load sprite sheet texture");
         }
         Textures.SpriteSheetTexture.setSmooth(true);
 

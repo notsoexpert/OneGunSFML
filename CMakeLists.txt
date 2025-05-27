@@ -30,7 +30,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 elseif(MSVC)
-  target_compile_options(OneGunSFML PUBLIC /std:c++23 /W4 /WX /permissive- /Zc:__cplusplus)
+  target_compile_options(OneGunSFML PUBLIC /std:c++latest /W4 /WX /permissive- /Zc:__cplusplus)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 endif()
@@ -45,7 +45,12 @@ target_include_directories(OneGunSFML PUBLIC vendor/entt/single_include)
 
 # This copies all resource files in the build directory.
 # We need this, because we want to work with paths relative to the executable.
-file(COPY ${data} DESTINATION assets)
+# file(COPY ${data} DESTINATION assets)
+add_custom_command(
+    TARGET OneGunSFML POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:OneGunSFML>/assets
+)
 
 ###############################################################################
 ## dependencies ###############################################################
@@ -70,8 +75,6 @@ target_link_libraries(OneGunSFML PUBLIC
   glm
   EnTT
 )
-
-
 
 ###############################################################################
 ## testing ####################################################################
