@@ -26,7 +26,7 @@ target_precompile_headers(OneGunSFML PRIVATE src/main/pch.hpp)
 
 # Just for example add some compiler flags.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options(OneGunSFML PUBLIC -std=c++23 -stdlib=libc++ -Wall -Wextra -Werror)
+  target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 elseif(MSVC)

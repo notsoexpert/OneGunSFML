@@ -1,6 +1,8 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
+#include "system/random.hpp"
+
 namespace OneGunGame {
 
     struct {
@@ -102,6 +104,8 @@ namespace OneGunGame {
     }
 
     std::expected<int, std::string> Setup() {
+        Random::Initialize(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
+
         Context.Window = {sf::VideoMode(DefaultWindowSize), WindowTitle, DefaultWindowStyle, DefaultWindowState, DefaultContextSettings};
         Context.Window.setFramerateLimit(DefaultFrameRateLimit);
 
@@ -167,7 +171,9 @@ namespace OneGunGame {
             if (playerData.m_FireClock.getElapsedTime().asSeconds() >= playerData.m_FireRate) {
                 playerData.m_FireClock.restart();
                 spdlog::trace("Player firing projectile");
-                auto projectile = CreateProjectile(Projectile::Type::Bullet3, Registry.get<Renderable>(Entities.Player).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, Entities.Player);
+                auto projectileType = static_cast<Projectile::Type>(Random::GenerateInt(0, static_cast<int>(Projectile::Type::Total) - 1));
+                spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
+                auto projectile = CreateProjectile(projectileType, Registry.get<Renderable>(Entities.Player).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, Entities.Player);
                 Entities.Projectiles.push_back(projectile);
             }
         }
