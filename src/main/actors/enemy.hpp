@@ -17,6 +17,10 @@ namespace Enemy {
         Total
     };
 
+    entt::entity Create(entt::registry &registry, 
+        Type type, const sf::Texture &texture, 
+        const sf::Vector2f& position, const sf::Vector2f& direction);
+
     struct Data {
         sf::IntRect TextureRect;
         sf::IntRect CollisionRect;

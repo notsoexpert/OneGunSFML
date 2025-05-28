@@ -2,9 +2,6 @@
 
 #include "system/constants.hpp"
 #include "system/randomgenerator.hpp"
-#include "actors/player.hpp"
-#include "actors/projectile.hpp"
-#include "actors/enemy.hpp"
 
 namespace OneGunGame {
     int Start(int argc, char *argv[]);
@@ -16,7 +13,6 @@ namespace OneGunGame {
     void Render();
 
     entt::entity CreateBackground();
-    entt::entity CreateEnemy(Enemy::Type type, const sf::Vector2f& position, const sf::Vector2f& direction);
 
     sf::Vector2f GetInputVector();
     sf::Vector2u GetWindowSize();

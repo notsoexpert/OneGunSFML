@@ -7,4 +7,11 @@ namespace OneGunGame {
     constexpr auto DefaultWindowState = sf::State::Windowed;
     constexpr auto DefaultFrameRateLimit = 60;
     constexpr auto WindowTitle = "One Gun - SFML";
+
+    enum CollisionLayer {
+        Player = 1 << 0,      // Player layer
+        Projectile = 1 << 1,  // Projectile layer
+        Enemy = 1 << 2,       // Enemy layer
+        Obstacle = 1 << 3     // Obstacle layer
+    };
 }

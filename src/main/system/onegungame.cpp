@@ -2,8 +2,11 @@
 #include "onegungame.hpp"
 
 #include "components/components.hpp"
+#include "actors/player.hpp"
+#include "actors/projectile.hpp"
+#include "actors/enemy.hpp"
 
-namespace OneGunGame {
+namespace OneGunGame { 
 
     static Data s_Data(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
 
@@ -89,17 +92,21 @@ namespace OneGunGame {
         return 0;
     }
 
+    bool FilterCollidable(OneGunGame::CollisionLayer mask, OneGunGame::CollisionLayer type) {
+        return (mask & type) != 0;
+    }
+
     void Update() {
         s_Data.Context.Window.handleEvents(s_Data.EventHandlers.OnClose, s_Data.EventHandlers.KeyPressed);
 
         sf::Vector2f inputVector = GetInputVector();
-        s_Data.Registry.get<Velocity>(s_Data.Entities.Player) = inputVector * Player::DefaultMoveSpeed;
+        Player::Move(inputVector, s_Data.Registry, s_Data.Entities.Player);
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            // DASH
+            Player::Dash(s_Data.Registry, s_Data.Entities.Player);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
-            entt::entity newProjectile = Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
+            auto newProjectile = Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
             if (newProjectile != entt::null) {
                 s_Data.Entities.Projectiles.push_back(newProjectile);
             }
@@ -110,6 +117,38 @@ namespace OneGunGame {
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.x, velocity.y);
             renderable.Sprite.move(velocity);
         });
+
+        s_Data.Registry.view<Collidable>().each([](auto entity, Collidable& collidable) {
+            spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
+                static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
+            auto &rectA = collidable.CollisionRect;
+            s_Data.Registry.view<Collidable>().each([&](auto otherEntity, Collidable& otherCollidable) {
+                if (entity == otherEntity || otherEntity == collidable.Source) 
+                    return;
+                
+                if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
+                    return;
+                };
+                
+                auto &rectB = otherCollidable.CollisionRect;
+                if (rectA.findIntersection(rectB)) {
+                    spdlog::trace("Collision detected between entity {} and entity {}", 
+                        static_cast<int>(entity), static_cast<int>(otherEntity));
+                    // auto collisionEntity = s_Data.Registry.create();
+                    
+                    // s_Data.Registry.emplace<Collision>(collisionEntity, entity, otherEntity);
+
+
+                }
+            });
+        });
+
+        // s_Data.Registry.view<Collision>().each([](auto entity, Collision& collision) {
+        //     spdlog::trace("Processing {} collision between entity {} and entity {}", static_cast<int>(entity),
+        //         static_cast<int>(collision.EntityA), static_cast<int>(collision.EntityB));
+            
+        //         s_Data.Registry.destroy(entity);
+        // });
 
         s_Data.Registry.view<Lifetime>().each([](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
