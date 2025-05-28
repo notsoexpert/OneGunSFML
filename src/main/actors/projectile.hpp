@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics/Rect.hpp>
-
 namespace Projectile {
     enum Type {
         Bullet1 = 0,
@@ -17,6 +15,12 @@ namespace Projectile {
         Total
     };
 
+    entt::entity Create(entt::registry &registry, 
+        Type type, const sf::Texture &texture, 
+        const sf::Vector2f& position, const sf::Vector2f& direction, 
+        entt::entity source);
+
+
     struct Data {
         sf::IntRect TextureRect;
         sf::IntRect CollisionRect;
@@ -25,7 +29,7 @@ namespace Projectile {
         bool IsHoming;
     }; 
 
-    static constexpr std::array<Data, Type::Total> Presets = {
+    inline constexpr std::array<Data, static_cast<size_t>(Type::Total)> Presets = {
         Data{ sf::IntRect({64, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f, false}, // Bullet1
         Data{ sf::IntRect({128, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f, false}, // Bullet2
         Data{ sf::IntRect({192, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f, false}, // Bullet3

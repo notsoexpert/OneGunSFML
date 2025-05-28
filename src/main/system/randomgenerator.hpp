@@ -3,14 +3,14 @@
 #include <concepts>
 #include <random>
 
-class Random {
+class RandomGenerator {
 public:
-    Random(unsigned int seed) {
+    RandomGenerator(unsigned int seed) {
         m_Generator.seed(seed);
     }
     
     template <std::integral T>
-    T GenerateInt(T min, T max) {
+    T generateInt(T min, T max) {
         if (min > max) {
             throw std::invalid_argument("Min cannot be greater than Max");
         }
@@ -19,7 +19,7 @@ public:
     }
     
     template <std::floating_point T>
-    T GenerateFloat(T min, T max) {
+    T generateFloat(T min, T max) {
         if (min > max) { 
             throw std::invalid_argument("Min cannot be greater than Max");
         }
@@ -27,13 +27,13 @@ public:
         return distribution(m_Generator);
     }
 
-    bool GenerateBool() {
+    bool generateBool() {
         std::bernoulli_distribution distribution(0.5);
         return distribution(m_Generator);
     }
 
     template <typename T>
-    T GenerateChoice(const std::vector<T>& choices) {
+    T generateChoice(const std::vector<T>& choices) {
         if (choices.empty()) {
             throw std::invalid_argument("Choices vector cannot be empty");
         }
@@ -42,7 +42,7 @@ public:
     }
 
     template <typename T, size_t N>
-    T GenerateChoice(const std::array<T, N>& choices) {
+    T generateChoice(const std::array<T, N>& choices) {
         if (N == 0) {
             throw std::invalid_argument("Choices array cannot be empty");
         }

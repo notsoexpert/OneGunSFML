@@ -9,6 +9,9 @@ namespace Player {
     constexpr sf::Vector2f Start{OneGunGame::DefaultWindowSize.x / 2.0f, static_cast<float>(OneGunGame::DefaultWindowSize.y)};
     constexpr float DefaultMoveSpeed = 5.0f;
 
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, const sf::Texture& projectileTexture);
+    entt::entity Create(entt::registry &registry, const sf::Texture &texture, const sf::Vector2f &startPosition);
+
     struct Data {
         sf::Clock m_FireClock{}; // Clock to manage fire rate
         sf::Clock m_DashClock{}; // Clock to manage dash duration

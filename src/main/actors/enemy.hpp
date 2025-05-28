@@ -24,7 +24,7 @@ namespace Enemy {
         float OffscreenLifetime;
     }; 
     
-    static constexpr std::array<Data, Type::Total> Presets = {
+    constexpr std::array<Data, Type::Total> Presets = {
         Data{ sf::IntRect({64, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f},  // Asteroid
         Data{ sf::IntRect({128, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f}, // LargeAsteroid
         Data{ sf::IntRect({192, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 10.0f, 1.0f}, // HugeAsteroid
