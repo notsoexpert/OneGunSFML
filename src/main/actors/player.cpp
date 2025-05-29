@@ -6,26 +6,6 @@
 #include "actors/projectile.hpp"
 
 namespace Player {
-    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, const sf::Texture& projectileTexture) {
-        auto fireComponent = registry.try_get<Fireable>(playerEntity);
-        if (!fireComponent) {
-            spdlog::warn("Player entity {} does not have a Fireable component", static_cast<int>(playerEntity));
-            return entt::null;
-        }
-
-        if (fireComponent->Fire()) {
-            spdlog::trace("Player firing projectile");
-            auto projectileType = static_cast<Projectile::Type>(
-                OneGunGame::GetRandomGenerator().generateInt(0, static_cast<int>(Projectile::Type::Total) - 1));
-            spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
-            auto projectile = Projectile::Create(registry, 
-                projectileType, projectileTexture, 
-                registry.get<Renderable>(playerEntity).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, 
-                playerEntity);
-            return projectile;
-        }
-        return entt::null;
-    }
 
     entt::entity Create(entt::registry &registry, const sf::Texture &texture, const sf::Vector2f &startPosition) {
         entt::entity entity = registry.create();
@@ -46,7 +26,9 @@ namespace Player {
         registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
+        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
+        registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
         
         return entity;
     }
@@ -60,10 +42,36 @@ namespace Player {
         };
     }
 
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, const sf::Texture& projectileTexture) {
+        auto fireComponent = registry.try_get<Fireable>(playerEntity);
+        if (!fireComponent) {
+            spdlog::warn("Player entity {} does not have a Fireable component", static_cast<int>(playerEntity));
+            return entt::null;
+        }
+
+        if (!fireComponent->Fire())
+            return entt::null;
+
+        auto weaponComponent = registry.try_get<Projectile::Weapon>(playerEntity);
+        if (!weaponComponent) {
+            spdlog::warn("Player entity {} does not have a Weapon component", static_cast<int>(playerEntity));
+            return entt::null;
+        }
+
+        spdlog::trace("Player firing projectile");
+        auto projectileType = weaponComponent->getBulletType(fireComponent->BaseDamage);
+        spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
+        auto projectile = Projectile::Create(registry, 
+            projectileType, projectileTexture, 
+            registry.get<Renderable>(playerEntity).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, 
+            playerEntity);
+        return projectile;
+    }
+
     void Dash(entt::registry &registry, entt::entity playerEntity) {
         auto &dashable = registry.get<Dashable>(playerEntity);
         if (dashable.IsDashCooldownComplete()) {
-            // TBD: Do a dash
+            // TBD: Do a dash 
         }
     }
 

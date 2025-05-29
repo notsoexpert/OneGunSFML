@@ -109,6 +109,14 @@ struct Renderable {
     {}
 };
 
+struct Confined {
+    sf::FloatRect Limits;
+
+    Confined(const sf::FloatRect& limits) :
+        Limits(limits)
+    {}
+};
+
 struct Collidable {
     sf::IntRect CollisionRect;
     entt::entity Source;

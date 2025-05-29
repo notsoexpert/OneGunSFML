@@ -2,6 +2,7 @@
 #include "onegungame.hpp"
 
 #include "components/components.hpp"
+#include "actors/background.hpp"
 #include "actors/player.hpp"
 #include "actors/projectile.hpp"
 #include "actors/enemy.hpp"
@@ -51,11 +52,12 @@ namespace OneGunGame {
         s_Data.Context.Window = {sf::VideoMode(DefaultWindowSize), WindowTitle, DefaultWindowStyle, DefaultWindowState, DefaultContextSettings};
         s_Data.Context.Window.setFramerateLimit(DefaultFrameRateLimit);
 
-        if (!s_Data.Textures.BackgroundTexture.loadFromFile("./assets/textures/bg1.png")) {
+        if (!s_Data.Textures.BackgroundTexture.loadFromFile(OneGunGame::BackgroundPath)) {
             return std::unexpected<std::string>("Failed to load background texture");
         }
         s_Data.Textures.BackgroundTexture.setSmooth(true);
-        if (!s_Data.Textures.SpriteSheetTexture.loadFromFile("./assets/textures/sprites.png")) {
+        s_Data.Textures.BackgroundTexture.setRepeated(true);
+        if (!s_Data.Textures.SpriteSheetTexture.loadFromFile(OneGunGame::SpriteSheetPath)) {
             return std::unexpected<std::string>("Failed to load sprite sheet texture");
         }
         s_Data.Textures.SpriteSheetTexture.setSmooth(true);
@@ -71,8 +73,8 @@ namespace OneGunGame {
         
         s_Data.Registry.clear();
 
-        s_Data.Entities.Background = CreateBackground();
-        s_Data.Entities.Player = Player::Create(s_Data.Registry, s_Data.Textures.SpriteSheetTexture, Player::Start);
+        s_Data.Entities.Background = Background::Create(s_Data.Registry, s_Data.Textures.BackgroundTexture);
+        s_Data.Entities.Player = Player::Create(s_Data.Registry, s_Data.Textures.SpriteSheetTexture, Player::Start(s_Data.Context.Window.getSize()));
 
         return 0;
     }
@@ -112,7 +114,8 @@ namespace OneGunGame {
             }
         }
 
-        s_Data.Registry.view<Acceleration, Velocity>().each([](auto entity, Acceleration& acceleration, Velocity& velocity) {
+        s_Data.Registry.view<Acceleration, Velocity>().each(
+            [](auto entity, Acceleration& acceleration, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Velocity ({}, {}) with Acceleration ({}, {})",
                 static_cast<int>(entity), velocity.Value.x, velocity.Value.y, acceleration.Value.x, acceleration.Value.y);
             velocity.Value.x += acceleration.Value.x;
@@ -129,7 +132,8 @@ namespace OneGunGame {
             velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
         });
 
-        s_Data.Registry.view<Friction, Velocity>().each([](auto Entity, Friction& friction, Velocity& velocity) {
+        s_Data.Registry.view<Friction, Velocity>().each(
+            [](auto Entity, Friction& friction, Velocity& velocity) {
             spdlog::trace("Applying friction to entity {}: Velocity ({}, {}) with Friction ({})",
                 static_cast<int>(Entity), velocity.Value.x, velocity.Value.y, friction.Value);
             velocity.Value.x *= (1.0f - friction.Value);
@@ -138,16 +142,49 @@ namespace OneGunGame {
             if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
         });
 
+        s_Data.Registry.view<Renderable, Velocity, Background::VerticalLoop>().each(
+            [&](auto entity, Renderable &renderable, Velocity &velocity, Background::VerticalLoop &vLoop) {
+            spdlog::trace("Updating entity {}: vLoop LimitY: {}, ResetY: {}, Copy Entity: {}", 
+                static_cast<int>(entity), vLoop.LimitY, vLoop.ResetY, static_cast<int>(vLoop.BackgroundCopy));
+            auto pos = renderable.Sprite.getPosition();
+            const auto &vel = velocity.Value;
+            
+            //spdlog::warn("BG Pos: ({}, {}), BG Vel: ({}, {}) LimitY: {}", pos.x, pos.y, vel.x, vel.y, vLoop.LimitY);
+            if (pos.y + vel.y <= vLoop.LimitY) 
+                return;
+            
+            auto &copyRenderable = s_Data.Registry.get<Renderable>(vLoop.BackgroundCopy);
+            renderable.Sprite.setPosition({pos.x, vLoop.ResetY});
+            copyRenderable.Sprite.setPosition({pos.x, vLoop.ResetY - copyRenderable.Sprite.getTexture().getSize().y});
+        });
         
-        s_Data.Registry.view<Renderable, Velocity>().each([](auto entity, Renderable& renderable, Velocity& velocity) {
+        s_Data.Registry.view<Renderable, Velocity>().each(
+            [](auto entity, Renderable& renderable, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.Value.x, velocity.Value.y);
             renderable.Sprite.move(velocity.Value);
         });
 
-        
+        s_Data.Registry.view<Renderable, Background::HorizontalParallax>().each(
+            [&](auto entity, Renderable& renderable, Background::HorizontalParallax& parallax) {
+            spdlog::trace("Updating entity {}: Parallax value ({})", static_cast<int>(entity), parallax.Value);
+            const auto &playerPosition = s_Data.Registry.get<Renderable>(s_Data.Entities.Player).Sprite.getPosition();
+            parallax.Value = playerPosition.x / OneGunGame::GetWindowSize().x;
+            renderable.Sprite.setPosition({OneGunGame::GetWindowSize().x * -parallax.Value, renderable.Sprite.getPosition().y});
+        });
 
-        s_Data.Registry.view<Collidable>().each([](auto entity, Collidable& collidable) {
+        s_Data.Registry.view<Renderable, Confined>().each(
+            [&](auto entity, Renderable &renderable, Confined &confined) {
+            spdlog::trace("Updating entity {}: Confined to ({}, {}, {}, {})", static_cast<int>(entity), 
+                confined.Limits.position.x, confined.Limits.position.y, confined.Limits.size.x, confined.Limits.size.y);
+            auto position = renderable.Sprite.getPosition();
+            position.x = std::clamp(position.x, confined.Limits.position.x, confined.Limits.position.x + confined.Limits.size.x);
+            position.y = std::clamp(position.y, confined.Limits.position.y, confined.Limits.position.y + confined.Limits.size.y);
+            renderable.Sprite.setPosition(position);
+        });
+
+        s_Data.Registry.view<Collidable>().each(
+            [](auto entity, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
             auto &rectA = collidable.CollisionRect;
@@ -179,7 +216,8 @@ namespace OneGunGame {
         //         s_Data.Registry.destroy(entity);
         // });
 
-        s_Data.Registry.view<Lifetime>().each([](auto entity, Lifetime& lifetime) {
+        s_Data.Registry.view<Lifetime>().each(
+            [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
                 spdlog::trace("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
                 if (std::find(s_Data.Entities.Projectiles.begin(), s_Data.Entities.Projectiles.end(), entity) != s_Data.Entities.Projectiles.end()) {
@@ -193,19 +231,14 @@ namespace OneGunGame {
     void Render() {
         s_Data.Context.Window.clear(sf::Color::Black);
 
-        s_Data.Registry.view<Renderable>().each([](auto entity, Renderable& renderable) {
+        s_Data.Registry.view<Renderable>().each(
+            [](auto entity, Renderable& renderable) {
             spdlog::trace("Rendering entity {}: Position ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
             s_Data.Context.Window.draw(renderable.Sprite);
         });
         
         s_Data.Context.Window.display();
-    }
-
-    entt::entity CreateBackground() {
-        entt::entity entity = s_Data.Registry.create();
-        s_Data.Registry.emplace<Renderable>(entity, s_Data.Textures.BackgroundTexture, 100);
-        return entity;
     }
 
     sf::Vector2u GetWindowSize() {

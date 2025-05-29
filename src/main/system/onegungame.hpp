@@ -12,8 +12,6 @@ namespace OneGunGame {
     void Update();
     void Render();
 
-    entt::entity CreateBackground();
-
     sf::Vector2f GetInputVector();
     sf::Vector2u GetWindowSize();
 
