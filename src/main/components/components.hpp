@@ -26,26 +26,24 @@ struct Energy {
     {}
 };
 
-struct Speed {
-    float MoveMaxSpeed;
-    float MoveAcceleration;
+struct MaxSpeed {
+    float Value;
 
-    Speed(float moveMaxSpeed = 5.0f, float moveAcceleration = 0.5f) :
-        MoveMaxSpeed(moveMaxSpeed),
-        MoveAcceleration(moveAcceleration)
+    MaxSpeed(float value = 5.0f) :
+        Value(value)
     {}
 };
 
 struct HitInvincibility {
-    sf::Clock InvincibilityClock;
-    float BaseInvincibleTime;
+    sf::Clock Clock;
+    float Duration;
 
-    HitInvincibility(float baseInvincibleTime = 1.0f) :
-        BaseInvincibleTime(baseInvincibleTime)
+    HitInvincibility(float duration = 1.0f) :
+        Duration(duration)
     {}
 
     bool IsInvincible() const {
-        return InvincibilityClock.getElapsedTime().asSeconds() <= BaseInvincibleTime;
+        return Clock.getElapsedTime().asSeconds() <= Duration;
     }
 
 };
@@ -53,7 +51,7 @@ struct HitInvincibility {
 struct Fireable {
     float BaseDamage;
     float BaseFireRate;
-    sf::Clock FireClock;
+    sf::Clock Clock;
 
     Fireable(float baseDamage = 1.0f, float baseFireRate = 1.0f) :
         BaseDamage(baseDamage),
@@ -61,8 +59,8 @@ struct Fireable {
     {}
 
     bool Fire(float weaponRate = 0.1f) {
-        if (FireClock.getElapsedTime().asSeconds() >= weaponRate * BaseFireRate) {
-            FireClock.restart();
+        if (Clock.getElapsedTime().asSeconds() >= weaponRate * BaseFireRate) {
+            Clock.restart();
             return true;
         }
         return false;
@@ -72,26 +70,26 @@ struct Fireable {
 struct Dashable {
     sf::Clock DashClock;
     sf::Clock DashCooldownClock;
-    sf::Vector2f m_LastDirection;
-    float BaseDashSpeedMultiplier = 3.0f;
-    float BaseDashDuration = 0.1f;
-    float BaseDashCooldown = 1.0f;
+    sf::Vector2f LastDirection;
+    float SpeedMultiplier = 3.0f;
+    float Duration = 0.1f;
+    float Cooldown = 1.0f;
 
-    Dashable(float baseDashSpeedMultiplier = 3.0f, float baseDashDuration = 0.1f, float baseDashCooldown = 1.0f) :
-        BaseDashSpeedMultiplier(baseDashSpeedMultiplier),
-        BaseDashDuration(baseDashDuration),
-        BaseDashCooldown(baseDashCooldown)
+    Dashable(float speedMultiplier = 3.0f, float duration = 0.1f, float cooldown = 1.0f) :
+        SpeedMultiplier(speedMultiplier),
+        Duration(duration),
+        Cooldown(cooldown)
     {
         DashClock.restart();
         DashCooldownClock.restart();
     }
 
     bool IsDashComplete() {
-        return DashClock.getElapsedTime().asSeconds() >= BaseDashDuration;
+        return DashClock.getElapsedTime().asSeconds() >= Duration;
     }
 
     bool IsDashCooldownComplete() {
-        return DashCooldownClock.getElapsedTime().asSeconds() >= BaseDashCooldown;
+        return DashCooldownClock.getElapsedTime().asSeconds() >= Cooldown;
     }
 
     void Dash() {
@@ -147,4 +145,44 @@ struct Lifetime {
     {}
 };
 
-using Velocity = sf::Vector2f;
+struct Friction {
+    float Value;
+
+    Friction(float value = 0.1f) :
+        Value(value)
+    {}
+};
+
+struct Velocity {
+    sf::Vector2f Value;
+
+    Velocity(float x = 0.0f, float y = 0.0f) :
+        Value(x, y)
+    {}
+    Velocity(const sf::Vector2f& vec) :
+        Value(vec)
+    {}
+    operator sf::Vector2f() const {
+        return Value;
+    }
+    operator sf::Vector2f&() {
+        return Value;
+    }
+};
+
+struct Acceleration {
+    sf::Vector2f Value;
+
+    Acceleration(float x = 0.0f, float y = 0.0f) :
+        Value(x, y)
+    {}
+    Acceleration(const sf::Vector2f& vec) :
+        Value(vec)
+    {}
+    operator sf::Vector2f() const {
+        return Value;
+    }
+    operator sf::Vector2f&() {
+        return Value;
+    }
+};

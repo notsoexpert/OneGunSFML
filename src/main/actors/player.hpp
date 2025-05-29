@@ -12,6 +12,7 @@ namespace Player {
     constexpr float BaseMaxEnergy = 100.0f;
     constexpr float BaseMoveSpeed = 5.0f;
     constexpr float BaseAcceleration = 0.5f;
+    constexpr float BaseFriction = 0.1f;
     constexpr float BaseHitInvincibilityDuration = 1.0f;
     constexpr float BaseDamage = 1.0f;
     constexpr float BaseFireRate = 1.0f;

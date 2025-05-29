@@ -38,11 +38,12 @@ namespace Player {
             OneGunGame::CollisionLayer::Player,
             static_cast<OneGunGame::CollisionLayer>(OneGunGame::Enemy | OneGunGame::Projectile | OneGunGame::Obstacle),
             OnCollision);
-        registry.emplace<Velocity>(entity, 0.0f, 0.0f);
-
-        registry.emplace<Health>(entity, BaseMaxHealth);
-        registry.emplace<Energy>(entity, BaseMaxEnergy);
-        registry.emplace<Speed>(entity, Player::BaseMoveSpeed, Player::BaseAcceleration);
+        registry.emplace<Velocity>(entity);
+        registry.emplace<Acceleration>(entity);
+        registry.emplace<Friction>(entity, Player::BaseFriction);
+        registry.emplace<Health>(entity, Player::BaseMaxHealth);
+        registry.emplace<Energy>(entity, Player::BaseMaxEnergy);
+        registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
@@ -51,17 +52,12 @@ namespace Player {
     }
 
     void Move(const sf::Vector2f &inputVector, entt::registry &registry, entt::entity playerEntity) {
-        auto &velocity = registry.get<Velocity>(playerEntity);
-        auto &speed = registry.get<Speed>(playerEntity);
+        auto &acceleration = registry.get<Acceleration>(playerEntity);
         
-        auto acceleration = sf::Vector2f{
-            inputVector.x * speed.MoveAcceleration,
-            inputVector.y * speed.MoveAcceleration
+        acceleration.Value = sf::Vector2f{
+            inputVector.x * Player::BaseAcceleration,
+            inputVector.y * Player::BaseAcceleration
         };
-
-        velocity += acceleration;
-        velocity.x = std::clamp(velocity.x, -speed.MoveMaxSpeed, speed.MoveMaxSpeed);
-        velocity.y = std::clamp(velocity.y, -speed.MoveMaxSpeed, speed.MoveMaxSpeed);
     }
 
     void Dash(entt::registry &registry, entt::entity playerEntity) {

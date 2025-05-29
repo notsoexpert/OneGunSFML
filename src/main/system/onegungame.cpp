@@ -111,12 +111,41 @@ namespace OneGunGame {
                 s_Data.Entities.Projectiles.push_back(newProjectile);
             }
         }
+
+        s_Data.Registry.view<Acceleration, Velocity>().each([](auto entity, Acceleration& acceleration, Velocity& velocity) {
+            spdlog::trace("Updating entity {}: Velocity ({}, {}) with Acceleration ({}, {})",
+                static_cast<int>(entity), velocity.Value.x, velocity.Value.y, acceleration.Value.x, acceleration.Value.y);
+            velocity.Value.x += acceleration.Value.x;
+            velocity.Value.y += acceleration.Value.y;
+            if (std::abs(velocity.Value.x) < 0.01f) velocity.Value.x = 0.0f;
+            if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
+        });
+
+        s_Data.Registry.view<MaxSpeed, Velocity>().each([](auto entity, MaxSpeed& maxSpeed, Velocity& velocity) {
+            spdlog::trace("Clamping speed for entity {}: Velocity ({}, {}) with MaxSpeed ({})", 
+                static_cast<int>(entity), velocity.Value.x, velocity.Value.y, maxSpeed.Value);
+
+            if (velocity.Value.length() <= maxSpeed.Value) return;
+            velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
+        });
+
+        s_Data.Registry.view<Friction, Velocity>().each([](auto Entity, Friction& friction, Velocity& velocity) {
+            spdlog::trace("Applying friction to entity {}: Velocity ({}, {}) with Friction ({})",
+                static_cast<int>(Entity), velocity.Value.x, velocity.Value.y, friction.Value);
+            velocity.Value.x *= (1.0f - friction.Value);
+            velocity.Value.y *= (1.0f - friction.Value);
+            if (std::abs(velocity.Value.x) < 0.01f) velocity.Value.x = 0.0f;
+            if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
+        });
+
         
         s_Data.Registry.view<Renderable, Velocity>().each([](auto entity, Renderable& renderable, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
-                static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.x, velocity.y);
-            renderable.Sprite.move(velocity);
+                static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.Value.x, velocity.Value.y);
+            renderable.Sprite.move(velocity.Value);
         });
+
+        
 
         s_Data.Registry.view<Collidable>().each([](auto entity, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
