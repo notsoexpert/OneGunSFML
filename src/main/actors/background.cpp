@@ -15,8 +15,7 @@ entt::entity Create(entt::registry &registry, const sf::Texture &texture) {
     renderable.Sprite.setPosition(StartPosition);
     copyRenderable.Sprite.setPosition(StartPosition);
     copyRenderable.Sprite.move(sf::Vector2f{0.0f, 0.0f - texture.getSize().y});
-    spdlog::warn("BG Pos: ({}, {})", renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
-    spdlog::warn("Copy Pos: ({}, {})", copyRenderable.Sprite.getPosition().x, copyRenderable.Sprite.getPosition().y);
+    
     registry.emplace<HorizontalParallax>(entity);
     registry.emplace<HorizontalParallax>(copy);
 

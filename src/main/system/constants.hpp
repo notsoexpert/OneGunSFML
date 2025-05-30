@@ -8,7 +8,7 @@ namespace OneGunGame {
     constexpr auto DefaultFrameRateLimit = 60;
     constexpr auto WindowTitle = "One Gun - SFML";
 
-    constexpr auto BackgroundPath = "./assets/textures/bg1.png";
+    constexpr auto BackgroundPath = "./assets/textures/bg1seamless.png";
     constexpr auto SpriteSheetPath = "./assets/textures/sprites.png";
 
     enum CollisionLayer {

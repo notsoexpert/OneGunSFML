@@ -53,8 +53,10 @@ namespace Projectile {
                     return HomingMissile;
                 case Dropper:
                     return Bomb;
+                default:
+                    spdlog::warn("Unknown weapon type, defaulting to Bullet1");
+                    return Bullet1;
             }
-            return Bullet1;
         }
     };
     
