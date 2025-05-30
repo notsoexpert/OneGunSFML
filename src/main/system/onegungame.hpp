@@ -37,8 +37,6 @@ namespace OneGunGame {
         struct {
             entt::entity Background;
             entt::entity Player;
-            std::vector<entt::entity> Projectiles;
-            std::vector<entt::entity> Enemies;
         } Entities;
 
         Data(unsigned int seed)

@@ -10,6 +10,10 @@ namespace OneGunGame {
 
     constexpr auto BackgroundPath = "./assets/textures/bg1seamless.png";
     constexpr auto SpriteSheetPath = "./assets/textures/sprites.png";
+    
+    constexpr auto Pi = 3.1415926535f;
+    constexpr auto PiSquared = Pi * Pi;
+    constexpr auto HalfPi = Pi / 2.0f;
 
     enum CollisionLayer {
         Player = 1 << 0,      // Player layer

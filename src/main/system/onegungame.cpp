@@ -109,9 +109,16 @@ namespace OneGunGame {
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
             auto newProjectile = Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
-            if (newProjectile != entt::null) {
-                s_Data.Entities.Projectiles.push_back(newProjectile);
-            }
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::N)) {
+            sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
+                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
+            sf::Vector2f flyDirection = {0.0f, 1.0f};
+            flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
+            
+            Enemy::Create(s_Data.Registry, static_cast<Enemy::Type>(s_Data.Random.generateInt(0, 2)),
+                            s_Data.Textures.SpriteSheetTexture, spawnPosition, flyDirection);
         }
 
         s_Data.Registry.view<Acceleration, Velocity>().each(
@@ -220,9 +227,6 @@ namespace OneGunGame {
             [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
                 spdlog::trace("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
-                if (std::find(s_Data.Entities.Projectiles.begin(), s_Data.Entities.Projectiles.end(), entity) != s_Data.Entities.Projectiles.end()) {
-                    s_Data.Entities.Projectiles.erase(std::remove(s_Data.Entities.Projectiles.begin(), s_Data.Entities.Projectiles.end(), entity));
-                }
                 s_Data.Registry.destroy(entity);
             }
         });

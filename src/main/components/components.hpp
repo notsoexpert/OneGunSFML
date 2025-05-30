@@ -144,12 +144,19 @@ struct Collision {
         EntityB(b)
     {}
 };
+struct ScreenTrigger {
+    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
+
+    Func Enter;
+    Func Leave;
+
+    ScreenTrigger(Func enter, Func leave) : Enter(enter), Leave(leave) {}
+};
 struct Lifetime {
     sf::Time Duration;
     sf::Clock Clock;
     Lifetime(sf::Time duration) : 
-        Duration(duration), 
-        Clock() 
+        Duration(duration)
     {}
 };
 
