@@ -51,6 +51,7 @@ namespace Projectile {
                     OneGunGame::CollisionLayer::Enemy);
                 break;
         }
+        auto colRect = preset.CollisionRect;
         registry.emplace<Collidable>(entity, preset.CollisionRect, source, 
             OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
 
@@ -62,22 +63,43 @@ namespace Projectile {
 
     void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity) {
         auto &component = registry.get<Component>(projectileEntity);
+        entt::entity sourceEntity = registry.get<Collidable>(projectileEntity).Source;
+        float damage = Presets.at(component.ThisType).Damage;
 
-        if (component.IsBurning()) {
-            // Get damage delay component;
-            // If damage delay clock expired,
-            // Deal damage
-            // restart delay clock
+        if (registry.valid(sourceEntity)) {
+            const auto &sourceFireable = registry.get<Fireable>(sourceEntity);
+            damage *= sourceFireable.BaseDamage;
         }
-
+        
+        auto otherHealth = registry.try_get<Health>(otherEntity);
+        if (!otherHealth) {
+            spdlog::warn("Entity {} hit by projectile entity {} is missing health component", 
+            static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
+        }
+        if (component.CompareFlags(Config::Burning)) {
+            auto &burning = registry.get<Burning>(projectileEntity);
+            if (burning.CanBurn(otherEntity)) {
+                if (otherHealth) {
+                    otherHealth->Damage(damage);
+                }
+                burning.BurnClocks[otherEntity].restart();
+            }
+        } else {
+            if (otherHealth) {
+                spdlog::warn("Entity {} damaged. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
+                otherHealth->Damage(damage);
+            }
+        }
+        
         // TODO: Create explosion actor and generate here
-        if (component.IsExploding()) {
+        if (component.CompareFlags(Config::Exploding)) {
             spdlog::info("Projectile {} exploded on collision with entity {}", static_cast<int>(projectileEntity), static_cast<int>(otherEntity));
         }
-
-        if (component.IsDestructing()) {
-            registry.destroy(projectileEntity);
+        
+        if (component.CompareFlags(Config::Destructing)) {
+            registry.emplace<Destructing>(projectileEntity);
         }
+        
     }
 
 

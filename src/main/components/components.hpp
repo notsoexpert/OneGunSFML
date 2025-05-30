@@ -1,7 +1,8 @@
 #pragma once
 
 #include <functional>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Clock.hpp>
 #include <entt/entt.hpp>
 
 #include "system/constants.hpp"
@@ -14,6 +15,14 @@ struct Health {
         Max(max),
         Current(max)
     {}
+
+    void Damage(float amount) { 
+        Current = std::clamp(Current - amount, 0.0f, Max);
+    }
+
+    void Heal(float amount) {
+        Damage(-amount);
+    }
 };
 
 struct Energy {
@@ -24,6 +33,14 @@ struct Energy {
         Max(max),
         Current(max)
     {}
+
+    void Exert(float amount) { 
+        Current = std::clamp(Current - amount, 0.0f, Max);
+    }
+
+    void Restore(float amount) {
+        Exert(-amount);
+    }
 };
 
 struct MaxSpeed {
@@ -102,6 +119,8 @@ struct Dashable {
 
 struct Renderable {
     sf::Sprite Sprite;
+    sf::RectangleShape DebugRect;
+
     int DrawOrder;
     Renderable(const sf::Texture& texture, int drawOrder = 0) : 
         Sprite(texture), 
@@ -201,3 +220,11 @@ struct Acceleration {
         return Value;
     }
 };
+
+struct Rotating {
+    sf::Angle RotationsPerSecond;
+
+    Rotating(sf::Angle rotationsPerSecond) : RotationsPerSecond(rotationsPerSecond) {}
+};
+
+struct Destructing {};

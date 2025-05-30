@@ -69,6 +69,18 @@ namespace OneGunGame {
             if (keyEvent.code == sf::Keyboard::Key::Escape) {
                 s_Data.Context.Window.close();
             }
+            if (keyEvent.code == sf::Keyboard::Key::T) {
+                spdlog::error("TOTAL ENTITIES: {}", GetEntityCount());
+            }
+            if (keyEvent.code == sf::Keyboard::Key::N) {
+                sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
+                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
+                sf::Vector2f flyDirection = {0.0f, 1.0f};
+                flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
+                
+                Enemy::Create(s_Data.Registry, static_cast<Enemy::Type>(s_Data.Random.generateInt(0, 2)),
+                                s_Data.Textures.SpriteSheetTexture, spawnPosition, flyDirection);
+            }
         };
         
         s_Data.Registry.clear();
@@ -108,19 +120,16 @@ namespace OneGunGame {
             Player::Dash(s_Data.Registry, s_Data.Entities.Player);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
-            auto newProjectile = Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
+            Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::N)) {
-            sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
-                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
-            sf::Vector2f flyDirection = {0.0f, 1.0f};
-            flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
-            
-            Enemy::Create(s_Data.Registry, static_cast<Enemy::Type>(s_Data.Random.generateInt(0, 2)),
-                            s_Data.Textures.SpriteSheetTexture, spawnPosition, flyDirection);
-        }
+        s_Data.Registry.view<Destructing>().each(
+            [](auto entity) {
+                s_Data.Registry.destroy(entity);
+            }
+        );
 
+        // TODO: Use DeltaTime
         s_Data.Registry.view<Acceleration, Velocity>().each(
             [](auto entity, Acceleration& acceleration, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Velocity ({}, {}) with Acceleration ({}, {})",
@@ -139,6 +148,7 @@ namespace OneGunGame {
             velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
         });
 
+        // TODO: Use DeltaTime
         s_Data.Registry.view<Friction, Velocity>().each(
             [](auto Entity, Friction& friction, Velocity& velocity) {
             spdlog::trace("Applying friction to entity {}: Velocity ({}, {}) with Friction ({})",
@@ -164,7 +174,17 @@ namespace OneGunGame {
             renderable.Sprite.setPosition({pos.x, vLoop.ResetY});
             copyRenderable.Sprite.setPosition({pos.x, vLoop.ResetY - copyRenderable.Sprite.getTexture().getSize().y});
         });
+
+        // TODO: Use DeltaTime
+        s_Data.Registry.view<Renderable, Rotating>().each(
+            [](auto entity, Renderable &renderable, Rotating &rotating) {
+                spdlog::trace("Updating entity {}: Rotating {} radians per second", 
+                static_cast<int>(entity), rotating.RotationsPerSecond.asRadians());
+                renderable.Sprite.rotate(rotating.RotationsPerSecond / DefaultFrameRateLimit);
+            }
+        );
         
+        // TODO: Use DeltaTime
         s_Data.Registry.view<Renderable, Velocity>().each(
             [](auto entity, Renderable& renderable, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
@@ -172,6 +192,7 @@ namespace OneGunGame {
             renderable.Sprite.move(velocity.Value);
         });
 
+        // TODO: Use DeltaTime
         s_Data.Registry.view<Renderable, Background::HorizontalParallax>().each(
             [&](auto entity, Renderable& renderable, Background::HorizontalParallax& parallax) {
             spdlog::trace("Updating entity {}: Parallax value ({})", static_cast<int>(entity), parallax.Value);
@@ -190,12 +211,27 @@ namespace OneGunGame {
             renderable.Sprite.setPosition(position);
         });
 
-        s_Data.Registry.view<Collidable>().each(
-            [](auto entity, Collidable& collidable) {
+        std::unordered_map<entt::entity, std::unordered_map<entt::entity, bool>> processedCollisions;
+        s_Data.Registry.view<Renderable, Collidable>().each(
+            [&](auto entity, Renderable &renderable, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
-            auto &rectA = collidable.CollisionRect;
-            s_Data.Registry.view<Collidable>().each([&](auto otherEntity, Collidable& otherCollidable) {
+            auto rectA = collidable.CollisionRect;
+            rectA.position += RoundVector(renderable.Sprite.getPosition());
+
+            renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
+            renderable.DebugRect.setOutlineColor(sf::Color::Red);
+            renderable.DebugRect.setOutlineThickness(1.0f);
+            renderable.DebugRect.setFillColor(sf::Color::Transparent);
+            renderable.DebugRect.setPosition(static_cast<sf::Vector2f>(rectA.position));
+
+            processedCollisions[entity] = {};
+            s_Data.Registry.view<Renderable, Collidable>().each([&](auto otherEntity, Renderable &otherRenderable, Collidable& otherCollidable) {
+                processedCollisions[entity][otherEntity] = true;
+                if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
+                    return;
+                }
+
                 if (entity == otherEntity || otherEntity == collidable.Source) 
                     return;
                 
@@ -203,30 +239,34 @@ namespace OneGunGame {
                     return;
                 };
                 
-                auto &rectB = otherCollidable.CollisionRect;
+                auto rectB = otherCollidable.CollisionRect;
+                rectB.position += RoundVector(otherRenderable.Sprite.getPosition());
                 if (rectA.findIntersection(rectB)) {
                     spdlog::trace("Collision detected between entity {} and entity {}", 
                         static_cast<int>(entity), static_cast<int>(otherEntity));
-                    // auto collisionEntity = s_Data.Registry.create();
-                    
-                    // s_Data.Registry.emplace<Collision>(collisionEntity, entity, otherEntity);
-
-
+                    collidable.OnCollision(s_Data.Registry, entity, otherEntity);
+                    otherCollidable.OnCollision(s_Data.Registry, otherEntity, entity);
                 }
             });
         });
 
-        // s_Data.Registry.view<Collision>().each([](auto entity, Collision& collision) {
-        //     spdlog::trace("Processing {} collision between entity {} and entity {}", static_cast<int>(entity),
-        //         static_cast<int>(collision.EntityA), static_cast<int>(collision.EntityB));
-            
-        //         s_Data.Registry.destroy(entity);
-        // });
+        s_Data.Registry.view<Renderable, ScreenTrigger>().each(
+            [](auto entity, Renderable &renderable, ScreenTrigger &screenTrigger) {
+                sf::FloatRect screenRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())};
+                sf::Vector2f spriteSize = static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size);
+                sf::FloatRect spriteRect{renderable.Sprite.getPosition(), spriteSize};
+                
+                if (spriteRect.findIntersection(screenRect)) {
+                    screenTrigger.Enter(s_Data.Registry, entity);
+                } else {
+                    screenTrigger.Leave(s_Data.Registry, entity);
+                }
+        });
 
         s_Data.Registry.view<Lifetime>().each(
             [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
-                spdlog::trace("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
+                spdlog::warn("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
                 s_Data.Registry.destroy(entity);
             }
         });
@@ -240,6 +280,7 @@ namespace OneGunGame {
             spdlog::trace("Rendering entity {}: Position ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
             s_Data.Context.Window.draw(renderable.Sprite);
+            s_Data.Context.Window.draw(renderable.DebugRect);
         });
         
         s_Data.Context.Window.display();
@@ -267,6 +308,22 @@ namespace OneGunGame {
             inputVector = inputVector / std::sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y);
         }
         return inputVector;
+    }
+
+    uint32_t GetEntityCount() {
+        uint32_t total = 0;
+        for ([[maybe_unused]]auto entity : s_Data.Registry.view<entt::entity>()) {
+            total += 1;
+        }
+        return total;
+    }
+
+    sf::Vector2i RoundVector(sf::Vector2f vec) {
+        return sf::Vector2i{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
+    }
+
+    int RoundCoordinate(float coord) {
+        return static_cast<int>(std::round(coord));
     }
 
     entt::registry& GetRegistry() { return s_Data.Registry; }

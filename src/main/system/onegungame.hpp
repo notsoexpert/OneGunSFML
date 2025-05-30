@@ -14,6 +14,10 @@ namespace OneGunGame {
 
     sf::Vector2f GetInputVector();
     sf::Vector2u GetWindowSize();
+    uint32_t GetEntityCount();
+
+    sf::Vector2i RoundVector(sf::Vector2f vec);
+    int RoundCoordinate(float coord);
 
     entt::registry& GetRegistry();
     RandomGenerator& GetRandomGenerator();
