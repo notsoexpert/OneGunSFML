@@ -17,66 +17,6 @@ namespace Projectile {
         Total
     };
 
-    struct Weapon {
-        enum Type {
-            Cannon = 0,
-            Blaster,
-            Burner,
-            Launcher,
-            SeekerLauncher,
-            Dropper,
-            Total
-        };
-        Weapon::Type ThisType;
-
-        Weapon(Weapon::Type type) : ThisType(type) {}
-
-        Projectile::Type getBulletType(float power = 1.0f) {
-            switch (ThisType) {
-                case Cannon:
-                    if (power < 5.0f)
-                        return Bullet1;
-                    if (power < 10.0f)
-                        return Bullet2;
-                    return Bullet3;
-                case Blaster:
-                    if (power < 5.0f)
-                        return Laser1;
-                    if (power < 10.0f)
-                        return Laser2;
-                    return Laser3;
-                case Burner:
-                    return Plasma;
-                case Launcher:
-                    return Missile;
-                case SeekerLauncher:
-                    return HomingMissile;
-                case Dropper:
-                    return Bomb;
-                default:
-                    spdlog::warn("Unknown weapon type, defaulting to Bullet1");
-                    return Bullet1;
-            }
-        }
-    };
-
-    struct Burning {
-        float BurnPeriodSeconds = 0.25f;
-        std::unordered_map<entt::entity, sf::Clock> BurnClocks;
-
-        bool CanBurn(entt::entity other) {
-            return !BurnClocks.contains(other) || 
-                    BurnClocks[other].getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
-        }
-    };
-    
-    entt::entity Create(entt::registry &registry, 
-        Type type, const sf::Texture &texture, 
-        const sf::Vector2f& position, const sf::Vector2f& direction, 
-        entt::entity source);
-
-    void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity);
-    
     struct Config {
         enum {
             Destructing = 1 << 0,
@@ -116,6 +56,49 @@ namespace Projectile {
         Config::Exploding}  // Bomb
     };
 
+    struct Weapon {
+        enum Type {
+            Cannon = 0,
+            Blaster,
+            Burner,
+            Launcher,
+            SeekerLauncher,
+            Dropper,
+            Total
+        };
+        Weapon::Type ThisType;
+
+        Weapon(Weapon::Type type) : ThisType(type) {}
+
+        Projectile::Type GetBulletType(float basePower = 1.0f) {
+            switch (ThisType) {
+                case Cannon:
+                    if (basePower < 5.0f)
+                        return Bullet1;
+                    if (basePower < 10.0f)
+                        return Bullet2;
+                    return Bullet3;
+                case Blaster:
+                    if (basePower < 5.0f)
+                        return Laser1;
+                    if (basePower < 10.0f)
+                        return Laser2;
+                    return Laser3;
+                case Burner:
+                    return Plasma;
+                case Launcher:
+                    return Missile;
+                case SeekerLauncher:
+                    return HomingMissile;
+                case Dropper:
+                    return Bomb;
+                default:
+                    spdlog::warn("Unknown weapon type, defaulting to Bullet1");
+                    return Bullet1;
+            }
+        }
+    };
+
     struct Component {
         Type ThisType;
 
@@ -125,4 +108,24 @@ namespace Projectile {
             return (Presets.at(static_cast<size_t>(ThisType)).Flags & flags) != 0;
         }
     };
+
+    struct Burning {
+        float BurnPeriodSeconds = 0.25f;
+        std::unordered_map<entt::entity, sf::Clock> BurnClocks;
+
+        bool CanBurn(entt::entity other) {
+            return !BurnClocks.contains(other) || 
+                    BurnClocks[other].getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
+        }
+    };
+
+    entt::entity Create(entt::registry &registry, 
+        Type type, const sf::Texture &texture, 
+        const sf::Vector2f& position, const sf::Vector2f& direction, 
+        entt::entity source);
+
+    void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity);
+    float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, const Component& component);
+    void DamageEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage);
+    void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
 }

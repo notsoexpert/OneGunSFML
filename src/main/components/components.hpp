@@ -23,6 +23,10 @@ struct Health {
     void Heal(float amount) {
         Damage(-amount);
     }
+
+    bool IsDead() const {
+        return Current <= 0.0f;
+    }
 };
 
 struct Energy {
@@ -228,3 +232,7 @@ struct Rotating {
 };
 
 struct Destructing {};
+struct Dying {
+    std::function<void(entt::registry& registry, entt::entity thisEntity)> OnDeath;
+    Dying(auto onDeath) : OnDeath(onDeath) {}
+};

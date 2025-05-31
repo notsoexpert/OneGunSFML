@@ -123,11 +123,7 @@ namespace OneGunGame {
             Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
         }
 
-        s_Data.Registry.view<Destructing>().each(
-            [](auto entity) {
-                s_Data.Registry.destroy(entity);
-            }
-        );
+        
 
         // TODO: Use DeltaTime
         s_Data.Registry.view<Acceleration, Velocity>().each(
@@ -266,10 +262,23 @@ namespace OneGunGame {
         s_Data.Registry.view<Lifetime>().each(
             [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
-                spdlog::warn("Removing entity {} due to lifetime expiration", static_cast<int>(entity));
-                s_Data.Registry.destroy(entity);
+                spdlog::warn("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
+                s_Data.Registry.emplace<Destructing>(entity);
             }
         });
+
+        s_Data.Registry.view<Dying>().each(
+            [](auto entity, Dying& dying) {
+                spdlog::trace("Processing death for entity {}", static_cast<int>(entity));
+                dying.OnDeath(s_Data.Registry, entity);
+            }
+        );
+
+        s_Data.Registry.view<Destructing>().each(
+            [](auto entity) {
+                s_Data.Registry.destroy(entity);
+            }
+        );
     }
 
     void Render() {

@@ -59,7 +59,7 @@ namespace Player {
         }
 
         spdlog::trace("Player firing projectile");
-        auto projectileType = weaponComponent->getBulletType(fireComponent->BaseDamage);
+        auto projectileType = weaponComponent->GetBulletType(fireComponent->BaseDamage);
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
         auto projectile = Projectile::Create(registry, 
             projectileType, projectileTexture, 

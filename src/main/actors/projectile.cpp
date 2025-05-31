@@ -51,7 +51,6 @@ namespace Projectile {
                     OneGunGame::CollisionLayer::Enemy);
                 break;
         }
-        auto colRect = preset.CollisionRect;
         registry.emplace<Collidable>(entity, preset.CollisionRect, source, 
             OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
 
@@ -61,34 +60,64 @@ namespace Projectile {
         return entity;
     }
 
-    void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity) {
-        auto &component = registry.get<Component>(projectileEntity);
-        entt::entity sourceEntity = registry.get<Collidable>(projectileEntity).Source;
+    float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, const Component &component) {
         float damage = Presets.at(component.ThisType).Damage;
 
-        if (registry.valid(sourceEntity)) {
-            const auto &sourceFireable = registry.get<Fireable>(sourceEntity);
-            damage *= sourceFireable.BaseDamage;
+        entt::entity sourceEntity = registry.get<Collidable>(projectileEntity).Source;
+        if (!registry.valid(sourceEntity)) {
+            spdlog::warn("Projectile entity {} - Source entity {} is invalid", static_cast<int>(projectileEntity), static_cast<int>(sourceEntity));
+            return damage;
         }
         
+        auto sourceFireable = registry.try_get<Fireable>(sourceEntity);
+        if (!sourceFireable) {
+            spdlog::warn("Projectile entity {} - Source entity {} is missing Fireable component", static_cast<int>(projectileEntity), static_cast<int>(sourceEntity));
+            return damage;
+        }
+
+        return damage * sourceFireable->BaseDamage;
+    }
+
+    void DamageEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage) {
         auto otherHealth = registry.try_get<Health>(otherEntity);
         if (!otherHealth) {
-            spdlog::warn("Entity {} hit by projectile entity {} is missing health component", 
+            spdlog::error("Entity {} hit by projectile entity {} is missing health component", 
             static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
+            return;
         }
+        
+        spdlog::info("Entity {} damaged. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
+        otherHealth->Damage(damage);
+    }
+
+    void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent) {
+        auto otherHealth = registry.try_get<Health>(otherEntity);
+        if (!otherHealth) {
+            spdlog::error("Entity {} hit by projectile entity {} is missing health component", 
+            static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
+            return;
+        }
+
+        if (!burningComponent.CanBurn(otherEntity)) {
+            return;
+        }
+        
+        otherHealth->Damage(damage);
+        spdlog::info("Entity {} burned. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
+        burningComponent.BurnClocks[otherEntity].restart();
+
+    }
+
+    void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity) {
+        auto &component = registry.get<Component>(projectileEntity);
+
+        float projectileDamage = GetProjectileDamage(registry, projectileEntity, component);
+
         if (component.CompareFlags(Config::Burning)) {
             auto &burning = registry.get<Burning>(projectileEntity);
-            if (burning.CanBurn(otherEntity)) {
-                if (otherHealth) {
-                    otherHealth->Damage(damage);
-                }
-                burning.BurnClocks[otherEntity].restart();
-            }
-        } else {
-            if (otherHealth) {
-                spdlog::warn("Entity {} damaged. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
-                otherHealth->Damage(damage);
-            }
+            BurnEntity(registry, projectileEntity, otherEntity, projectileDamage, burning);
+        } else if (!component.CompareFlags(Config::Exploding)) {
+            DamageEntity(registry, projectileEntity, otherEntity, projectileDamage);
         }
         
         // TODO: Create explosion actor and generate here
