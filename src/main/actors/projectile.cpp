@@ -126,7 +126,7 @@ namespace Projectile {
         }
         
         if (component.CompareFlags(Config::Destructing)) {
-            registry.emplace<Destructing>(projectileEntity);
+            registry.emplace_or_replace<Destructing>(projectileEntity);
         }
         
     }

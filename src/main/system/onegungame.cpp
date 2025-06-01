@@ -15,10 +15,30 @@ namespace OneGunGame {
         spdlog::info("spdlog Version: {0}.{1}.{2}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
         spdlog::info("SFML Version: {0}.{1}.{2}", SFML_VERSION_MAJOR, SFML_VERSION_MINOR, SFML_VERSION_PATCH);
         spdlog::info("EnTT Version: {0}.{1}.{2}", ENTT_VERSION_MAJOR, ENTT_VERSION_MINOR, ENTT_VERSION_PATCH);
-
+        
         spdlog::info("Argc: {0}", argc);
         for (int i = 0; i < argc; ++i) {
             spdlog::info("Argv[{0}]: {1}", i, argv[i]);
+    
+            std::string_view arg{argv[i]};
+
+            if (arg.starts_with("-l")) {
+                if (arg.ends_with("0")) {
+                    spdlog::set_level(spdlog::level::trace);
+                } else if (arg.ends_with("1")) {
+                    spdlog::set_level(spdlog::level::info);
+                } else if (arg.ends_with("2")) {
+                    spdlog::set_level(spdlog::level::warn);
+                } else if (arg.ends_with("3")) {
+                    spdlog::set_level(spdlog::level::err);
+                } else if (arg.ends_with("4")) {
+                    spdlog::set_level(spdlog::level::critical);
+                }
+            }
+
+            if (arg.starts_with("-f")) {
+                
+            }
         }
 
         spdlog::info("Setting up OneGunGame...");
@@ -263,7 +283,7 @@ namespace OneGunGame {
             [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
                 spdlog::warn("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
-                s_Data.Registry.emplace<Destructing>(entity);
+                s_Data.Registry.emplace_or_replace<Destructing>(entity);
             }
         });
 
