@@ -37,7 +37,7 @@ namespace OneGunGame {
             }
 
             if (arg.starts_with("-f")) {
-                
+                Configuration.WindowState = sf::State::Fullscreen;
             }
         }
 
@@ -69,8 +69,8 @@ namespace OneGunGame {
     }
 
     std::expected<int, std::string> Setup() {
-        s_Data.Context.Window = {sf::VideoMode(DefaultWindowSize), WindowTitle, DefaultWindowStyle, DefaultWindowState, DefaultContextSettings};
-        s_Data.Context.Window.setFramerateLimit(DefaultFrameRateLimit);
+        s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(Configuration.WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
+        s_Data.Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
 
         if (!s_Data.Textures.BackgroundTexture.loadFromFile(OneGunGame::BackgroundPath)) {
             return std::unexpected<std::string>("Failed to load background texture");
@@ -196,7 +196,7 @@ namespace OneGunGame {
             [](auto entity, Renderable &renderable, Rotating &rotating) {
                 spdlog::trace("Updating entity {}: Rotating {} radians per second", 
                 static_cast<int>(entity), rotating.RotationsPerSecond.asRadians());
-                renderable.Sprite.rotate(rotating.RotationsPerSecond / DefaultFrameRateLimit);
+                renderable.Sprite.rotate(rotating.RotationsPerSecond / Default.FrameRateLimit);
             }
         );
         
