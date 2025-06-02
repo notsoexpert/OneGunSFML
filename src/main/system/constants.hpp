@@ -31,4 +31,10 @@ namespace OneGunGame {
         Enemy = 1 << 2,       // Enemy layer
         Obstacle = 1 << 3     // Obstacle layer
     };
+
+    enum Images {
+        Background = 0,
+        SpriteSheet,
+        TotalImages
+    };
 }

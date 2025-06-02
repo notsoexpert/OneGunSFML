@@ -6,7 +6,10 @@ namespace Background {
     constexpr auto ScrollSpeed = 5.0f;
 
     struct HorizontalParallax {
+        entt::entity SourceEntity;
         float Value = 0.0f;
+
+        HorizontalParallax(entt::entity sourceEntity) : SourceEntity(sourceEntity) {}
     };
 
     struct VerticalLoop {
@@ -21,5 +24,6 @@ namespace Background {
         {}
     };
 
-    entt::entity Create(entt::registry &registry, const sf::Texture &texture);
+    void Update(entt::registry &registry);
+    entt::entity Create(entt::registry &registry);
 }

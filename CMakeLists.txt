@@ -35,6 +35,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 endif()
 
+target_compile_definitions(OneGunSFML PRIVATE
+    $<$<CONFIG:Debug>:
+        DEBUG
+    >
+)
+
 # This allows to include files relative to the root of the src directory with a <> pair
 target_include_directories(OneGunSFML PUBLIC src/main)
 target_include_directories(OneGunSFML PUBLIC vendor/SFML/include)

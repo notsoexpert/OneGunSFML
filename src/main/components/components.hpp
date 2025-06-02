@@ -123,7 +123,9 @@ struct Dashable {
 
 struct Renderable {
     sf::Sprite Sprite;
+#if DEBUG
     sf::RectangleShape DebugRect;
+#endif
 
     int DrawOrder;
     Renderable(const sf::Texture& texture, int drawOrder = 0) : 
@@ -158,15 +160,6 @@ struct Collidable {
     {}
 };
 
-struct Collision {
-    entt::entity EntityA;
-    entt::entity EntityB;
-
-    Collision(entt::entity a, entt::entity b) : 
-        EntityA(a),
-        EntityB(b)
-    {}
-};
 struct ScreenTrigger {
     using Func = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
 

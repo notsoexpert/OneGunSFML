@@ -9,8 +9,7 @@
 namespace Projectile {
 
     entt::entity Create(entt::registry &registry, 
-        Type type, const sf::Texture &texture, 
-        const sf::Vector2f& position, const sf::Vector2f& direction, 
+        Type type, const sf::Vector2f& position, const sf::Vector2f& direction, 
         entt::entity source)
     {
         if (type < Type::Bullet1 || type >= Type::Total) {
@@ -22,7 +21,8 @@ namespace Projectile {
 
         registry.emplace<Component>(entity, type);
 
-        auto &projectileSprite = registry.emplace<Renderable>(entity, texture, 25).Sprite;
+        auto &projectileSprite = registry.emplace<Renderable>(entity, 
+            OneGunGame::GetTexture(OneGunGame::SpriteSheet), 25).Sprite;
         auto &preset = Presets.at(static_cast<size_t>(type));
         projectileSprite.setTextureRect(preset.TextureRect);
         projectileSprite.setOrigin({preset.TextureRect.size.x / 2.0f, preset.TextureRect.size.y / 2.0f});

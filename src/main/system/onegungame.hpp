@@ -15,11 +15,13 @@ namespace OneGunGame {
     sf::Vector2f GetInputVector();
     sf::Vector2u GetWindowSize();
     uint32_t GetEntityCount();
+    const sf::Texture& GetTexture(Images image);
 
     sf::Vector2i RoundVector(sf::Vector2f vec);
     int RoundCoordinate(float coord);
 
     entt::registry& GetRegistry();
+    entt::entity GetPlayerEntity();
     RandomGenerator& GetRandomGenerator();
     const sf::RenderWindow& GetWindow();
 
@@ -33,6 +35,7 @@ namespace OneGunGame {
         struct {
             sf::Texture BackgroundTexture;
             sf::Texture SpriteSheetTexture;
+            sf::Texture UnknownTexture;
         } Textures;
         struct {
             std::function<void(const sf::Event::Closed&)> OnClose;

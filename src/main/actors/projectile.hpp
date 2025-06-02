@@ -120,8 +120,7 @@ namespace Projectile {
     };
 
     entt::entity Create(entt::registry &registry, 
-        Type type, const sf::Texture &texture, 
-        const sf::Vector2f& position, const sf::Vector2f& direction, 
+        Type type, const sf::Vector2f& position, const sf::Vector2f& direction, 
         entt::entity source);
 
     void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity);

@@ -23,9 +23,10 @@ namespace Player {
     constexpr float BaseDashDuration = 0.25f;
     constexpr float BaseDashCooldown = 5.0f;
 
-    entt::entity Create(entt::registry &registry, const sf::Texture &texture, const sf::Vector2f &startPosition);
+    void Update(entt::registry &registry, entt::entity playerEntity);
+    entt::entity Create(entt::registry &registry, const sf::Vector2f &startPosition);
     void Move(const sf::Vector2f &inputVector, entt::registry &registry, entt::entity playerEntity);
-    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, const sf::Texture& projectileTexture);
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
     void Dash(entt::registry &registry, entt::entity playerEntity);
     void OnCollision(entt::registry &registry, entt::entity playerEntity, entt::entity otherEntity);
 }

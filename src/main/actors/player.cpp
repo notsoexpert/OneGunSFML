@@ -7,9 +7,21 @@
 
 namespace Player {
 
-    entt::entity Create(entt::registry &registry, const sf::Texture &texture, const sf::Vector2f &startPosition) {
+    void Update(entt::registry &registry, entt::entity playerEntity) {
+        sf::Vector2f inputVector = OneGunGame::GetInputVector();
+        Player::Move(inputVector, registry, playerEntity);
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+            Player::Dash(registry, playerEntity);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
+            Player::Fire(registry, playerEntity);
+        }
+    }
+
+    entt::entity Create(entt::registry &registry, const sf::Vector2f &startPosition) {
         entt::entity entity = registry.create();
-        auto &renderable = registry.emplace<Renderable>(entity, texture, 10);
+        auto &renderable = registry.emplace<Renderable>(entity, OneGunGame::GetTexture(OneGunGame::SpriteSheet), 10);
         renderable.Sprite.setOrigin({Player::Size.x / 2.0f, Player::Size.y / 2.0f}); // Set origin to center of the sprite
         renderable.Sprite.setPosition(startPosition);
         renderable.Sprite.setTextureRect(sf::IntRect({0, 0}, Player::Size));
@@ -42,7 +54,7 @@ namespace Player {
         };
     }
 
-    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, const sf::Texture& projectileTexture) {
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity) {
         auto fireComponent = registry.try_get<Fireable>(playerEntity);
         if (!fireComponent) {
             spdlog::warn("Player entity {} does not have a Fireable component", static_cast<int>(playerEntity));
@@ -61,10 +73,9 @@ namespace Player {
         spdlog::trace("Player firing projectile");
         auto projectileType = weaponComponent->GetBulletType(fireComponent->BaseDamage);
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
-        auto projectile = Projectile::Create(registry, 
-            projectileType, projectileTexture, 
-            registry.get<Renderable>(playerEntity).Sprite.getPosition(), sf::Vector2f{0.0f, -1.0f}, 
-            playerEntity);
+        auto projectile = Projectile::Create(registry, projectileType, 
+            registry.get<Renderable>(playerEntity).Sprite.getPosition(), 
+            sf::Vector2f{0.0f, -1.0f}, playerEntity);
         return projectile;
     }
 

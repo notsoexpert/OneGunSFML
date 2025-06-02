@@ -82,6 +82,12 @@ namespace OneGunGame {
         }
         s_Data.Textures.SpriteSheetTexture.setSmooth(true);
 
+        {
+            sf::Image img{{2u, 2u}, sf::Color::Magenta};
+            if (!s_Data.Textures.UnknownTexture.loadFromImage(img))
+                return std::unexpected<std::string>("Failed to generate placeholder texture");
+        }
+
         s_Data.EventHandlers.OnClose = [](const sf::Event::Closed&) {
                 s_Data.Context.Window.close();
         };
@@ -99,14 +105,14 @@ namespace OneGunGame {
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
                 Enemy::Create(s_Data.Registry, static_cast<Enemy::Type>(s_Data.Random.generateInt(0, 2)),
-                                s_Data.Textures.SpriteSheetTexture, spawnPosition, flyDirection);
+                                spawnPosition, flyDirection);
             }
         };
         
         s_Data.Registry.clear();
 
-        s_Data.Entities.Background = Background::Create(s_Data.Registry, s_Data.Textures.BackgroundTexture);
-        s_Data.Entities.Player = Player::Create(s_Data.Registry, s_Data.Textures.SpriteSheetTexture, Player::Start(s_Data.Context.Window.getSize()));
+        s_Data.Entities.Background = Background::Create(s_Data.Registry);
+        s_Data.Entities.Player = Player::Create(s_Data.Registry, Player::Start(s_Data.Context.Window.getSize()));
 
         return 0;
     }
@@ -133,16 +139,11 @@ namespace OneGunGame {
     void Update() {
         s_Data.Context.Window.handleEvents(s_Data.EventHandlers.OnClose, s_Data.EventHandlers.KeyPressed);
 
-        sf::Vector2f inputVector = GetInputVector();
-        Player::Move(inputVector, s_Data.Registry, s_Data.Entities.Player);
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            Player::Dash(s_Data.Registry, s_Data.Entities.Player);
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
-            Player::Fire(s_Data.Registry, s_Data.Entities.Player, s_Data.Textures.SpriteSheetTexture);
-        }
+        // Handle Inputs
+        Player::Update(s_Data.Registry, s_Data.Entities.Player);
 
+        // Handle Enemy Behavior
+        Enemy::Update(s_Data.Registry);
         
 
         // TODO: Use DeltaTime
@@ -156,14 +157,6 @@ namespace OneGunGame {
             if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
         });
 
-        s_Data.Registry.view<MaxSpeed, Velocity>().each([](auto entity, MaxSpeed& maxSpeed, Velocity& velocity) {
-            spdlog::trace("Clamping speed for entity {}: Velocity ({}, {}) with MaxSpeed ({})", 
-                static_cast<int>(entity), velocity.Value.x, velocity.Value.y, maxSpeed.Value);
-
-            if (velocity.Value.length() <= maxSpeed.Value) return;
-            velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
-        });
-
         // TODO: Use DeltaTime
         s_Data.Registry.view<Friction, Velocity>().each(
             [](auto Entity, Friction& friction, Velocity& velocity) {
@@ -175,21 +168,15 @@ namespace OneGunGame {
             if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
         });
 
-        s_Data.Registry.view<Renderable, Velocity, Background::VerticalLoop>().each(
-            [&](auto entity, Renderable &renderable, Velocity &velocity, Background::VerticalLoop &vLoop) {
-            spdlog::trace("Updating entity {}: vLoop LimitY: {}, ResetY: {}, Copy Entity: {}", 
-                static_cast<int>(entity), vLoop.LimitY, vLoop.ResetY, static_cast<int>(vLoop.BackgroundCopy));
-            auto pos = renderable.Sprite.getPosition();
-            const auto &vel = velocity.Value;
-            
-            //spdlog::warn("BG Pos: ({}, {}), BG Vel: ({}, {}) LimitY: {}", pos.x, pos.y, vel.x, vel.y, vLoop.LimitY);
-            if (pos.y + vel.y <= vLoop.LimitY) 
-                return;
-            
-            auto &copyRenderable = s_Data.Registry.get<Renderable>(vLoop.BackgroundCopy);
-            renderable.Sprite.setPosition({pos.x, vLoop.ResetY});
-            copyRenderable.Sprite.setPosition({pos.x, vLoop.ResetY - copyRenderable.Sprite.getTexture().getSize().y});
+        s_Data.Registry.view<MaxSpeed, Velocity>().each([](auto entity, MaxSpeed& maxSpeed, Velocity& velocity) {
+            spdlog::trace("Clamping speed for entity {}: Velocity ({}, {}) with MaxSpeed ({})", 
+                static_cast<int>(entity), velocity.Value.x, velocity.Value.y, maxSpeed.Value);
+
+            if (velocity.Value.length() <= maxSpeed.Value) return;
+            velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
         });
+
+        Background::Update(s_Data.Registry);
 
         // TODO: Use DeltaTime
         s_Data.Registry.view<Renderable, Rotating>().each(
@@ -206,15 +193,6 @@ namespace OneGunGame {
             spdlog::trace("Updating entity {}: Position ({}, {}), Velocity ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y, velocity.Value.x, velocity.Value.y);
             renderable.Sprite.move(velocity.Value);
-        });
-
-        // TODO: Use DeltaTime
-        s_Data.Registry.view<Renderable, Background::HorizontalParallax>().each(
-            [&](auto entity, Renderable& renderable, Background::HorizontalParallax& parallax) {
-            spdlog::trace("Updating entity {}: Parallax value ({})", static_cast<int>(entity), parallax.Value);
-            const auto &playerPosition = s_Data.Registry.get<Renderable>(s_Data.Entities.Player).Sprite.getPosition();
-            parallax.Value = playerPosition.x / OneGunGame::GetWindowSize().x;
-            renderable.Sprite.setPosition({OneGunGame::GetWindowSize().x * -parallax.Value, renderable.Sprite.getPosition().y});
         });
 
         s_Data.Registry.view<Renderable, Confined>().each(
@@ -234,12 +212,13 @@ namespace OneGunGame {
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
             auto rectA = collidable.CollisionRect;
             rectA.position += RoundVector(renderable.Sprite.getPosition());
-
+#if DEBUG
             renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
             renderable.DebugRect.setOutlineColor(sf::Color::Red);
             renderable.DebugRect.setOutlineThickness(1.0f);
             renderable.DebugRect.setFillColor(sf::Color::Transparent);
             renderable.DebugRect.setPosition(static_cast<sf::Vector2f>(rectA.position));
+#endif
 
             processedCollisions[entity] = {};
             s_Data.Registry.view<Renderable, Collidable>().each([&](auto otherEntity, Renderable &otherRenderable, Collidable& otherCollidable) {
@@ -282,7 +261,7 @@ namespace OneGunGame {
         s_Data.Registry.view<Lifetime>().each(
             [](auto entity, Lifetime& lifetime) {
             if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
-                spdlog::warn("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
+                spdlog::trace("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
                 s_Data.Registry.emplace_or_replace<Destructing>(entity);
             }
         });
@@ -309,7 +288,9 @@ namespace OneGunGame {
             spdlog::trace("Rendering entity {}: Position ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
             s_Data.Context.Window.draw(renderable.Sprite);
+#if DEBUG
             s_Data.Context.Window.draw(renderable.DebugRect);
+#endif
         });
         
         s_Data.Context.Window.display();
@@ -347,6 +328,16 @@ namespace OneGunGame {
         return total;
     }
 
+    const sf::Texture& GetTexture(Images image) {
+        switch (image) {
+            case Background:
+                return s_Data.Textures.BackgroundTexture;
+            case SpriteSheet:
+                return s_Data.Textures.SpriteSheetTexture;
+        }
+        return s_Data.Textures.UnknownTexture;
+    }
+
     sf::Vector2i RoundVector(sf::Vector2f vec) {
         return sf::Vector2i{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
     }
@@ -356,6 +347,7 @@ namespace OneGunGame {
     }
 
     entt::registry& GetRegistry() { return s_Data.Registry; }
+    entt::entity GetPlayerEntity() { return s_Data.Entities.Player; }
     RandomGenerator& GetRandomGenerator() { return s_Data.Random; }
     const sf::RenderWindow& GetWindow() { return s_Data.Context.Window; }
 }
