@@ -104,8 +104,7 @@ namespace OneGunGame {
                 sf::Vector2f flyDirection = {0.0f, 1.0f};
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
-                Enemy::Create(s_Data.Registry, static_cast<Enemy::Type>(s_Data.Random.generateInt(0, 2)),
-                                spawnPosition, flyDirection);
+                Enemy::Create(s_Data.Registry, Enemy::Drone, spawnPosition, flyDirection);
             }
         };
         

@@ -10,6 +10,7 @@ namespace Enemy {
 
     const std::unordered_map<Type, Behavior::Action> Behavior::Callbacks = {
             {Comet, CometBehavior},
+            {Drone, DroneBehavior},
             {Fighter, FighterBehavior},
             {Bomber, BomberBehavior},
             {Hunter, HunterBehavior}, 
@@ -46,16 +47,43 @@ namespace Enemy {
 
         registry.emplace<Health>(entity, Presets.at(type).MaxHealth);
         registry.emplace<MaxSpeed>(entity);
-        registry.emplace<Fireable>(entity, 1.0f, 5.0f);
+        registry.emplace<Fireable>(entity, 1.0f, Presets.at(type).FireRate);
         registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
         if (Behavior::Callbacks.contains(type))
             registry.emplace<Behavior>(entity, Behavior::Callbacks.at(type));
         registry.emplace<Component>(entity, type);
         registry.emplace<ScreenTrigger>(entity, RemoveOffscreenLifetime, AddOffscreenLifetime);
-        registry.emplace<Rotating>(entity, sf::radians(2*OneGunGame::Pi));
+
+        if (static_cast<int>(type) <= 2)
+            registry.emplace<Rotating>(entity, sf::radians(2*OneGunGame::Pi));
 
         spdlog::info("Creating Enemy of type '{}', entity {}", Names.at(type), static_cast<int>(entity));
         return entity;
+    }
+
+    entt::entity Fire(entt::registry &registry, entt::entity sourceEntity) {
+        auto fireComponent = registry.try_get<Fireable>(sourceEntity);
+        if (!fireComponent) {
+            spdlog::warn("Source entity {} does not have a Fireable component", static_cast<int>(sourceEntity));
+            return entt::null;
+        }
+
+        if (!fireComponent->Fire())
+            return entt::null;
+
+        auto weaponComponent = registry.try_get<Projectile::Weapon>(sourceEntity);
+        if (!weaponComponent) {
+            spdlog::warn("Source entity {} does not have a Weapon component", static_cast<int>(sourceEntity));
+            return entt::null;
+        }
+
+        spdlog::trace("Player firing projectile");
+        auto projectileType = weaponComponent->GetBulletType(fireComponent->BaseDamage);
+        spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
+        auto projectile = Projectile::Create(registry, projectileType, 
+            registry.get<Renderable>(sourceEntity).Sprite.getPosition(), 
+            sf::Vector2f{0.0f, 1.0f}, sourceEntity);
+        return projectile;
     }
 
     void OnCollision(entt::registry &registry, entt::entity thisEntity, entt::entity otherEntity) {
@@ -80,6 +108,10 @@ namespace Enemy {
             registry.emplace<Lifetime>(thisEntity, sf::seconds(Presets.at(component->ThisType).OffscreenLifetime));
             spdlog::trace("Lifetime component added to {}", static_cast<int>(thisEntity));
         }
+    }
+
+    void DroneBehavior(entt::registry &registry, entt::entity thisEntity){
+        Fire(registry, thisEntity);
     }
     void CometBehavior(entt::registry &registry, entt::entity thisEntity){
         if (registry.valid(thisEntity))

@@ -29,11 +29,14 @@ namespace Enemy {
         Type type, const sf::Vector2f& position, const sf::Vector2f& direction,
         entt::entity source = entt::null);
 
+    entt::entity Fire(entt::registry &registry, entt::entity sourceEntity);
+
     void OnCollision(entt::registry &registry, entt::entity thisEntity, entt::entity otherEntity);
 
     void RemoveOffscreenLifetime(entt::registry &registry, entt::entity thisEntity);
     void AddOffscreenLifetime(entt::registry &registry, entt::entity thisEntity);
 
+    void DroneBehavior(entt::registry &registry, entt::entity thisEntity);
     void CometBehavior(entt::registry &registry, entt::entity thisEntity);
     void FighterBehavior(entt::registry &registry, entt::entity thisEntity);
     void BomberBehavior(entt::registry &registry, entt::entity thisEntity);
@@ -62,6 +65,7 @@ namespace Enemy {
         float MoveSpeed;
         float OffscreenLifetime;
         float MaxHealth;
+        float FireRate = 1.0f;
     }; 
     
     constexpr std::array<Data, Type::Total> Presets = {
@@ -69,7 +73,7 @@ namespace Enemy {
         Data{ sf::IntRect({192, 64}, {64, 64}), sf::IntRect{{-23, -23}, {46, 46}}, 2.0f, 5.0f, 25.0f}, // LargeAsteroid
         Data{ sf::IntRect({256, 64}, {64, 64}), sf::IntRect{{-32, -32}, {64, 64}}, 1.0f, 5.0f, 50.0f}, // HugeAsteroid
         Data{ sf::IntRect({256, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 6.0f, 2.5f, 100.0f},  // Comet
-        Data{ sf::IntRect({320, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 3.0f, 3.0f, 20.0f},  // Drone
+        Data{ sf::IntRect({320, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 3.0f, 3.0f, 20.0f, 2.0f},  // Drone
         Data{ sf::IntRect({384, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 6.0f, 3.0f, 40.0f},  // Fighter
         Data{ sf::IntRect({448, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 4.0f, 3.0f, 50.0f},  // Bomber
         Data{ sf::IntRect({576, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 6.0f, 3.0f, 150.0f},  // Hunter

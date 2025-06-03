@@ -79,7 +79,7 @@ struct Fireable {
         BaseFireRate(baseFireRate)
     {}
 
-    bool Fire(float weaponRate = 0.1f) {
+    bool Fire(float weaponRate = 1.0f) {
         if (Clock.getElapsedTime().asSeconds() >= weaponRate * BaseFireRate) {
             Clock.restart();
             return true;
