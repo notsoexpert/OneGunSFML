@@ -80,7 +80,7 @@ struct Fireable {
     {}
 
     bool Fire(float weaponRate = 1.0f) {
-        if (Clock.getElapsedTime().asSeconds() >= weaponRate * BaseFireRate) {
+        if (Clock.getElapsedTime().asSeconds() >= 1.0f / std::clamp(weaponRate * BaseFireRate, 0.001f, INFINITY)) {
             Clock.restart();
             return true;
         }

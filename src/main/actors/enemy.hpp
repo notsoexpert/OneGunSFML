@@ -73,9 +73,9 @@ namespace Enemy {
         Data{ sf::IntRect({192, 64}, {64, 64}), sf::IntRect{{-23, -23}, {46, 46}}, 2.0f, 5.0f, 25.0f}, // LargeAsteroid
         Data{ sf::IntRect({256, 64}, {64, 64}), sf::IntRect{{-32, -32}, {64, 64}}, 1.0f, 5.0f, 50.0f}, // HugeAsteroid
         Data{ sf::IntRect({256, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 6.0f, 2.5f, 100.0f},  // Comet
-        Data{ sf::IntRect({320, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 3.0f, 3.0f, 20.0f, 2.0f},  // Drone
-        Data{ sf::IntRect({384, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 6.0f, 3.0f, 40.0f},  // Fighter
-        Data{ sf::IntRect({448, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 4.0f, 3.0f, 50.0f},  // Bomber
+        Data{ sf::IntRect({320, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 2.0f, 5.0f, 20.0f, 0.5f},  // Drone
+        Data{ sf::IntRect({384, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 5.0f, 5.0f, 40.0f},  // Fighter
+        Data{ sf::IntRect({448, 64}, {64, 64}), sf::IntRect{{-24, -24}, {48, 48}}, 3.0f, 5.0f, 50.0f},  // Bomber
         Data{ sf::IntRect({576, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 6.0f, 3.0f, 150.0f},  // Hunter
         Data{ sf::IntRect({0, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 5.0f, 6.0f, 300.0f},   // Bombardier
         Data{ sf::IntRect({64, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.5f, 2.0f, 1000.0f}   // Galaxis
