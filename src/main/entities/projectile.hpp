@@ -25,6 +25,7 @@ namespace Projectile {
             Exploding = 1 << 3,
             Homing = 1 << 4,
         };
+        
         sf::IntRect TextureRect;
         sf::IntRect CollisionRect;
         float Damage;
@@ -46,13 +47,13 @@ namespace Projectile {
         Specification::Destructing | Specification::Splitting}, // Laser2
         Specification{{{384, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
         Specification::Destructing | Specification::Splitting}, // Laser3
-        Specification{{{448, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
+        Specification{{{0, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
         Specification::Burning}, // Plasma
-        Specification{{{576, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
+        Specification{{{448, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
         Specification::Destructing | Specification::Exploding}, // Missile
-        Specification{{{0, 64}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
+        Specification{{{512, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
         Specification::Destructing | Specification::Exploding | Specification::Homing}, // HomingMissile
-        Specification{{{64, 64}, {64, 64}}, {{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
+        Specification{{{576, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
         Specification::Exploding}  // Bomb
     };
 

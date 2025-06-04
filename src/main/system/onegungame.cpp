@@ -43,80 +43,37 @@ namespace OneGunGame {
 
         spdlog::info("Setting up OneGunGame...");
         auto setupResult = Setup(/*pass command line arguments for specific window config*/);
-        if (!setupResult.has_value()) {
+        if (!setupResult) {
             spdlog::error("Setup failed: {}", setupResult.error());
             return -1;
         }
         spdlog::info("Setup completed successfully.");
 
         spdlog::info("Running OneGunGame...");
-        auto runResult = Run();
-        if (!runResult.has_value()) {
-            spdlog::error("Run failed: {}", runResult.error());
-            return -1;
-        }
+        Run();
         spdlog::info("Run completed successfully.");
 
         spdlog::info("Cleaning up OneGunGame...");
-        auto cleanupResult = Cleanup();
-        if (!cleanupResult.has_value()) {
-            spdlog::error("Cleanup failed: {}", cleanupResult.error());
-            return -1;
-        }
+        Cleanup();
         spdlog::info("Cleanup completed successfully.");
 
         return 0;
     }
 
-    std::expected<int, std::string> Setup() {
-        s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(Configuration.WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
-        s_Data.Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
-
-        if (!s_Data.Textures.BackgroundTexture.loadFromFile(OneGunGame::BackgroundPath)) {
-            return std::unexpected<std::string>("Failed to load background texture");
+    std::expected<void, std::string> Setup() {
+        SetupContext();
+        auto setupResult = SetupTextures();
+        if (!setupResult) {
+            return setupResult;
         }
-        s_Data.Textures.BackgroundTexture.setSmooth(true);
-        s_Data.Textures.BackgroundTexture.setRepeated(true);
-        if (!s_Data.Textures.SpriteSheetTexture.loadFromFile(OneGunGame::SpriteSheetPath)) {
-            return std::unexpected<std::string>("Failed to load sprite sheet texture");
-        }
-        s_Data.Textures.SpriteSheetTexture.setSmooth(true);
+        SetupEventHandlers();
+        SetupRegistry();
+        SetupLevel();
 
-        {
-            sf::Image img{{2u, 2u}, sf::Color::Magenta};
-            if (!s_Data.Textures.UnknownTexture.loadFromImage(img))
-                return std::unexpected<std::string>("Failed to generate placeholder texture");
-        }
-
-        s_Data.EventHandlers.OnClose = [](const sf::Event::Closed&) {
-                s_Data.Context.Window.close();
-        };
-        s_Data.EventHandlers.KeyPressed = [](const sf::Event::KeyPressed& keyEvent) {
-            if (keyEvent.code == sf::Keyboard::Key::Escape) {
-                s_Data.Context.Window.close();
-            }
-            if (keyEvent.code == sf::Keyboard::Key::T) {
-                spdlog::error("TOTAL ENTITIES: {}", GetEntityCount());
-            }
-            if (keyEvent.code == sf::Keyboard::Key::N) {
-                sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
-                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
-                sf::Vector2f flyDirection = {0.0f, 1.0f};
-                flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
-                
-                Enemy::Create(s_Data.Registry, Enemy::Drone, spawnPosition, flyDirection);
-            }
-        };
-        
-        s_Data.Registry.clear();
-
-        s_Data.Entities.Background = Background::Create(s_Data.Registry);
-        s_Data.Entities.Player = Player::Create(s_Data.Registry, Player::Start(s_Data.Context.Window.getSize()));
-
-        return 0;
+        return {};
     }
 
-    std::expected<int, std::string> Run() {
+    void Run() {
         while (s_Data.Context.Window.isOpen()) {
             Update();
             s_Data.Registry.sort<Renderable>([](const Renderable& a, const Renderable& b) {
@@ -124,11 +81,9 @@ namespace OneGunGame {
             });
             Render();
         }
-        return 0;
     }
 
-    std::expected<int, std::string> Cleanup() {
-        return 0;
+    void Cleanup() {
     }
 
     bool FilterCollidable(OneGunGame::CollisionLayer mask, OneGunGame::CollisionLayer type) {
@@ -295,6 +250,67 @@ namespace OneGunGame {
         s_Data.Context.Window.display();
     }
 
+    void SetupContext() {
+        s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(Configuration.WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
+        s_Data.Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
+    }
+
+    std::expected<void, std::string> SetupTextures() {
+        if (!LoadTexture(Background, true, true)) {
+            return std::unexpected<std::string>("Failed to load background texture");
+        }
+        if (!LoadTexture(SpriteSheet, true)) {
+            return std::unexpected<std::string>("Failed to load sprite sheet texture");
+        }
+        if (!LoadTexture(ExplosionRed, true)) {
+            return std::unexpected<std::string>("Failed to load red explosion texture");
+        }
+        if (!LoadTexture(ExplosionYellow, true)) {
+            return std::unexpected<std::string>("Failed to load red explosion texture");
+        }
+        if (!LoadTexture(ExplosionGreen, true)) {
+            return std::unexpected<std::string>("Failed to load red explosion texture");
+        }
+        if (!LoadTexture(ExplosionBlue, true)) {
+            return std::unexpected<std::string>("Failed to load red explosion texture");
+        }
+        if (!LoadTexture(ExplosionViolet, true)) {
+            return std::unexpected<std::string>("Failed to load red explosion texture");
+        }
+        if (!GeneratePlaceholderTexture()) {
+            return std::unexpected<std::string>("Failed to generate placeholder texture");
+        }
+        return {};
+    }
+    void SetupEventHandlers() {
+        s_Data.EventHandlers.OnClose = [](const sf::Event::Closed&) {
+                s_Data.Context.Window.close();
+        };
+        s_Data.EventHandlers.KeyPressed = [](const sf::Event::KeyPressed& keyEvent) {
+            if (keyEvent.code == sf::Keyboard::Key::Escape) {
+                s_Data.Context.Window.close();
+            }
+            if (keyEvent.code == sf::Keyboard::Key::T) {
+                spdlog::error("TOTAL ENTITIES: {}", GetEntityCount());
+            }
+            if (keyEvent.code == sf::Keyboard::Key::N) {
+                sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
+                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
+                sf::Vector2f flyDirection = {0.0f, 1.0f};
+                flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
+                
+                Enemy::Create(s_Data.Registry, Enemy::Drone, spawnPosition, flyDirection);
+            }
+        };
+    }
+    void SetupRegistry() {
+        s_Data.Registry.clear();
+    }
+    void SetupLevel() {
+        s_Data.Entities.Background = Background::Create(s_Data.Registry);
+        s_Data.Entities.Player = Player::Create(s_Data.Registry, Player::Start(s_Data.Context.Window.getSize()));
+    }
+
     sf::Vector2u GetWindowSize() {
         return s_Data.Context.Window.getSize();
     }
@@ -348,13 +364,7 @@ namespace OneGunGame {
     }
 
     const sf::Texture& GetTexture(Images image) {
-        switch (image) {
-            case Background:
-                return s_Data.Textures.BackgroundTexture;
-            case SpriteSheet:
-                return s_Data.Textures.SpriteSheetTexture;
-        }
-        return s_Data.Textures.UnknownTexture;
+        return s_Data.Textures[image].Texture;
     }
 
     sf::Vector2i RoundVector(sf::Vector2f vec) {
@@ -369,4 +379,18 @@ namespace OneGunGame {
     entt::entity GetPlayerEntity() { return s_Data.Entities.Player; }
     RandomGenerator& GetRandomGenerator() { return s_Data.Random; }
     const sf::RenderWindow& GetWindow() { return s_Data.Context.Window; }
+
+    bool LoadTexture(Images imgType, bool smooth, bool repeat) {
+        if (s_Data.Textures[imgType].Load()) {
+            s_Data.Textures[imgType].Texture.setSmooth(smooth);
+            s_Data.Textures[imgType].Texture.setRepeated(repeat);
+            return true;
+        }
+        return false;
+    }
+
+    bool GeneratePlaceholderTexture() {
+        sf::Image img{{2u, 2u}, sf::Color::Magenta};
+        return s_Data.Textures[Unknown].Texture.loadFromImage(img);
+    }
 }

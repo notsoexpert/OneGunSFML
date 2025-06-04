@@ -17,9 +17,6 @@ namespace OneGunGame {
     
     constexpr auto WindowTitle = "One Gun - SFML";
     constexpr auto WindowStyle = sf::Style::Titlebar;
-    
-    constexpr auto BackgroundPath = "./assets/textures/bg1seamless.png";
-    constexpr auto SpriteSheetPath = "./assets/textures/sprites.png";
 
     constexpr auto Pi = 3.1415926535f;
     constexpr auto PiSquared = Pi * Pi;
@@ -35,6 +32,12 @@ namespace OneGunGame {
     enum Images {
         Background = 0,
         SpriteSheet,
+        ExplosionRed,
+        ExplosionYellow,
+        ExplosionGreen,
+        ExplosionBlue,
+        ExplosionViolet,
+        Unknown,
         TotalImages
     };
 }

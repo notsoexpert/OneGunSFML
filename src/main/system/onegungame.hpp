@@ -5,9 +5,14 @@
 
 namespace OneGunGame {
     int Start(int argc, char *argv[]);
-    std::expected<int, std::string> Setup();
-    std::expected<int, std::string> Run();
-    std::expected<int, std::string> Cleanup();
+    std::expected<void, std::string> Setup();
+    void SetupContext();
+    std::expected<void, std::string> SetupTextures();
+    void SetupEventHandlers();
+    void SetupRegistry();
+    void SetupLevel();
+    void Run();
+    void Cleanup();
     
     void Update();
     void Render();
@@ -34,11 +39,25 @@ namespace OneGunGame {
         struct {
             sf::RenderWindow Window;
         } Context;
-        struct {
-            sf::Texture BackgroundTexture;
-            sf::Texture SpriteSheetTexture;
-            sf::Texture UnknownTexture;
-        } Textures;
+
+        struct TexData {
+            const char* Path;
+            sf::Texture Texture;
+
+            bool Load() {
+                return Texture.loadFromFile(Path);
+            }
+        };
+        std::unordered_map<Images, TexData> Textures {
+            {Background, TexData{"./assets/textures/bg1seamless.png"}},
+            {SpriteSheet, TexData{"./assets/textures/sprites.png"}},
+            {ExplosionRed, TexData{"./assets/textures/explosionRed.png"}},
+            {ExplosionYellow, TexData{"./assets/textures/explosionYellow.png"}},
+            {ExplosionGreen, TexData{"./assets/textures/explosionGreen.png"}},
+            {ExplosionBlue, TexData{"./assets/textures/explosionBlue.png"}},
+            {ExplosionViolet, TexData{"./assets/textures/explosionViolet.png"}}
+        };
+
         struct {
             std::function<void(const sf::Event::Closed&)> OnClose;
             std::function<void(const sf::Event::KeyPressed&)> KeyPressed;
@@ -51,5 +70,8 @@ namespace OneGunGame {
         Data(unsigned int seed)
             : Random(seed) {}
     };
+
+    bool LoadTexture(Images imgType, bool smooth = false, bool repeat = false);
+    bool GeneratePlaceholderTexture();
 
 }
