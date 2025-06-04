@@ -13,9 +13,10 @@ namespace Projectile {
         entt::entity source)
     {
         if (type < Type::Bullet1 || type >= Type::Total) {
-            spdlog::error("Invalid projectile type: {}", static_cast<int>(type));
+            spdlog::error("Create: Invalid projectile type: {}", static_cast<int>(type));
             return entt::null;
         }
+        auto &specification = Specifications.at(static_cast<size_t>(type));
         
         entt::entity entity = registry.create();
 
@@ -23,12 +24,11 @@ namespace Projectile {
 
         auto &projectileSprite = registry.emplace<Renderable>(entity, 
             OneGunGame::GetTexture(OneGunGame::SpriteSheet), 25).Sprite;
-        auto &preset = Presets.at(static_cast<size_t>(type));
-        projectileSprite.setTextureRect(preset.TextureRect);
-        projectileSprite.setOrigin({preset.TextureRect.size.x / 2.0f, preset.TextureRect.size.y / 2.0f});
+        projectileSprite.setTextureRect(specification.TextureRect);
+        projectileSprite.setOrigin({specification.TextureRect.size.x / 2.0f, specification.TextureRect.size.y / 2.0f});
         projectileSprite.setPosition(position);
 
-        registry.emplace<Velocity>(entity, direction * preset.Speed);
+        registry.emplace<Velocity>(entity, direction * specification.Speed);
 
         OneGunGame::CollisionLayer mask;
         switch (registry.get<Collidable>(source).Layer) {
@@ -51,17 +51,17 @@ namespace Projectile {
                     OneGunGame::CollisionLayer::Enemy);
                 break;
         }
-        registry.emplace<Collidable>(entity, preset.CollisionRect, source, 
+        registry.emplace<Collidable>(entity, specification.CollisionRect, source, 
             OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
 
-        auto &lifetime = registry.emplace<Lifetime>(entity, sf::seconds(preset.Lifetime));
+        auto &lifetime = registry.emplace<Lifetime>(entity, sf::seconds(specification.Lifetime));
         lifetime.Clock.restart();
 
         return entity;
     }
 
     float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, const Component &component) {
-        float damage = Presets.at(component.ThisType).Damage;
+        float damage = Specifications.at(component.ThisType).Damage;
 
         entt::entity sourceEntity = registry.get<Collidable>(projectileEntity).Source;
         if (!registry.valid(sourceEntity)) {
@@ -113,19 +113,19 @@ namespace Projectile {
 
         float projectileDamage = GetProjectileDamage(registry, projectileEntity, component);
 
-        if (component.CompareFlags(Config::Burning)) {
+        if (component.CompareFlags(Specification::Burning)) {
             auto &burning = registry.get<Burning>(projectileEntity);
             BurnEntity(registry, projectileEntity, otherEntity, projectileDamage, burning);
-        } else if (!component.CompareFlags(Config::Exploding)) {
+        } else if (!component.CompareFlags(Specification::Exploding)) {
             DamageEntity(registry, projectileEntity, otherEntity, projectileDamage);
         }
         
         // TODO: Create explosion actor and generate here
-        if (component.CompareFlags(Config::Exploding)) {
+        if (component.CompareFlags(Specification::Exploding)) {
             spdlog::info("Projectile {} exploded on collision with entity {}", static_cast<int>(projectileEntity), static_cast<int>(otherEntity));
         }
         
-        if (component.CompareFlags(Config::Destructing)) {
+        if (component.CompareFlags(Specification::Destructing)) {
             registry.emplace_or_replace<Destructing>(projectileEntity);
         }
         

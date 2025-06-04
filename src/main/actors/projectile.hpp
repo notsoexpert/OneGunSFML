@@ -17,7 +17,7 @@ namespace Projectile {
         Total
     };
 
-    struct Config {
+    struct Specification {
         enum {
             Destructing = 1 << 0,
             Splitting = 1 << 1,
@@ -33,27 +33,27 @@ namespace Projectile {
         uint16_t Flags;
     }; 
 
-    inline constexpr std::array<Config, static_cast<size_t>(Type::Total)> Presets = {
-        Config{ sf::IntRect({64, 0}, {64, 64}), sf::IntRect{{-4, -8}, {8, 17}}, 1.0f, 10.0f, 1.0f, 
-        Config::Destructing}, // Bullet1
-        Config{ sf::IntRect({128, 0}, {64, 64}), sf::IntRect{{-5, -13}, {10, 26}}, 1.0f, 10.0f, 1.0f, 
-        Config::Destructing}, // Bullet2
-        Config{ sf::IntRect({192, 0}, {64, 64}), sf::IntRect{{-6, -18}, {12, 36}}, 1.0f, 10.0f, 1.0f, 
-        Config::Destructing}, // Bullet3
-        Config{ sf::IntRect({256, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
-        Config::Destructing | Config::Splitting}, // Laser1
-        Config{ sf::IntRect({320, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
-        Config::Destructing | Config::Splitting}, // Laser2
-        Config{ sf::IntRect({384, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
-        Config::Destructing | Config::Splitting}, // Laser3
-        Config{ sf::IntRect({448, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
-        Config::Burning}, // Plasma
-        Config{ sf::IntRect({576, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
-        Config::Destructing | Config::Exploding}, // Missile
-        Config{ sf::IntRect({0, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
-        Config::Destructing | Config::Exploding | Config::Homing}, // HomingMissile
-        Config{ sf::IntRect({64, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
-        Config::Exploding}  // Bomb
+    inline constexpr std::array<Specification, static_cast<size_t>(Type::Total)> Specifications = {
+        Specification{ sf::IntRect({64, 0}, {64, 64}), sf::IntRect{{-4, -8}, {8, 17}}, 1.0f, 10.0f, 1.0f, 
+        Specification::Destructing}, // Bullet1
+        Specification{ sf::IntRect({128, 0}, {64, 64}), sf::IntRect{{-5, -13}, {10, 26}}, 1.0f, 10.0f, 1.0f, 
+        Specification::Destructing}, // Bullet2
+        Specification{ sf::IntRect({192, 0}, {64, 64}), sf::IntRect{{-6, -18}, {12, 36}}, 1.0f, 10.0f, 1.0f, 
+        Specification::Destructing}, // Bullet3
+        Specification{ sf::IntRect({256, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification::Destructing | Specification::Splitting}, // Laser1
+        Specification{ sf::IntRect({320, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification::Destructing | Specification::Splitting}, // Laser2
+        Specification{ sf::IntRect({384, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification::Destructing | Specification::Splitting}, // Laser3
+        Specification{ sf::IntRect({448, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
+        Specification::Burning}, // Plasma
+        Specification{ sf::IntRect({576, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
+        Specification::Destructing | Specification::Exploding}, // Missile
+        Specification{ sf::IntRect({0, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
+        Specification::Destructing | Specification::Exploding | Specification::Homing}, // HomingMissile
+        Specification{ sf::IntRect({64, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
+        Specification::Exploding}  // Bomb
     };
 
     struct Weapon {
@@ -105,7 +105,7 @@ namespace Projectile {
         Component(Type type = Type::Bullet1) : ThisType(type) {}
 
         [[nodiscard]] bool CompareFlags(uint16_t flags) const {
-            return (Presets.at(static_cast<size_t>(ThisType)).Flags & flags) != 0;
+            return (Specifications.at(static_cast<size_t>(ThisType)).Flags & flags) != 0;
         }
     };
 

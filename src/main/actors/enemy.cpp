@@ -29,25 +29,31 @@ namespace Enemy {
     entt::entity Create(entt::registry &registry, Type type,const sf::Vector2f& position, 
         const sf::Vector2f& direction, entt::entity source) {
 
+        if (type < Enemy::Asteroid || type > Enemy::Galaxis) {
+            spdlog::error("Create: Invalid enemy type: {}", static_cast<int>(type));
+            return entt::null;
+        }
+        auto &specification = Specifications.at(type);
+
         entt::entity entity = registry.create();
 
         auto &renderable = registry.emplace<Renderable>(entity, 
             OneGunGame::GetTexture(OneGunGame::SpriteSheet), 50);
-        renderable.Sprite.setTextureRect(Presets.at(type).TextureRect);
+        renderable.Sprite.setTextureRect(specification.TextureRect);
         renderable.Sprite.setOrigin(static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size) / 2.0f);
         renderable.Sprite.setPosition(position);
         
-        registry.emplace<Velocity>(entity, direction * Presets.at(type).MoveSpeed);
+        registry.emplace<Velocity>(entity, direction * specification.MoveSpeed);
         
-        sf::IntRect centeredRect = Presets.at(type).CollisionRect;
+        sf::IntRect centeredRect = specification.CollisionRect;
         centeredRect.position -= centeredRect.size / 2;
-        registry.emplace<Collidable>(entity, Presets.at(type).CollisionRect, source, OneGunGame::CollisionLayer::Enemy,
+        registry.emplace<Collidable>(entity, specification.CollisionRect, source, OneGunGame::CollisionLayer::Enemy,
             static_cast<OneGunGame::CollisionLayer>(OneGunGame::Player | OneGunGame::Projectile),
             OnCollision);
 
-        registry.emplace<Health>(entity, Presets.at(type).MaxHealth);
+        registry.emplace<Health>(entity, specification.MaxHealth);
         registry.emplace<MaxSpeed>(entity);
-        registry.emplace<Fireable>(entity, 1.0f, Presets.at(type).FireRate);
+        registry.emplace<Fireable>(entity, 1.0f, specification.FireRate);
         registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
         if (Behavior::Callbacks.contains(type))
             registry.emplace<Behavior>(entity, Behavior::Callbacks.at(type));
@@ -105,17 +111,17 @@ namespace Enemy {
 
         auto lifetime = registry.try_get<Lifetime>(thisEntity);
         if (!lifetime) {
-            registry.emplace<Lifetime>(thisEntity, sf::seconds(Presets.at(component->ThisType).OffscreenLifetime));
+            registry.emplace<Lifetime>(thisEntity, sf::seconds(Specifications.at(component->ThisType).OffscreenLifetime));
             spdlog::trace("Lifetime component added to {}", static_cast<int>(thisEntity));
         }
     }
 
-    void DroneBehavior(entt::registry &registry, entt::entity thisEntity){
-        Fire(registry, thisEntity);
-    }
     void CometBehavior(entt::registry &registry, entt::entity thisEntity){
         if (registry.valid(thisEntity))
             spdlog::trace("Comet Behavior invoked for entity {}", static_cast<int>(thisEntity));
+    }
+    void DroneBehavior(entt::registry &registry, entt::entity thisEntity){
+        Fire(registry, thisEntity);
     }
     void FighterBehavior(entt::registry &registry, entt::entity thisEntity){
         if (registry.valid(thisEntity))
