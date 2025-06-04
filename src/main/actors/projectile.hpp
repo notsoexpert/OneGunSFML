@@ -34,25 +34,25 @@ namespace Projectile {
     }; 
 
     inline constexpr std::array<Specification, static_cast<size_t>(Type::Total)> Specifications = {
-        Specification{ sf::IntRect({64, 0}, {64, 64}), sf::IntRect{{-4, -8}, {8, 17}}, 1.0f, 10.0f, 1.0f, 
+        Specification{{{64, 0}, {64, 64}}, {{-4, -8}, {8, 17}}, 1.0f, 10.0f, 1.0f, 
         Specification::Destructing}, // Bullet1
-        Specification{ sf::IntRect({128, 0}, {64, 64}), sf::IntRect{{-5, -13}, {10, 26}}, 1.0f, 10.0f, 1.0f, 
+        Specification{{{128, 0}, {64, 64}}, {{-5, -13}, {10, 26}}, 1.0f, 10.0f, 1.0f, 
         Specification::Destructing}, // Bullet2
-        Specification{ sf::IntRect({192, 0}, {64, 64}), sf::IntRect{{-6, -18}, {12, 36}}, 1.0f, 10.0f, 1.0f, 
+        Specification{{{192, 0}, {64, 64}}, {{-6, -18}, {12, 36}}, 1.0f, 10.0f, 1.0f, 
         Specification::Destructing}, // Bullet3
-        Specification{ sf::IntRect({256, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification{{{256, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
         Specification::Destructing | Specification::Splitting}, // Laser1
-        Specification{ sf::IntRect({320, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification{{{320, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
         Specification::Destructing | Specification::Splitting}, // Laser2
-        Specification{ sf::IntRect({384, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
+        Specification{{{384, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 2.0f, 6.0f, 2.5f, 
         Specification::Destructing | Specification::Splitting}, // Laser3
-        Specification{ sf::IntRect({448, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
+        Specification{{{448, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 3.0f, 4.0f, 1.5f, 
         Specification::Burning}, // Plasma
-        Specification{ sf::IntRect({576, 0}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
+        Specification{{{576, 0}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 6.0f, 3.0f, 
         Specification::Destructing | Specification::Exploding}, // Missile
-        Specification{ sf::IntRect({0, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
+        Specification{{{0, 64}, {64, 64}}, {{0, 0}, {64, 64}}, 4.0f, 5.0f, 6.0f, 
         Specification::Destructing | Specification::Exploding | Specification::Homing}, // HomingMissile
-        Specification{ sf::IntRect({64, 64}, {64, 64}), sf::IntRect{{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
+        Specification{{{64, 64}, {64, 64}}, {{0, 0}, {64, 64}}, 25.0f, 2.5f, 2.0f, 
         Specification::Exploding}  // Bomb
     };
 
