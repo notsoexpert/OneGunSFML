@@ -15,7 +15,7 @@ namespace OneGunGame {
         spdlog::info("spdlog Version: {0}.{1}.{2}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
         spdlog::info("SFML Version: {0}.{1}.{2}", SFML_VERSION_MAJOR, SFML_VERSION_MINOR, SFML_VERSION_PATCH);
         spdlog::info("EnTT Version: {0}.{1}.{2}", ENTT_VERSION_MAJOR, ENTT_VERSION_MINOR, ENTT_VERSION_PATCH);
-        
+
         spdlog::info("Argc: {0}", argc);
         for (int i = 0; i < argc; ++i) {
             spdlog::info("Argv[{0}]: {1}", i, argv[i]);
