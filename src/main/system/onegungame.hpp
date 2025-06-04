@@ -13,6 +13,8 @@ namespace OneGunGame {
     void Render();
 
     sf::Vector2f GetInputVector();
+    CollisionLayer GetHitMask(CollisionLayer layer);
+
     sf::Vector2u GetWindowSize();
     uint32_t GetEntityCount();
     const sf::Texture& GetTexture(Images image);

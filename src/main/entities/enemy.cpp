@@ -2,9 +2,9 @@
 #include "enemy.hpp"
 
 #include "system/onegungame.hpp"
-#include "components/components.hpp"
+#include "system/components.hpp"
 
-#include "actors/projectile.hpp"
+#include "entities/projectile.hpp"
 
 namespace Enemy {
 
@@ -29,7 +29,7 @@ namespace Enemy {
     entt::entity Create(entt::registry &registry, Type type,const sf::Vector2f& position, 
         const sf::Vector2f& direction, entt::entity source) {
 
-        if (type < Enemy::Asteroid || type > Enemy::Galaxis) {
+        if (type < Enemy::Asteroid || type >= Enemy::Total) {
             spdlog::error("Create: Invalid enemy type: {}", static_cast<int>(type));
             return entt::null;
         }

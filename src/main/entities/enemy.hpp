@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics/Rect.hpp>
-
 namespace Enemy {
     enum Type {
         Asteroid = 0,

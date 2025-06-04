@@ -125,6 +125,5 @@ namespace Projectile {
 
     void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity);
     float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, const Component& component);
-    void DamageEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage);
     void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
 }

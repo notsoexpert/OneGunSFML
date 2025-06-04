@@ -2,8 +2,8 @@
 #include "player.hpp"
 
 #include "system/onegungame.hpp"
-#include "components/components.hpp"
-#include "actors/projectile.hpp"
+#include "system/components.hpp"
+#include "entities/projectile.hpp"
 
 namespace Player {
 

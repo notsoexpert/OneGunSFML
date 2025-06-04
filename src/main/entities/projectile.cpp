@@ -1,10 +1,11 @@
 #include "pch.hpp"
 #include "projectile.hpp"
 
+#include "entities/entity.hpp"
 #include "system/onegungame.hpp"
-#include "components/components.hpp"
+#include "system/components.hpp"
 
-#include "actors/player.hpp"
+#include "entities/player.hpp"
 
 namespace Projectile {
 
@@ -30,27 +31,8 @@ namespace Projectile {
 
         registry.emplace<Velocity>(entity, direction * specification.Speed);
 
-        OneGunGame::CollisionLayer mask;
-        switch (registry.get<Collidable>(source).Layer) {
-            case OneGunGame::CollisionLayer::Player:
-                mask = static_cast<OneGunGame::CollisionLayer>
-                (OneGunGame::CollisionLayer::Enemy | OneGunGame::CollisionLayer::Obstacle);
-                break;
-            case OneGunGame::CollisionLayer::Projectile:
-                mask = static_cast<OneGunGame::CollisionLayer>
-                (OneGunGame::CollisionLayer::Player | OneGunGame::CollisionLayer::Enemy | 
-                    OneGunGame::CollisionLayer::Obstacle);
-                break;
-            case OneGunGame::CollisionLayer::Enemy:
-                mask = static_cast<OneGunGame::CollisionLayer>
-                (OneGunGame::CollisionLayer::Player | OneGunGame::CollisionLayer::Obstacle);
-                break;
-            case OneGunGame::CollisionLayer::Obstacle:
-                mask = static_cast<OneGunGame::CollisionLayer>
-                (OneGunGame::CollisionLayer::Player | OneGunGame::CollisionLayer::Projectile | 
-                    OneGunGame::CollisionLayer::Enemy);
-                break;
-        }
+        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(registry.get<Collidable>(source).Layer);
+        
         registry.emplace<Collidable>(entity, specification.CollisionRect, source, 
             OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
 
@@ -78,33 +60,16 @@ namespace Projectile {
         return damage * sourceFireable->BaseDamage;
     }
 
-    void DamageEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage) {
-        auto otherHealth = registry.try_get<Health>(otherEntity);
-        if (!otherHealth) {
-            spdlog::error("Entity {} hit by projectile entity {} is missing health component", 
-            static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
-            return;
-        }
-        
-        spdlog::info("Entity {} damaged. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
-        otherHealth->Damage(damage);
-    }
-
     void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent) {
-        auto otherHealth = registry.try_get<Health>(otherEntity);
-        if (!otherHealth) {
-            spdlog::error("Entity {} hit by projectile entity {} is missing health component", 
-            static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
-            return;
-        }
-
         if (!burningComponent.CanBurn(otherEntity)) {
             return;
         }
         
-        otherHealth->Damage(damage);
-        spdlog::info("Entity {} burned. New Health: {}", static_cast<int>(otherEntity), otherHealth->Current);
-        burningComponent.BurnClocks[otherEntity].restart();
+        if (Entity::Damage(registry, projectileEntity, otherEntity, damage)){
+            burningComponent.BurnClocks[otherEntity].restart();
+        }
+
+        spdlog::info("Entity {} burned by entity {}", static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
 
     }
 
@@ -117,7 +82,7 @@ namespace Projectile {
             auto &burning = registry.get<Burning>(projectileEntity);
             BurnEntity(registry, projectileEntity, otherEntity, projectileDamage, burning);
         } else if (!component.CompareFlags(Specification::Exploding)) {
-            DamageEntity(registry, projectileEntity, otherEntity, projectileDamage);
+            Entity::Damage(registry, projectileEntity, otherEntity, projectileDamage);
         }
         
         // TODO: Create explosion actor and generate here

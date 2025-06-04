@@ -2,7 +2,7 @@
 #include "background.hpp"
 
 #include "system/onegungame.hpp"
-#include "components/components.hpp"
+#include "system/components.hpp"
 
 namespace Background {
 

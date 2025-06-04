@@ -1,11 +1,11 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "components/components.hpp"
-#include "actors/background.hpp"
-#include "actors/player.hpp"
-#include "actors/projectile.hpp"
-#include "actors/enemy.hpp"
+#include "system/components.hpp"
+#include "entities/background.hpp"
+#include "entities/player.hpp"
+#include "entities/projectile.hpp"
+#include "entities/enemy.hpp"
 
 namespace OneGunGame { 
 
@@ -317,6 +317,26 @@ namespace OneGunGame {
             inputVector = inputVector / std::sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y);
         }
         return inputVector;
+    }
+
+    CollisionLayer GetHitMask(CollisionLayer layer){
+        switch (layer) {
+            case CollisionLayer::Player:
+                return static_cast<CollisionLayer>
+                (CollisionLayer::Enemy | CollisionLayer::Obstacle);
+            case CollisionLayer::Projectile:
+                return static_cast<CollisionLayer>
+                (CollisionLayer::Player | CollisionLayer::Enemy | 
+                    CollisionLayer::Obstacle);
+            case CollisionLayer::Enemy:
+                return static_cast<CollisionLayer>
+                (CollisionLayer::Player | CollisionLayer::Obstacle);
+            case CollisionLayer::Obstacle:
+                return static_cast<CollisionLayer>
+                (CollisionLayer::Player | CollisionLayer::Projectile | 
+                    CollisionLayer::Enemy);
+        }
+        return CollisionLayer::Obstacle;
     }
 
     uint32_t GetEntityCount() {
