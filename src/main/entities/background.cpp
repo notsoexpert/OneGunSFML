@@ -14,7 +14,6 @@ void Update(entt::registry &registry) {
         auto pos = renderable.Sprite.getPosition();
         const auto &vel = velocity.Value;
         
-        //spdlog::warn("BG Pos: ({}, {}), BG Vel: ({}, {}) LimitY: {}", pos.x, pos.y, vel.x, vel.y, vLoop.LimitY);
         if (pos.y + vel.y <= vLoop.LimitY) 
             return;
         

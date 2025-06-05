@@ -2,7 +2,7 @@
 
 namespace OneGunGame {
     struct {
-        constexpr static auto WindowSize = sf::Vector2u{800, 600};
+        constexpr static auto WindowSize = sf::Vector2u{1600, 1200};
         constexpr static auto ContextSettings = sf::ContextSettings{24, 8, 4, 3, 3}; // 24 bits color depth, 8 bits stencil buffer, 4 samples for anti-aliasing, OpenGL version 3.3
         constexpr static auto WindowState = sf::State::Windowed;
         constexpr static auto FrameRateLimit = 60;
@@ -17,6 +17,7 @@ namespace OneGunGame {
     
     constexpr auto WindowTitle = "One Gun - SFML";
     constexpr auto WindowStyle = sf::Style::Titlebar;
+    constexpr auto ViewSize = sf::Vector2f{800.0f, 600.0f};
 
     constexpr auto Pi = 3.1415926535f;
     constexpr auto PiSquared = Pi * Pi;

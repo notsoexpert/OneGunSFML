@@ -253,6 +253,10 @@ namespace OneGunGame {
     void SetupContext() {
         s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(Configuration.WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
         s_Data.Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
+        s_Data.Context.View.setCenter(sf::Vector2f{ViewSize.x / 2, ViewSize.y / 2});
+        s_Data.Context.View.setSize(static_cast<sf::Vector2f>(ViewSize));
+
+        s_Data.Context.Window.setView(s_Data.Context.View);
     }
 
     std::expected<void, std::string> SetupTextures() {
@@ -308,11 +312,11 @@ namespace OneGunGame {
     }
     void SetupLevel() {
         s_Data.Entities.Background = Background::Create(s_Data.Registry);
-        s_Data.Entities.Player = Player::Create(s_Data.Registry, Player::Start(s_Data.Context.Window.getSize()));
+        s_Data.Entities.Player = Player::Create(s_Data.Registry, Player::Start(GetWindowSize()));
     }
 
-    sf::Vector2u GetWindowSize() {
-        return s_Data.Context.Window.getSize();
+    sf::Vector2f GetWindowSize() {
+        return ViewSize;
     }
 
     sf::Vector2f GetInputVector() {

@@ -7,7 +7,7 @@ namespace Player {
     constexpr sf::Vector2i CollisionSize{32, 32}; // Collision size for the player sprite
     constexpr sf::Vector2i CollisionOffset{-16, -16}; // Offset for collision detection
 
-    constexpr sf::Vector2f Start(const sf::Vector2u &windowSize) {
+    constexpr sf::Vector2f Start(const sf::Vector2f &windowSize) {
         return {windowSize.x / 2.0f, windowSize.y - Size.y - 10.0f};
     }
     

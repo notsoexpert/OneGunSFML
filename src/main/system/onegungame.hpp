@@ -20,7 +20,7 @@ namespace OneGunGame {
     sf::Vector2f GetInputVector();
     CollisionLayer GetHitMask(CollisionLayer layer);
 
-    sf::Vector2u GetWindowSize();
+    sf::Vector2f GetWindowSize();
     uint32_t GetEntityCount();
     const sf::Texture& GetTexture(Images image);
 
@@ -38,6 +38,7 @@ namespace OneGunGame {
         
         struct {
             sf::RenderWindow Window;
+            sf::View View;
         } Context;
 
         struct TexData {
