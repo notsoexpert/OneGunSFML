@@ -33,7 +33,7 @@ namespace Player {
         registry.emplace<Velocity>(entity);
         registry.emplace<Acceleration>(entity);
         registry.emplace<Friction>(entity, Player::BaseFriction);
-        registry.emplace<Health>(entity, Player::BaseMaxHealth);
+        registry.emplace<Health>(entity, Player::BaseMaxHealth, OnDeath);
         registry.emplace<Energy>(entity, Player::BaseMaxEnergy);
         registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
@@ -101,5 +101,9 @@ namespace Player {
             spdlog::warn("You dead");
             return;
         }
+    }
+
+    void OnDeath(entt::registry &registry, entt::entity playerEntity) {
+        registry.emplace<Destructing>(playerEntity);
     }
 }

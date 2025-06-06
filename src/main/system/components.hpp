@@ -8,12 +8,16 @@
 #include "system/constants.hpp"
 
 struct Health {
+    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
     float Max;
     float Current;
 
-    Health(float max) :
+    Func OnDeath;
+    
+    Health(float max, Func onDeath = {}) :
         Max(max),
-        Current(max)
+        Current(max),
+        OnDeath(onDeath)
     {}
 
     void Damage(float amount) { 
@@ -143,15 +147,17 @@ struct Confined {
 };
 
 struct Collidable {
+    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity, entt::entity otherEntity)>;
+    
     sf::IntRect CollisionRect;
     entt::entity Source;
     OneGunGame::CollisionLayer Layer;
     OneGunGame::CollisionLayer Mask;
 
-    std::function<void(entt::registry& registry, entt::entity thisEntity, entt::entity otherEntity)> OnCollision;
+    Func OnCollision;
 
     Collidable(const sf::IntRect& rect, entt::entity source, OneGunGame::CollisionLayer layer, 
-        OneGunGame::CollisionLayer mask, auto onCollision = [](entt::registry&, entt::entity, entt::entity) {}) : 
+        OneGunGame::CollisionLayer mask, Func onCollision = {}) : 
         CollisionRect(rect),
         Source(source),
         Layer(layer),
@@ -161,12 +167,14 @@ struct Collidable {
 };
 
 struct ScreenTrigger {
-    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
+    using Func = std::function<void(entt::registry&, entt::entity, std::variant<int, float>)>;
 
     Func Enter;
     Func Leave;
+    std::variant<int, float> Arg;
 
-    ScreenTrigger(Func enter, Func leave) : Enter(enter), Leave(leave) {}
+    ScreenTrigger(Func enter, Func leave, int iArg) : Enter(enter), Leave(leave), Arg(iArg) {}
+    ScreenTrigger(Func enter, Func leave, float fArg) : Enter(enter), Leave(leave), Arg(fArg) {}
 };
 struct Lifetime {
     sf::Time Duration;
@@ -225,7 +233,3 @@ struct Rotating {
 };
 
 struct Destructing {};
-struct Dying {
-    std::function<void(entt::registry& registry, entt::entity thisEntity)> OnDeath;
-    Dying(auto onDeath) : OnDeath(onDeath) {}
-};

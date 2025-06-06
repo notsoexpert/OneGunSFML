@@ -2,21 +2,16 @@
 #include "enemy.hpp"
 
 #include "system/onegungame.hpp"
-#include "system/components.hpp"
-
+#include "entities/entity.hpp"
 #include "entities/projectile.hpp"
 
 namespace Enemy {
 
-    const std::unordered_map<Type, Behavior::Action> Behavior::Callbacks = {
-            {Comet, CometBehavior},
-            {Drone, DroneBehavior},
-            {Fighter, FighterBehavior},
-            {Bomber, BomberBehavior},
-            {Hunter, HunterBehavior}, 
-            {Bombardier, BombardierBehavior},
-            {Galaxis, GalaxisBehavior}
-        };
+    static const std::array<std::function<void(const Setup&)>, Type::Total> SetupEnemy = {
+        AsteroidSetup, LargeAsteroidSetup, HugeAsteroidSetup,
+        CometSetup, DroneSetup, FighterSetup, BomberSetup,
+        HunterSetup, BombardierSetup, GalaxisSetup
+    };
 
     void Update(entt::registry &registry) {
         registry.view<Behavior>().each(
@@ -26,45 +21,45 @@ namespace Enemy {
         );
     }
 
-    entt::entity Create(entt::registry &registry, Type type,const sf::Vector2f& position, 
-        const sf::Vector2f& direction, entt::entity source) {
-
-        if (type < Enemy::Asteroid || type >= Enemy::Total) {
+    entt::entity Create(Setup& setup, Type type) {
+        if (type < 0 || type >= Enemy::Type::Total) {
             spdlog::error("Create: Invalid enemy type: {}", static_cast<int>(type));
             return entt::null;
         }
-        auto &specification = Specifications.at(type);
+        
+        setup.ThisEntity = setup.Registry.create();
+        spdlog::info("Creating Enemy entity {}", static_cast<int>(setup.ThisEntity));
+        setup.Registry.emplace<Component>(setup.ThisEntity, type);
 
-        entt::entity entity = registry.create();
+        SetupEnemy[type](setup);
 
-        auto &renderable = registry.emplace<Renderable>(entity, 
-            OneGunGame::GetTexture(OneGunGame::SpriteSheet), 50);
-        renderable.Sprite.setTextureRect(specification.TextureRect);
+        return setup.ThisEntity;
+    }
+
+    Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect){
+        auto &renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
+            OneGunGame::GetTexture(imageID), 50);
+        renderable.Sprite.setTextureRect(textureRect);
         renderable.Sprite.setOrigin(static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size) / 2.0f);
-        renderable.Sprite.setPosition(position);
-        
-        registry.emplace<Velocity>(entity, direction * specification.MoveSpeed);
-        
-        sf::IntRect centeredRect = specification.CollisionRect;
+        renderable.Sprite.setPosition(setup.Position);
+        return renderable;
+    }
+    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
+        sf::IntRect centeredRect = collisionRect;
         centeredRect.position -= centeredRect.size / 2;
-        registry.emplace<Collidable>(entity, specification.CollisionRect, source, OneGunGame::CollisionLayer::Enemy,
+        return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, setup.Source, OneGunGame::CollisionLayer::Enemy,
             static_cast<OneGunGame::CollisionLayer>(OneGunGame::Player | OneGunGame::Projectile),
             OnCollision);
-
-        registry.emplace<Health>(entity, specification.MaxHealth);
-        registry.emplace<MaxSpeed>(entity);
-        registry.emplace<Fireable>(entity, 1.0f, specification.FireRate);
-        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
-        if (Behavior::Callbacks.contains(type))
-            registry.emplace<Behavior>(entity, Behavior::Callbacks.at(type));
-        registry.emplace<Component>(entity, type);
-        registry.emplace<ScreenTrigger>(entity, RemoveOffscreenLifetime, AddOffscreenLifetime);
-
-        if (static_cast<int>(type) <= 2)
-            registry.emplace<Rotating>(entity, sf::radians(2*OneGunGame::Pi));
-
-        spdlog::info("Creating Enemy of type '{}', entity {}", Names.at(type), static_cast<int>(entity));
-        return entity;
+    }
+    Health& SetupHealth(const Setup& setup, float maxHealth){
+        return setup.Registry.emplace<Health>(setup.ThisEntity, maxHealth);
+    }
+    void SetupMovement(const Setup& setup, float moveSpeed){
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * moveSpeed);
+        setup.Registry.emplace<MaxSpeed>(setup.ThisEntity, moveSpeed);
+    }
+    void SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds){
+        setup.Registry.emplace<ScreenTrigger>(setup.ThisEntity, Entity::RemoveOffscreenLifetime, Entity::AddOffscreenLifetime, expireTimeInSeconds);
     }
 
     entt::entity Fire(entt::registry &registry, entt::entity sourceEntity) {
@@ -98,50 +93,4 @@ namespace Enemy {
             static_cast<int>(thisEntity), static_cast<int>(otherEntity));
         }
     }
-
-    void RemoveOffscreenLifetime(entt::registry &registry, entt::entity thisEntity) {
-        if (registry.remove<Lifetime>(thisEntity) > 0)
-            spdlog::trace("Lifetime component removed from {}", static_cast<int>(thisEntity));
-    }
-
-    void AddOffscreenLifetime(entt::registry &registry, entt::entity thisEntity) {
-        auto component = registry.try_get<Component>(thisEntity);
-        if (!component)
-            return;
-
-        auto lifetime = registry.try_get<Lifetime>(thisEntity);
-        if (!lifetime) {
-            registry.emplace<Lifetime>(thisEntity, sf::seconds(Specifications.at(component->ThisType).OffscreenLifetime));
-            spdlog::trace("Lifetime component added to {}", static_cast<int>(thisEntity));
-        }
-    }
-
-    void CometBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Comet Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-    void DroneBehavior(entt::registry &registry, entt::entity thisEntity){
-        Fire(registry, thisEntity);
-    }
-    void FighterBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Fighter Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-    void BomberBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Bomber Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-    void HunterBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Hunter Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-    void BombardierBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Bombardier Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-    void GalaxisBehavior(entt::registry &registry, entt::entity thisEntity){
-        if (registry.valid(thisEntity))
-            spdlog::trace("Galaxis Behavior invoked for entity {}", static_cast<int>(thisEntity));
-    }
-
 }

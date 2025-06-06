@@ -29,4 +29,5 @@ namespace Player {
     entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
     void Dash(entt::registry &registry, entt::entity playerEntity);
     void OnCollision(entt::registry &registry, entt::entity playerEntity, entt::entity otherEntity);
+    void OnDeath(entt::registry &registry, entt::entity playerEntity);
 }

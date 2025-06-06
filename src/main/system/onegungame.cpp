@@ -2,6 +2,7 @@
 #include "onegungame.hpp"
 
 #include "system/components.hpp"
+#include "entities/entity.hpp"
 #include "entities/background.hpp"
 #include "entities/player.hpp"
 #include "entities/projectile.hpp"
@@ -199,18 +200,7 @@ namespace OneGunGame {
             });
         });
 
-        s_Data.Registry.view<Renderable, ScreenTrigger>().each(
-            [](auto entity, Renderable &renderable, ScreenTrigger &screenTrigger) {
-                sf::FloatRect screenRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())};
-                sf::Vector2f spriteSize = static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size);
-                sf::FloatRect spriteRect{renderable.Sprite.getPosition(), spriteSize};
-                
-                if (spriteRect.findIntersection(screenRect)) {
-                    screenTrigger.Enter(s_Data.Registry, entity);
-                } else {
-                    screenTrigger.Leave(s_Data.Registry, entity);
-                }
-        });
+        Entity::Update(s_Data.Registry);
 
         s_Data.Registry.view<Lifetime>().each(
             [](auto entity, Lifetime& lifetime) {
@@ -219,13 +209,6 @@ namespace OneGunGame {
                 s_Data.Registry.emplace_or_replace<Destructing>(entity);
             }
         });
-
-        s_Data.Registry.view<Dying>().each(
-            [](auto entity, Dying& dying) {
-                spdlog::trace("Processing death for entity {}", static_cast<int>(entity));
-                dying.OnDeath(s_Data.Registry, entity);
-            }
-        );
 
         s_Data.Registry.view<Destructing>().each(
             [](auto entity) {
@@ -303,7 +286,8 @@ namespace OneGunGame {
                 sf::Vector2f flyDirection = {0.0f, 1.0f};
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
-                Enemy::Create(s_Data.Registry, Enemy::Drone, spawnPosition, flyDirection);
+                Enemy::Setup setup{s_Data.Registry, spawnPosition, flyDirection, entt::null, entt::null};
+                Enemy::Create(setup, Enemy::Drone);
             }
         };
     }

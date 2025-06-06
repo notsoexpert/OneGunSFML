@@ -1,0 +1,39 @@
+#include "pch.hpp"
+#include "entities/enemy.hpp"
+
+namespace Enemy {
+    static constexpr const char* Name = "Galaxis";
+    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
+    static constexpr sf::IntRect CollisionRect = {{-8, -8}, {16, 16}};
+    static constexpr float MaxHealth = 1000.0f;
+    static constexpr float MoveSpeed = 2.5f;
+    static constexpr float OffscreenLifetime = 2.0f;
+
+    void GalaxisSetup(const Setup& setup){
+        SetupRenderable(setup, ImageID, TextureRect);
+        SetupCollidable(setup, CollisionRect);
+        SetupMovement(setup, MoveSpeed);
+        auto& health = SetupHealth(setup, MaxHealth);
+        health.OnDeath = GalaxisDeath;
+        SetupOffscreenLifetime(setup, OffscreenLifetime);
+
+        setup.Registry.emplace<Behavior>(setup.ThisEntity, GalaxisBehavior);
+    }
+
+    void GalaxisBehavior(entt::registry &registry, entt::entity thisEntity){
+        if (registry.valid(thisEntity)){
+            spdlog::trace("Galaxis Behavior invoked for entity {}", static_cast<int>(thisEntity));
+        }
+    }
+
+    void GalaxisDeath(entt::registry &registry, entt::entity thisEntity){
+        registry.emplace<Destructing>(thisEntity);
+
+        /* CREATE DEATH EXPLOSION */
+        // auto &renderable = registry.get<Renderable>(thisEntity);
+        // auto &velocity = registry.get<Velocity>(thisEntity);
+        // Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
+        // Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+    }
+}

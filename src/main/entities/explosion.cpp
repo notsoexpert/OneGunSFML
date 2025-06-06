@@ -21,7 +21,7 @@ namespace Explosion {
         registry.emplace<Component>(entity, type);
 
         auto &explosionSprite = registry.emplace<Renderable>(entity, 
-            OneGunGame::GetTexture(OneGunGame::SpriteSheet), 20).Sprite;
+            OneGunGame::GetTexture(specification.TextureID), 20).Sprite;
         explosionSprite.setTextureRect(specification.TextureRect);
         explosionSprite.setOrigin({specification.TextureRect.size.x / 2.0f, specification.TextureRect.size.y / 2.0f});
         explosionSprite.setPosition(position);
