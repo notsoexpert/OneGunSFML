@@ -7,7 +7,7 @@ namespace Enemy {
     static constexpr sf::IntRect TextureRect = {{64, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{-23, -23}, {46, 46}};
     static constexpr float MaxHealth = 25.0f;
-    static constexpr float MoveSpeed = 2.0f;
+    static constexpr float MoveSpeed = 1.0f;
     static constexpr float OffscreenLifetime = 5.0f;
     static constexpr int DeathAsteroids = 2;
 
@@ -27,15 +27,15 @@ namespace Enemy {
         registry.emplace<Destructing>(thisEntity);
         
         /* GET RELEVANT COMPONENTS */
-        //auto &renderable = registry.get<Renderable>(thisEntity);
-        //auto &velocity = registry.get<Velocity>(thisEntity);
+        auto &renderable = registry.get<Renderable>(thisEntity);
+        auto &velocity = registry.get<Velocity>(thisEntity);
 
         /* SPLIT INTO ASTEROIDS */
-        //for (int i = 0; i < DeathAsteroids; i++) {
-            //sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i/2+1) * (i%2==0?1.0f:-1.0f)).normalized();
-            //Enemy::Setup setup{registry, renderable.Sprite.getPosition, newDirection, entt::null, entt::null};
-            //Enemy::Create(setup, Enemy::Type::Asteroid);
-        //}
+        for (int i = 0; i < DeathAsteroids; i++) {
+            sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i/2+1) * (i%2==0?1.0f:-1.0f))).normalized();
+            Enemy::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, entt::null, thisEntity};
+            Enemy::Create(setup, Enemy::Type::Asteroid);
+        }
 
         /* CREATE DEATH EXPLOSION */
         //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};

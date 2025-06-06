@@ -31,9 +31,9 @@ namespace Enemy {
         registry.emplace<Destructing>(thisEntity);
 
         /* CREATE DEATH EXPLOSION */
-        // auto &renderable = registry.get<Renderable>(thisEntity);
-        // auto &velocity = registry.get<Velocity>(thisEntity);
-        // Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
-        // Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+        //auto &renderable = registry.get<Renderable>(thisEntity);
+        //auto &velocity = registry.get<Velocity>(thisEntity);
+        //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
+        //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
     }
 }

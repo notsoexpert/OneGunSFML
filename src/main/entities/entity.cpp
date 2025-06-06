@@ -31,6 +31,9 @@ namespace Entity {
         
         spdlog::info("Entity {} damaged. New Health: {}", static_cast<int>(target), otherHealth->Current);
         otherHealth->Damage(damage);
+        if (otherHealth->IsDead()) {
+            otherHealth->OnDeath(registry, target);
+        }
         return true;
     }
 

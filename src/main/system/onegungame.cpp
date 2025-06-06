@@ -287,7 +287,7 @@ namespace OneGunGame {
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
                 Enemy::Setup setup{s_Data.Registry, spawnPosition, flyDirection, entt::null, entt::null};
-                Enemy::Create(setup, Enemy::Drone);
+                Enemy::Create(setup, Enemy::HugeAsteroid);
             }
         };
     }
