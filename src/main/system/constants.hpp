@@ -1,18 +1,18 @@
 #pragma once
 
 namespace OneGunGame {
-    struct {
-        constexpr static auto WindowSize = sf::Vector2u{1600, 1200};
-        constexpr static auto ContextSettings = sf::ContextSettings{24, 8, 4, 3, 3}; // 24 bits color depth, 8 bits stencil buffer, 4 samples for anti-aliasing, OpenGL version 3.3
-        constexpr static auto WindowState = sf::State::Windowed;
-        constexpr static auto FrameRateLimit = 60;
-    } Default;
+    struct Default {
+        static constexpr sf::Vector2u WindowSize = sf::Vector2u{1600, 1200};
+        static constexpr sf::ContextSettings ContextSettings = sf::ContextSettings{24, 8, 4, 3, 3}; // 24 bits color depth, 8 bits stencil buffer, 4 samples for anti-aliasing, OpenGL version 3.3
+        static constexpr sf::State WindowState = sf::State::Windowed;
+        static constexpr uint16_t FrameRateLimit = 60;
+    };
     
     struct {
-        sf::Vector2u WindowSize = Default.WindowSize;
-        sf::ContextSettings ContextSettings = Default.ContextSettings;
-        sf::State WindowState = Default.WindowState;
-        int FrameRateLimit = Default.FrameRateLimit;
+        sf::Vector2u WindowSize = Default::WindowSize;
+        sf::ContextSettings ContextSettings = Default::ContextSettings;
+        sf::State WindowState = Default::WindowState;
+        int FrameRateLimit = Default::FrameRateLimit;
     } Configuration;
     
     constexpr auto WindowTitle = "One Gun - SFML";

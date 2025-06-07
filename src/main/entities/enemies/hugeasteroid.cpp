@@ -12,7 +12,7 @@ namespace Enemy {
     static constexpr int DeathLargeAsteroids = 2;
 
     void HugeAsteroidSetup(const Setup& setup){
-
+        spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);

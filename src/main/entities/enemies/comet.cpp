@@ -9,9 +9,10 @@ namespace Enemy {
     static constexpr float MaxHealth = 100.0f;
     static constexpr float MoveSpeed = 6.0f;
     static constexpr float OffscreenLifetime = 2.5f;
-    static constexpr int DeathProjectiles = 8;
+    //static constexpr int DeathProjectiles = 8;
 
     void CometSetup(const Setup& setup){
+        spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);

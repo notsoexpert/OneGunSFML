@@ -50,13 +50,13 @@ namespace OneGunGame {
             }
         };
         std::unordered_map<Images, TexData> Textures {
-            {Background, TexData{"./assets/textures/bg1seamless.png"}},
-            {SpriteSheet, TexData{"./assets/textures/sprites.png"}},
-            {ExplosionRed, TexData{"./assets/textures/explosionRed.png"}},
-            {ExplosionYellow, TexData{"./assets/textures/explosionYellow.png"}},
-            {ExplosionGreen, TexData{"./assets/textures/explosionGreen.png"}},
-            {ExplosionBlue, TexData{"./assets/textures/explosionBlue.png"}},
-            {ExplosionViolet, TexData{"./assets/textures/explosionViolet.png"}}
+            {Background, TexData{"./assets/textures/bg1seamless.png", {}}},
+            {SpriteSheet, TexData{"./assets/textures/sprites.png", {}}},
+            {ExplosionRed, TexData{"./assets/textures/explosionRed.png", {}}},
+            {ExplosionYellow, TexData{"./assets/textures/explosionYellow.png", {}}},
+            {ExplosionGreen, TexData{"./assets/textures/explosionGreen.png", {}}},
+            {ExplosionBlue, TexData{"./assets/textures/explosionBlue.png", {}}},
+            {ExplosionViolet, TexData{"./assets/textures/explosionViolet.png", {}}}
         };
 
         struct {

@@ -11,6 +11,7 @@ namespace Enemy {
     static constexpr float OffscreenLifetime = 5.0f;
 
     void FighterSetup(const Setup& setup){
+        spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
