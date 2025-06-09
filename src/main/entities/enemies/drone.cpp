@@ -1,8 +1,9 @@
 #include "pch.hpp"
-#include "entities/enemy.hpp"
+#include "entities/enemy_types.hpp"
 
-#include "entities/projectile.hpp"
+#include "entities/projectile_types.hpp"
 #include "system/components.hpp"
+#include "entities/entity.hpp"
 
 namespace Enemy {
     static constexpr const char* Name = "Drone";
@@ -22,8 +23,7 @@ namespace Enemy {
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
         health.OnDeath = DroneDeath;
-        SetupOffscreenLifetime(setup, OffscreenLifetime);
-
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         
         setup.Registry.emplace<Behavior>(setup.ThisEntity, DroneBehavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity, FireDamage, FireRate);

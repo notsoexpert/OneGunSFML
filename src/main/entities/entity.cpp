@@ -21,6 +21,15 @@ namespace Entity {
         });
     }
 
+    float GetBasePower(entt::registry &registry, entt::entity thisEntity) {
+        auto fireComp = registry.try_get<Fireable>(thisEntity);
+        if (!fireComp){
+            spdlog::warn("GetBasePower called on entity {} with no Fireable component, returning 1.0f", static_cast<int>(thisEntity));
+            return 1.0f;
+        }
+        return fireComp->BaseDamage;
+    }
+
     bool Damage(entt::registry &registry, entt::entity attacker, entt::entity target, float damage) {
         auto otherHealth = registry.try_get<Health>(target);
         if (!otherHealth) {
@@ -35,6 +44,10 @@ namespace Entity {
             otherHealth->OnDeath(registry, target);
         }
         return true;
+    }
+
+    void SetupOffscreenLifetime(entt::registry &registry, entt::entity thisEntity, float expireTimeInSeconds){
+        registry.emplace<ScreenTrigger>(thisEntity, Entity::RemoveOffscreenLifetime, Entity::AddOffscreenLifetime, expireTimeInSeconds);
     }
 
     void RemoveOffscreenLifetime(entt::registry &registry, entt::entity thisEntity, [[maybe_unused]]std::variant<int, float> duration) {

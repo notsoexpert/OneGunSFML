@@ -1,6 +1,8 @@
 #include "pch.hpp"
 #include "entities/enemy.hpp"
 
+#include "entities/entity.hpp"
+
 namespace Enemy {
     static constexpr const char* Name = "Hunter";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
@@ -17,7 +19,7 @@ namespace Enemy {
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
         health.OnDeath = HunterDeath;
-        SetupOffscreenLifetime(setup, OffscreenLifetime);
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
         setup.Registry.emplace<Behavior>(setup.ThisEntity, HunterBehavior);
     }

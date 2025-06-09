@@ -1,5 +1,7 @@
 #include "pch.hpp"
-#include "entities/enemy.hpp"
+#include "entities/enemy_types.hpp"
+
+#include "entities/entity.hpp"
 
 namespace Enemy {
     static constexpr const char* Name = "Large Asteroid";
@@ -18,8 +20,8 @@ namespace Enemy {
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
         health.OnDeath = LargeAsteroidDeath;
-        SetupOffscreenLifetime(setup, OffscreenLifetime);
-
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
+        
         setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
     }
 

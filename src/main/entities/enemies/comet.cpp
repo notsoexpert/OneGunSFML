@@ -1,5 +1,7 @@
 #include "pch.hpp"
-#include "entities/enemy.hpp"
+#include "entities/enemy_types.hpp"
+
+#include "entities/entity.hpp"
 
 namespace Enemy {
     static constexpr const char* Name = "Comet";
@@ -18,7 +20,7 @@ namespace Enemy {
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
         health.OnDeath = CometDeath;
-        SetupOffscreenLifetime(setup, OffscreenLifetime);
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
         setup.Registry.emplace<Behavior>(setup.ThisEntity, CometBehavior);
     }

@@ -138,7 +138,7 @@ namespace OneGunGame {
             [](auto entity, Renderable &renderable, Rotating &rotating) {
                 spdlog::trace("Updating entity {}: Rotating {} radians per second", 
                 static_cast<int>(entity), rotating.RotationsPerSecond.asRadians());
-                renderable.Sprite.rotate(rotating.RotationsPerSecond / Configuration.FrameRateLimit);
+                renderable.Sprite.rotate(rotating.RotationsPerSecond / static_cast<float>(Configuration.FrameRateLimit));
             }
         );
         

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <entt/entt.hpp>
-#include <SFML/Graphics.hpp>
+#include "entities/enemy.hpp"
 
 namespace Enemy {
     enum Type {
@@ -24,13 +23,7 @@ namespace Enemy {
         Component(Type type) : ThisType(type) {}
     };
 
-    struct Setup {
-        entt::registry &Registry;
-        const sf::Vector2f &Position;
-        const sf::Vector2f &Direction;
-        entt::entity ThisEntity = entt::null;
-        entt::entity Source = entt::null;
-    };
+    entt::entity Create(Setup& setup, Type type);
 
     void AsteroidSetup(const Setup& setup);
     void LargeAsteroidSetup(const Setup& setup);
