@@ -6,7 +6,7 @@
 #include "entities/background.hpp"
 #include "entities/player.hpp"
 #include "entities/projectile.hpp"
-#include "entities/enemy.hpp"
+#include "entities/enemy_types.hpp"
 
 namespace OneGunGame { 
 

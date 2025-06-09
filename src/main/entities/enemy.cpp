@@ -56,7 +56,7 @@ entt::entity Enemy::Fire(entt::registry &registry, entt::entity sourceEntity) {
         return entt::null;
     }
     spdlog::trace("Player firing projectile");
-    auto projectileType = weaponComponent->GetBulletType(fireComponent->BaseDamage);
+    auto projectileType = weaponComponent->GetBulletType();
     spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
     Projectile::Setup setup{registry, registry.get<Renderable>(sourceEntity).Sprite.getPosition(),
     sf::Vector2f{0.0f, 1.0f}, sourceEntity};

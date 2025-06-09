@@ -22,19 +22,7 @@ namespace Projectile {
     static constexpr std::array<uint8_t, 3> Specification = 
     {Flags::Destruct, Flags::Destruct, Flags::Destruct};
 
-    void BulletSetup(const Setup& setup) {
-        spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
-        float power = Entity::GetBasePower(setup.Registry, setup.Source);
-        size_t index = GetBulletTier(power);
-        SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
-        SetupCollidable(setup, CollisionRect.at(index));
-
-        setup.Registry.emplace<Component>(setup.ThisEntity, );
-
-        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
-    }
-
-    size_t GetBulletTier(float basePower){
+    static size_t GetBulletTier(float basePower){
         if (basePower < 5.0f){
             return 0;
         }
@@ -42,6 +30,29 @@ namespace Projectile {
             return 1;
         }
         return 2;
+    }
+
+    void BulletSetup(const Setup& setup) {
+        float power = Entity::GetBasePower(setup.Registry, setup.Source);
+        size_t index = GetBulletTier(power);
+        spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
+
+        SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
+        SetupCollidable(setup, CollisionRect.at(index));
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
+
+        setup.Registry.emplace<Component>(setup.ThisEntity, Bullet, 
+            Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
+
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
+    }
+
+    void BulletDestruction(entt::registry &registry, entt::entity thisEntity) {
+        auto &component = registry.get<Component>(thisEntity);
+
+        if (component.CompareFlags(Flags::Explode)) {
+            spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
+        }
     }
 
 }

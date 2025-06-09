@@ -3,7 +3,7 @@
 
 #include "system/onegungame.hpp"
 #include "system/components.hpp"
-#include "entities/projectile.hpp"
+#include "entities/projectile_types.hpp"
 
 namespace Player {
 
@@ -71,11 +71,11 @@ namespace Player {
         }
 
         spdlog::trace("Player firing projectile");
-        auto projectileType = weaponComponent->GetBulletType(fireComponent->BaseDamage);
+        auto projectileType = weaponComponent->GetBulletType();
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
-        auto projectile = Projectile::Create(registry, projectileType, 
-            registry.get<Renderable>(playerEntity).Sprite.getPosition(), 
-            sf::Vector2f{0.0f, -1.0f}, playerEntity);
+        Projectile::Setup setup{registry, registry.get<Renderable>(playerEntity).Sprite.getPosition(), 
+            sf::Vector2f{0.0f, -1.0f}, playerEntity};
+        auto projectile = Projectile::Create(setup, projectileType);
         return projectile;
     }
 

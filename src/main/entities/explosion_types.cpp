@@ -1,6 +1,10 @@
 #include "pch.hpp"
 #include "explosion_types.hpp"
 
+#include "system/onegungame.hpp"
+#include "system/components.hpp"
+#include "entities/entity.hpp"
+
 namespace Explosion {
     entt::entity Create(Setup& setup, Type type) 
     {
@@ -11,22 +15,20 @@ namespace Explosion {
 
         setup.ThisEntity = Explosion::Create(setup);
 
-        registry.emplace<Component>(entity, type);
+        setup.Registry.emplace<Component>(setup.ThisEntity, type);
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Velocity);
 
-        
-
-        registry.emplace<Velocity>(entity, velocity);
-
-        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(registry.get<Collidable>(source).Layer);
-
-        registry.emplace<Collidable>(entity, specification.CollisionRect, source, 
+        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
+        setup.Registry.emplace<Collidable>(setup.ThisEntity, Specifications.at(type).CollisionRect, setup.Source, 
             OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
+        
+        return setup.ThisEntity;
     }
 
     void OnCollision(entt::registry &registry, entt::entity explosionEntity, entt::entity otherEntity) {
-        auto &component = registry.get<Component>(explosionEntity);
+        //auto &component = registry.get<Component>(explosionEntity);
 
-        float explosionDamage = GetExplosionDamage(registry, explosionEntity, component);
+        float explosionDamage = GetExplosionDamage(registry, explosionEntity, 25.0f);
 
         Entity::Damage(registry, explosionEntity, otherEntity, explosionDamage);
 

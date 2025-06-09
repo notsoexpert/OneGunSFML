@@ -1,6 +1,9 @@
 #include "pch.hpp"
 #include "entities/projectile_types.hpp"
 
+#include "entities/entity.hpp"
+#include "system/components.hpp"
+
 namespace Projectile {
     static constexpr std::array<const char*, 3> Name = 
     {"Green Laser", "Yellow Laser", "Red Laser"};
@@ -19,4 +22,28 @@ namespace Projectile {
     static constexpr std::array<size_t, 3> Specification = 
     {Flags::Destruct | Flags::Split, Flags::Destruct | Flags::Split, Flags::Destruct | Flags::Split};
 
+    static size_t GetLaserTier(float basePower){
+        if (basePower < 5.0f){
+            return 0;
+        }
+        if (basePower < 10.0f){
+            return 1;
+        }
+        return 2;
+    }
+
+    void LaserSetup(const Setup& setup) {
+        float power = Entity::GetBasePower(setup.Registry, setup.Source);
+        size_t index = GetLaserTier(power);
+        spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
+        
+        SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
+        SetupCollidable(setup, CollisionRect.at(index));
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
+
+        setup.Registry.emplace<Component>(setup.ThisEntity, Laser, 
+            Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
+
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
+    }
 }

@@ -47,7 +47,7 @@ namespace Projectile {
         } else {
             Entity::Damage(registry, projectileEntity, otherEntity, projectileDamage);
         }
-        
+
         if (component.CompareFlags(Flags::Destruct)) {
             registry.emplace_or_replace<::Destructing>(projectileEntity);
         }

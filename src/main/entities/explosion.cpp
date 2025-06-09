@@ -22,16 +22,6 @@ namespace Explosion {
         return renderable;
     }
 
-    void OnCollision(entt::registry &registry, entt::entity explosionEntity, entt::entity otherEntity) {
-        auto &component = registry.get<Component>(explosionEntity);
-
-        float explosionDamage = GetExplosionDamage(registry, explosionEntity, component);
-
-        Entity::Damage(registry, explosionEntity, otherEntity, explosionDamage);
-
-        // TODO: Add damaged entity to ignore list
-    }
-
     float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float baseDamage) {
         entt::entity sourceEntity = registry.get<Collidable>(explosionEntity).Source;
         if (!registry.valid(sourceEntity)) {

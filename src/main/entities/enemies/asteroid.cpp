@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "entities/enemy.hpp"
+#include "entities/enemy_types.hpp"
 
 #include "system/components.hpp"
 #include "entities/entity.hpp"

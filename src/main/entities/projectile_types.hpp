@@ -52,7 +52,7 @@ namespace Projectile {
 
         Weapon(Weapon::Type type) : ThisType(type) {}
 
-        Projectile::Type GetBulletType(float basePower = 1.0f) {
+        Projectile::Type GetBulletType() {
             switch (ThisType) {
                 case Cannon:
                     return Bullet;
@@ -84,4 +84,11 @@ namespace Projectile {
     };
 
     void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
+    
+    void BulletSetup(const Setup& setup);
+    void LaserSetup(const Setup& setup);
+    void PlasmaSetup(const Setup& setup);
+    void MissileSetup(const Setup& setup);
+    void BombSetup(const Setup& setup);
+    void IceSetup(const Setup& setup);
 }

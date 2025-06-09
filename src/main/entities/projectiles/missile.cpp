@@ -1,6 +1,9 @@
 #include "pch.hpp"
 #include "entities/projectile_types.hpp"
 
+#include "entities/entity.hpp"
+#include "system/components.hpp"
+
 namespace Projectile {
     static constexpr std::array<const char*, 2> Name = 
     {"Missile", "Homing Missile"};
@@ -19,4 +22,26 @@ namespace Projectile {
     static constexpr std::array<size_t, 2> Specification = 
     {Flags::Destruct | Flags::Explode, Flags::Destruct | Flags::Explode | Flags::Home};
 
+    static size_t GetIndex(const Setup &setup) {
+        auto weapComp = setup.Registry.try_get<Projectile::Weapon>(setup.Source);
+        if (!weapComp) {
+            spdlog::warn("MissileSetup - GetIndex - Source {} has no weapon component", static_cast<int>(setup.Source));
+            return 0;
+        }
+        return weapComp->ThisType == Projectile::Weapon::SeekerLauncher ? 1 : 0;
+    }
+
+    void MissileSetup(const Setup& setup) {
+        size_t index = GetIndex(setup);
+        spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
+        
+        SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
+        SetupCollidable(setup, CollisionRect.at(index));
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
+
+        setup.Registry.emplace<Component>(setup.ThisEntity, Missile, 
+            Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
+
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
+    }
 }

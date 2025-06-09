@@ -17,11 +17,12 @@ namespace Projectile {
     }
 
     Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect) {
-        auto &projectileSprite = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
-            OneGunGame::GetTexture(imageID), 25).Sprite;
-        projectileSprite.setTextureRect(textureRect);
-        projectileSprite.setOrigin({textureRect.size.x / 2.0f, textureRect.size.y / 2.0f});
-        projectileSprite.setPosition(setup.Position);
+        auto &renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
+            OneGunGame::GetTexture(imageID), 25);
+        renderable.Sprite.setTextureRect(textureRect);
+        renderable.Sprite.setOrigin({textureRect.size.x / 2.0f, textureRect.size.y / 2.0f});
+        renderable.Sprite.setPosition(setup.Position);
+        return renderable;
     }
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
         sf::IntRect centeredRect = collisionRect;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system/constants.hpp"
+#include "entities/explosion.hpp"
 
 namespace Explosion {
     enum Type {

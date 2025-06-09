@@ -9,7 +9,7 @@ namespace Explosion {
     struct Setup {
         entt::registry &Registry;
         const sf::Vector2f &Position;
-        const sf::Vector2f &Direction;
+        const sf::Vector2f &Velocity;
         entt::entity ThisEntity = entt::null;
         entt::entity Source = entt::null;
     };
