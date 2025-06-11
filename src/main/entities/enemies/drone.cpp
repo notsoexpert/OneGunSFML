@@ -23,8 +23,8 @@ namespace Enemy {
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
         health.OnDeath = DroneDeath;
-        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         
+        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         setup.Registry.emplace<Behavior>(setup.ThisEntity, DroneBehavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity, FireDamage, FireRate);
         setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, Projectile::Weapon::Cannon);
