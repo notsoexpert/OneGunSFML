@@ -4,7 +4,7 @@
 #include "entities/entity.hpp"
 #include "system/components.hpp"
 
-namespace Projectile {
+namespace Projectile::Laser {
     static constexpr std::array<const char*, 3> Name = 
     {"Green Laser", "Yellow Laser", "Red Laser"};
     static constexpr std::array<OneGunGame::Images, 3> ImageID = 
@@ -32,7 +32,7 @@ namespace Projectile {
         return 2;
     }
 
-    void LaserSetup(const Setup& setup) {
+    void Create(const Setup& setup) {
         float power = Entity::GetBasePower(setup.Registry, setup.Source);
         size_t index = GetLaserTier(power);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
@@ -41,9 +41,17 @@ namespace Projectile {
         SetupCollidable(setup, CollisionRect.at(index));
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
-        setup.Registry.emplace<Component>(setup.ThisEntity, Laser, 
+        setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Laser, 
             Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
+    }
+
+    void Death(entt::registry &registry, entt::entity thisEntity) {
+        auto &component = registry.get<Component>(thisEntity);
+
+        if (component.CompareFlags(Flags::Explode)) {
+            spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
+        }
     }
 }

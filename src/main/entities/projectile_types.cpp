@@ -6,9 +6,13 @@
 #include "entities/entity.hpp"
 
 namespace Projectile {
-    static const std::array<std::function<void(const Setup&)>, Type::Total> SetupProjectile = {
-        BulletSetup, LaserSetup, PlasmaSetup,
-        MissileSetup, BombSetup, IceSetup
+    static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> ProjectileSetup = {
+        Bullet::Create, Laser::Create, Plasma::Create,
+        Missile::Create, Bomb::Create, Ice::Create
+    };
+    static const std::array<std::function<void(entt::registry&, entt::entity)>, static_cast<size_t>(Type::Total)> ProjectileDeath = {
+        Bullet::Death, Laser::Death, Plasma::Death,
+        Missile::Death, Bomb::Death, Ice::Death
     };
 
     entt::entity Create(Setup& setup, Type type) {
@@ -18,7 +22,7 @@ namespace Projectile {
         }
         setup.ThisEntity = Projectile::Create(setup);
 
-        SetupProjectile[type](setup);
+        ProjectileSetup.at(static_cast<size_t>(type))(setup);
 
         return setup.ThisEntity;
     }
@@ -49,7 +53,7 @@ namespace Projectile {
         }
 
         if (component.CompareFlags(Flags::Destruct)) {
-            registry.emplace_or_replace<::Destructing>(projectileEntity);
+            registry.emplace_or_replace<Dying>(projectileEntity, ProjectileDeath.at(static_cast<size_t>(component.ThisType)));
         }
         
     }

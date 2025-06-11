@@ -3,7 +3,7 @@
 #include "entities/projectile.hpp"
 
 namespace Projectile {
-    enum Type {
+    enum class Type {
         Bullet = 0,
         Laser,
         Plasma,
@@ -55,20 +55,20 @@ namespace Projectile {
         Projectile::Type GetBulletType() {
             switch (ThisType) {
                 case Cannon:
-                    return Bullet;
+                    return Projectile::Type::Bullet;
                 case Blaster:
-                    return Laser;
+                    return Projectile::Type::Laser;
                 case Burner:
-                    return Plasma;
+                    return Projectile::Type::Plasma;
                 case Launcher:
-                    return Missile;
+                    return Projectile::Type::Missile;
                 case SeekerLauncher:
-                    return Missile;
+                    return Projectile::Type::Missile;
                 case Dropper:
-                    return Bomb;
+                    return Projectile::Type::Bomb;
                 default:
                     spdlog::warn("Unknown weapon type, defaulting projectile to Bullet");
-                    return Bullet;
+                    return Projectile::Type::Bullet;
             }
         }
     };
@@ -83,12 +83,30 @@ namespace Projectile {
         }
     };
 
-    void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
+    void BurnEntity(entt::registry& registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
     
-    void BulletSetup(const Setup& setup);
-    void LaserSetup(const Setup& setup);
-    void PlasmaSetup(const Setup& setup);
-    void MissileSetup(const Setup& setup);
-    void BombSetup(const Setup& setup);
-    void IceSetup(const Setup& setup);
+    namespace Bullet {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
+    namespace Laser {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
+    namespace Plasma {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
+    namespace Missile {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
+    namespace Bomb {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
+    namespace Ice {
+        void Create(const Setup& setup);
+        void Death(entt::registry& registry, entt::entity thisEntity);
+    }
 }

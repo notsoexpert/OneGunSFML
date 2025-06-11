@@ -4,7 +4,7 @@
 #include "system/components.hpp"
 #include "entities/entity.hpp"
 
-namespace Enemy {
+namespace Enemy::Asteroid {
     static constexpr const char* Name = "Asteroid";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
@@ -13,19 +13,19 @@ namespace Enemy {
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 3.0f;
 
-    void AsteroidSetup(const Setup& setup){
+    void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
-        health.OnDeath = AsteroidDeath;
+        health.OnDeath = Death;
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
         setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
     }
 
-    void AsteroidDeath(entt::registry &registry, entt::entity thisEntity){
+    void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
         /* CREATE DEATH EXPLOSION */

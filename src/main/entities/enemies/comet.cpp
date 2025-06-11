@@ -3,7 +3,7 @@
 
 #include "entities/entity.hpp"
 
-namespace Enemy {
+namespace Enemy::Comet {
     static constexpr const char* Name = "Comet";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{352, 480}, {32, 32}};
@@ -13,25 +13,25 @@ namespace Enemy {
     static constexpr float OffscreenLifetime = 2.5f;
     //static constexpr int DeathProjectiles = 8;
 
-    void CometSetup(const Setup& setup){
+    void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
-        health.OnDeath = CometDeath;
+        health.OnDeath = Death;
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
-        setup.Registry.emplace<Behavior>(setup.ThisEntity, CometBehavior);
+        setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
     }
 
-    void CometBehavior(entt::registry &registry, entt::entity thisEntity){
+    void Behavior(entt::registry &registry, entt::entity thisEntity){
         if (registry.valid(thisEntity)){
             spdlog::trace("Comet Behavior invoked for entity {}", static_cast<int>(thisEntity));
         }
     }
 
-    void CometDeath(entt::registry &registry, entt::entity thisEntity){
+    void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
         /* DEATH STUFF */

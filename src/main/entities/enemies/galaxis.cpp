@@ -3,7 +3,7 @@
 
 #include "entities/entity.hpp"
 
-namespace Enemy {
+namespace Enemy::Galaxis {
     static constexpr const char* Name = "Galaxis";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
@@ -12,25 +12,25 @@ namespace Enemy {
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 2.0f;
 
-    void GalaxisSetup(const Setup& setup){
+    void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
         auto& health = SetupHealth(setup, MaxHealth);
-        health.OnDeath = GalaxisDeath;
+        health.OnDeath = Death;
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
-        setup.Registry.emplace<Behavior>(setup.ThisEntity, GalaxisBehavior);
+        setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
     }
 
-    void GalaxisBehavior(entt::registry &registry, entt::entity thisEntity){
+    void Behavior(entt::registry &registry, entt::entity thisEntity){
         if (registry.valid(thisEntity)){
             spdlog::trace("Galaxis Behavior invoked for entity {}", static_cast<int>(thisEntity));
         }
     }
 
-    void GalaxisDeath(entt::registry &registry, entt::entity thisEntity){
+    void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
         /* CREATE DEATH EXPLOSION */

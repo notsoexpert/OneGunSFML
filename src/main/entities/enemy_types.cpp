@@ -2,23 +2,18 @@
 #include "enemy_types.hpp"
 
 namespace Enemy {
-    static const std::array<std::function<void(const Setup&)>, Type::Total> SetupEnemy = {
-        AsteroidSetup, LargeAsteroidSetup, HugeAsteroidSetup,
-        CometSetup, DroneSetup, FighterSetup, BomberSetup,
-        HunterSetup, BombardierSetup, GalaxisSetup
+    static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> SetupEnemy = {
+        Asteroid::Create, LargeAsteroid::Create, HugeAsteroid::Create,
+        Comet::Create, Drone::Create, Fighter::Create, Bomber::Create,
+        Hunter::Create, Bombardier::Create, Galaxis::Create
     };
 
     entt::entity Create(Setup& setup, Type type) {
-        if (type < 0 || type >= Enemy::Type::Total) {
-            spdlog::error("Create: Invalid enemy type: {}", static_cast<int>(type));
-            return entt::null;
-        }
-        
         setup.ThisEntity = Enemy::Create(setup);
         spdlog::info("Creating Enemy entity {}", static_cast<int>(setup.ThisEntity));
         setup.Registry.emplace<Component>(setup.ThisEntity, type);
 
-        SetupEnemy[type](setup);
+        SetupEnemy[static_cast<size_t>(type)](setup);
 
         return setup.ThisEntity;
     }

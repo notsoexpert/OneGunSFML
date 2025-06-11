@@ -7,14 +7,15 @@
 
 #include "system/constants.hpp"
 
-struct Health {
-    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
+using Callback = std::function<void(entt::registry& registry, entt::entity thisEntity)>;
+
+struct Health { 
     float Max;
     float Current;
 
-    Func OnDeath;
+    Callback OnDeath;
     
-    Health(float max, Func onDeath = {}) :
+    Health(float max, Callback onDeath = {}) :
         Max(max),
         Current(max),
         OnDeath(onDeath)
@@ -31,6 +32,14 @@ struct Health {
     bool IsDead() const {
         return Current <= 0.0f;
     }
+};
+
+struct Dying {
+    Callback OnDeath;
+
+    Dying(Callback onDeath = {}) : 
+        OnDeath(onDeath)
+    {}
 };
 
 struct Energy {

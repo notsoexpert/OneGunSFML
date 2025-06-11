@@ -4,7 +4,7 @@
 
 #include "system/components.hpp"
 
-namespace Projectile {
+namespace Projectile::Bullet {
     static constexpr std::array<const char*, 3> Name = 
     {"Bullet", "Large Bullet", "Huge Bullet"};
     static constexpr std::array<OneGunGame::Images, 3> ImageID = 
@@ -32,7 +32,7 @@ namespace Projectile {
         return 2;
     }
 
-    void BulletSetup(const Setup& setup) {
+    void Create(const Setup& setup) {
         float power = Entity::GetBasePower(setup.Registry, setup.Source);
         size_t index = GetBulletTier(power);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
@@ -41,18 +41,17 @@ namespace Projectile {
         SetupCollidable(setup, CollisionRect.at(index));
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
-        setup.Registry.emplace<Component>(setup.ThisEntity, Bullet, 
+        setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bullet, 
             Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
     }
 
-    void BulletDestruction(entt::registry &registry, entt::entity thisEntity) {
+    void Death(entt::registry &registry, entt::entity thisEntity) {
         auto &component = registry.get<Component>(thisEntity);
 
         if (component.CompareFlags(Flags::Explode)) {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
     }
-
 }

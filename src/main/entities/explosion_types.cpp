@@ -8,7 +8,7 @@
 namespace Explosion {
     entt::entity Create(Setup& setup, Type type) 
     {
-        if (type < Type::AsteroidDeath || type >= Type::Total) {
+        if (type < Type::VisualOnly || type >= Type::Total) {
             spdlog::error("Create: Invalid explosion type: {}", static_cast<int>(type));
             return entt::null;
         }
@@ -18,9 +18,9 @@ namespace Explosion {
         setup.Registry.emplace<Component>(setup.ThisEntity, type);
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Velocity);
 
-        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
-        setup.Registry.emplace<Collidable>(setup.ThisEntity, Specifications.at(type).CollisionRect, setup.Source, 
-            OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
+        //OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
+        //setup.Registry.emplace<Collidable>(setup.ThisEntity, Specifications.at(type).CollisionRect, setup.Source, 
+        //    OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
         
         return setup.ThisEntity;
     }
