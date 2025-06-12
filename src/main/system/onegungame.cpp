@@ -131,6 +131,53 @@ namespace OneGunGame {
             velocity.Value = velocity.Value.normalized() * maxSpeed.Value;
         });
 
+        s_Data.Registry.view<Renderable, Animation>().each(
+            [](Renderable& renderable, Animation& animation) {
+                if (!animation.IsFrameComplete()) {
+                    return;
+                }
+
+                auto texRect = renderable.Sprite.getTextureRect();
+                if (animation.CurrentFrame + 1 >= animation.TotalFrames) {
+                    texRect.position = animation.TextureRectStartPosition;
+                    animation.CurrentFrame = 0;
+                } else {
+                    texRect.position.x += texRect.size.x;
+                    animation.CurrentFrame++;
+                }
+                renderable.Sprite.setTextureRect(texRect);
+            }
+        );
+
+        s_Data.Registry.view<Renderable, Scaling>().each(
+            [](auto entity, Renderable& renderable, Scaling& scaling) {
+                if (scaling.IsScaleComplete()) {
+                    renderable.Sprite.setScale(scaling.TargetScale);
+                    s_Data.Registry.remove<Scaling>(entity);
+                    return;
+                }
+                float scalePercentage = scaling.GetScalePercentage();
+                spdlog::warn("Scale percent: {}", scalePercentage);
+                sf::Vector2f scaleFactor = scaling.OriginalScale * (1 - scalePercentage) + scaling.TargetScale * scalePercentage;
+                renderable.Sprite.setScale(scaleFactor);
+            }
+        );
+
+        s_Data.Registry.view<Renderable, Fading>().each(
+            [](Renderable& renderable, Fading& fading) {
+                auto color = renderable.Sprite.getColor();
+                if (fading.IsFadeComplete()) {
+                    color.a = fading.TargetAlpha;
+                    renderable.Sprite.setColor(color);
+                    return;
+                }
+                float fadePercentage = fading.GetFadePercentage();
+                spdlog::warn("Fade percent: {}", fadePercentage);
+                color.a = static_cast<uint8_t>(fading.OriginalAlpha * (1 - fadePercentage) + fading.TargetAlpha * fadePercentage);
+                renderable.Sprite.setColor(color);
+            }
+        );
+
         Background::Update(s_Data.Registry);
 
         // TODO: Use DeltaTime
@@ -167,7 +214,9 @@ namespace OneGunGame {
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
             auto rectA = collidable.CollisionRect;
             rectA.position += RoundVector(renderable.Sprite.getPosition());
+            rectA.size = RoundVector({collidable.CollisionRect.size.x * renderable.Sprite.getScale().x, collidable.CollisionRect.size.y * renderable.Sprite.getScale().y});
 #if DEBUG
+            
             renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
             renderable.DebugRect.setOutlineColor(sf::Color::Red);
             renderable.DebugRect.setOutlineThickness(1.0f);
@@ -176,18 +225,29 @@ namespace OneGunGame {
 #endif
 
             processedCollisions[entity] = {};
-            s_Data.Registry.view<Renderable, Collidable>().each([&](auto otherEntity, Renderable &otherRenderable, Collidable& otherCollidable) {
-                processedCollisions[entity][otherEntity] = true;
-                if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
+            for (auto [otherEntity, otherRenderable, otherCollidable] : s_Data.Registry.view<Renderable, Collidable>().each()) {
+
+                if (s_Data.Registry.any_of<Destructing, Dying>(entity)) {
                     return;
                 }
 
-                if (entity == otherEntity || otherEntity == collidable.Source) 
-                    return;
+                processedCollisions[entity][otherEntity] = true;
+
+                if (s_Data.Registry.any_of<Destructing, Dying>(otherEntity)) {
+                    continue;
+                }
+                
+                if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
+                    continue;
+                }
+
+                if (entity == otherEntity || otherEntity == collidable.Source) {
+                    continue;
+                }
                 
                 if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
-                    return;
-                };
+                    continue;
+                }
                 
                 auto rectB = otherCollidable.CollisionRect;
                 rectB.position += RoundVector(otherRenderable.Sprite.getPosition());
@@ -197,10 +257,17 @@ namespace OneGunGame {
                     collidable.OnCollision(s_Data.Registry, entity, otherEntity);
                     otherCollidable.OnCollision(s_Data.Registry, otherEntity, entity);
                 }
-            });
+            }
         });
 
         Entity::Update(s_Data.Registry);
+
+        s_Data.Registry.view<Dying>().each(
+            [](auto entity, Dying& dying) {
+                dying.OnDeath(s_Data.Registry, entity);
+                s_Data.Registry.remove<Dying>(entity);
+            }
+        );
 
         s_Data.Registry.view<Lifetime>().each(
             [](auto entity, Lifetime& lifetime) {

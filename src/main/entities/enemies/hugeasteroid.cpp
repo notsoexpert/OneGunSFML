@@ -26,7 +26,7 @@ namespace Enemy::HugeAsteroid {
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){
-        registry.emplace<Destructing>(thisEntity);
+        registry.emplace_or_replace<Destructing>(thisEntity);
 
         /* GET RELEVANT COMPONENTS */
         auto &renderable = registry.get<Renderable>(thisEntity);

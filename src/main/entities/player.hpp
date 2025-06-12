@@ -18,7 +18,7 @@ namespace Player {
     constexpr float BaseFriction = 0.15f;
     constexpr float BaseHitInvincibilityDuration = 1.0f;
     constexpr float BaseDamage = 5.0f;
-    constexpr float BaseFireRate = 3.0f;
+    constexpr float BaseFireRate = 10.0f;
     constexpr float BaseDashSpeedMultiplier = 3.0f;
     constexpr float BaseDashDuration = 0.25f;
     constexpr float BaseDashCooldown = 5.0f;

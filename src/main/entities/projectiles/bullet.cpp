@@ -22,7 +22,7 @@ namespace Projectile::Bullet {
     static constexpr std::array<uint8_t, 3> Specification = 
     {Flags::Destruct, Flags::Destruct, Flags::Destruct};
 
-    static size_t GetBulletTier(float basePower){
+    size_t GetTier(float basePower){
         if (basePower < 5.0f){
             return 0;
         }
@@ -34,7 +34,7 @@ namespace Projectile::Bullet {
 
     void Create(const Setup& setup) {
         float power = Entity::GetBasePower(setup.Registry, setup.Source);
-        size_t index = GetBulletTier(power);
+        size_t index = GetTier(power);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
 
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
@@ -53,5 +53,7 @@ namespace Projectile::Bullet {
         if (component.CompareFlags(Flags::Explode)) {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
+
+        registry.emplace_or_replace<Destructing>(thisEntity);
     }
 }

@@ -38,7 +38,7 @@ namespace Player {
         registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
-        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
+        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Burner);
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
         registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
         

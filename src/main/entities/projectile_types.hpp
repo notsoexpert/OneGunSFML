@@ -86,6 +86,7 @@ namespace Projectile {
     void BurnEntity(entt::registry& registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
     
     namespace Bullet {
+        size_t GetTier(float basePower);
         void Create(const Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }

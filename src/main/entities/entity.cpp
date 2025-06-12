@@ -38,8 +38,8 @@ namespace Entity {
             return false;
         }
         
-        spdlog::info("Entity {} damaged. New Health: {}", static_cast<int>(target), otherHealth->Current);
         otherHealth->Damage(damage);
+        spdlog::info("Entity {} damaged by {}. New Health: {}", static_cast<int>(target), damage, otherHealth->Current);
         if (otherHealth->IsDead()) {
             registry.emplace_or_replace<Dying>(target, otherHealth->OnDeath);
         }
