@@ -8,7 +8,6 @@
 #include "entities/player.hpp"
 
 namespace Projectile {
-
     entt::entity Create(Setup& setup)
     {
         entt::entity entity = setup.Registry.create();

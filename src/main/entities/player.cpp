@@ -12,8 +12,8 @@ namespace Player {
     constexpr float BaseAcceleration = 1.5f;
     constexpr float BaseFriction = 0.15f;
     constexpr float BaseHitInvincibilityDuration = 1.0f;
-    constexpr float BaseDamage = 2.0f;
-    constexpr float BaseFireRate = 10.0f;
+    constexpr float BaseDamage = 10.0f;
+    constexpr float BaseFireRate = 4.0f;
     constexpr float BaseDashSpeedMultiplier = 3.0f;
     constexpr float BaseDashDuration = 0.25f;
     constexpr float BaseDashCooldown = 5.0f;
@@ -49,7 +49,7 @@ namespace Player {
         registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
-        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Cannon);
+        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Blaster);
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
         registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
         

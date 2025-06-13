@@ -3,6 +3,8 @@
 #include "system/constants.hpp"
 #include "entities/explosion.hpp"
 
+struct Renderable;
+
 namespace Explosion {
     enum class Type {
         VisualOnly = 0,
@@ -22,6 +24,10 @@ namespace Explosion {
     namespace VisualOnly {
         namespace BulletHit {
             void Create(Setup& setup);
+        }
+        namespace LaserHit {
+            void Create(Setup& setup);
+            void SetImageWithTier(Renderable& renderable, size_t tier);
         }
     }
 }

@@ -37,12 +37,18 @@ namespace Projectile {
         }
 
         spdlog::info("Entity {} burned by entity {}", static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
-
     }
 
     void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity) {
-        auto &component = registry.get<Component>(projectileEntity);
+        auto hitLimiting = registry.try_get<HitLimiting>(projectileEntity);
+        if (hitLimiting) {
+            if (hitLimiting->HitEntities.contains(otherEntity)) {
+                return;
+            }
+            hitLimiting->HitEntities[otherEntity] = true;
+        }
 
+        auto &component = registry.get<Component>(projectileEntity);
         float projectileDamage = GetProjectileDamage(registry, projectileEntity, component.BaseDamage);
 
         if (component.CompareFlags(Flags::Burn)) {

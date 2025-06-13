@@ -263,7 +263,8 @@ namespace OneGunGame {
         s_Data.Registry.view<Renderable, Collidable>().each([&](auto entity, Renderable &renderable, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
-            auto rectA = GetAdjustedCollisionRect(collidable.CollisionRect, renderable.Sprite.getPosition(), renderable.Sprite.getScale());
+            auto rectA = GetAdjustedCollisionRect(collidable.CollisionRect, 
+                renderable.Sprite.getPosition(), renderable.Sprite.getScale());
 
 #if DEBUG
             renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
@@ -282,19 +283,18 @@ namespace OneGunGame {
                 if (s_Data.Registry.any_of<Destructing, Dying>(otherEntity)) {
                    continue;
                 }
-
                 if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
                     continue;
                 }
                 if (entity == otherEntity || otherEntity == collidable.Source) {
                     continue;
                 }
-
                 if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
                     continue;
                 }
 
-                auto rectB = GetAdjustedCollisionRect(otherCollidable.CollisionRect, otherRenderable.Sprite.getPosition(), otherRenderable.Sprite.getScale());
+                auto rectB = GetAdjustedCollisionRect(otherCollidable.CollisionRect, 
+                    otherRenderable.Sprite.getPosition(), otherRenderable.Sprite.getScale());
                 if (rectA.findIntersection(rectB)) {
                     spdlog::trace("Collision detected between entity {} and entity {}", 
                         static_cast<int>(entity), static_cast<int>(otherEntity));
@@ -325,16 +325,16 @@ namespace OneGunGame {
             return std::unexpected<std::string>("Failed to load red explosion texture");
         }
         if (!LoadTexture(ExplosionYellow, true)) {
-            return std::unexpected<std::string>("Failed to load red explosion texture");
+            return std::unexpected<std::string>("Failed to load yellow explosion texture");
         }
         if (!LoadTexture(ExplosionGreen, true)) {
-            return std::unexpected<std::string>("Failed to load red explosion texture");
+            return std::unexpected<std::string>("Failed to load green explosion texture");
         }
         if (!LoadTexture(ExplosionBlue, true)) {
-            return std::unexpected<std::string>("Failed to load red explosion texture");
+            return std::unexpected<std::string>("Failed to load blue explosion texture");
         }
         if (!LoadTexture(ExplosionViolet, true)) {
-            return std::unexpected<std::string>("Failed to load red explosion texture");
+            return std::unexpected<std::string>("Failed to load violet explosion texture");
         }
         if (!GeneratePlaceholderTexture()) {
             return std::unexpected<std::string>("Failed to generate placeholder texture");

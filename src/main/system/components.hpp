@@ -199,6 +199,10 @@ struct Collidable {
     {}
 };
 
+struct HitLimiting {
+    std::unordered_map<entt::entity, bool> HitEntities;
+};
+
 struct ScreenTrigger {
     using Func = std::function<void(entt::registry&, entt::entity, std::variant<int, float>)>;
 

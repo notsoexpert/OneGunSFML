@@ -72,18 +72,6 @@ namespace Projectile {
             }
         }
     };
-
-    struct Burning {
-        float BurnPeriodSeconds = 0.25f;
-        std::unordered_map<entt::entity, sf::Clock> BurnClocks;
-
-        [[nodiscard]] bool CanBurn(entt::entity other) const {
-            return !BurnClocks.contains(other) || 
-                    BurnClocks.at(other).getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
-        }
-    };
-
-    void BurnEntity(entt::registry& registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);
     
     namespace Bullet {
         size_t GetTier(float basePower);
@@ -91,6 +79,7 @@ namespace Projectile {
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Laser {
+        size_t GetTier(float basePower);
         void Create(const Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
