@@ -272,9 +272,9 @@ struct Scaling {
     sf::Vector2f TargetScale;
 
     Scaling(const sf::Vector2f& originalScale, const sf::Vector2f& targetScale, sf::Time scaleTime) :
+        ScaleTime(scaleTime),
         OriginalScale(originalScale),
-        TargetScale(targetScale),
-        ScaleTime(scaleTime)
+        TargetScale(targetScale)
     {
         ScaleClock.restart();
     }
@@ -299,9 +299,9 @@ struct Fading {
     uint8_t TargetAlpha;
 
     Fading(uint8_t originalAlpha, uint8_t targetAlpha, sf::Time fadeTime) :
+        FadeTime(fadeTime),
         OriginalAlpha(originalAlpha),
-        TargetAlpha(targetAlpha),
-        FadeTime(fadeTime)
+        TargetAlpha(targetAlpha)
     {
         FadeClock.restart();
     }

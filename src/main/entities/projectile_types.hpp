@@ -52,7 +52,7 @@ namespace Projectile {
 
         Weapon(Weapon::Type type) : ThisType(type) {}
 
-        Projectile::Type GetBulletType() {
+        [[nodiscard]] Projectile::Type GetBulletType() const {
             switch (ThisType) {
                 case Cannon:
                     return Projectile::Type::Bullet;
@@ -77,9 +77,9 @@ namespace Projectile {
         float BurnPeriodSeconds = 0.25f;
         std::unordered_map<entt::entity, sf::Clock> BurnClocks;
 
-        bool CanBurn(entt::entity other) {
+        [[nodiscard]] bool CanBurn(entt::entity other) const {
             return !BurnClocks.contains(other) || 
-                    BurnClocks[other].getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
+                    BurnClocks.at(other).getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
         }
     };
 

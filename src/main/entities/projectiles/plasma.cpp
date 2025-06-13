@@ -11,7 +11,7 @@ namespace Projectile::Plasma {
     static constexpr sf::IntRect CollisionRect = {{-16, -16}, {32, 32}};
     static constexpr size_t Specification = Flags::Burn;
     static constexpr size_t TotalFrames = 4U;
-    static constexpr float BaseDamage = 3.0f;
+    static constexpr float BaseDamage = 1.0f;
     static constexpr float MoveSpeed = 3.0f;
     static constexpr float LifetimeDuration = 1.25f;
     static constexpr float FrameTimeInSeconds = 0.05f;
@@ -33,6 +33,7 @@ namespace Projectile::Plasma {
         setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
         setup.Registry.emplace<Scaling>(setup.ThisEntity, renderable.Sprite.getScale(), sf::Vector2f{TargetScale, TargetScale}, sf::seconds(ScaleTimeInSeconds));
         setup.Registry.emplace<Fading>(setup.ThisEntity, renderable.Sprite.getColor().a, TargetAlpha, sf::seconds(FadeTimeInSeconds));
+        setup.Registry.emplace<Burning>(setup.ThisEntity);
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
     }
 

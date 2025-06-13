@@ -3,6 +3,9 @@
 #include "system/constants.hpp"
 #include "system/randomgenerator.hpp"
 
+struct Renderable;
+struct Collidable;
+
 namespace OneGunGame {
     int Start(int argc, char *argv[]);
     std::expected<void, std::string> Setup();
@@ -31,6 +34,8 @@ namespace OneGunGame {
     entt::entity GetPlayerEntity();
     RandomGenerator& GetRandomGenerator();
     const sf::RenderWindow& GetWindow();
+
+    void CheckCollisions();
 
     struct Data {
         entt::registry Registry;

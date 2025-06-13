@@ -207,58 +207,7 @@ namespace OneGunGame {
             renderable.Sprite.setPosition(position);
         });
 
-        std::unordered_map<entt::entity, std::unordered_map<entt::entity, bool>> processedCollisions;
-        s_Data.Registry.view<Renderable, Collidable>().each(
-            [&](auto entity, Renderable &renderable, Collidable& collidable) {
-            spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
-                static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
-            auto rectA = collidable.CollisionRect;
-            rectA.position += RoundVector(renderable.Sprite.getPosition());
-            rectA.size = RoundVector({collidable.CollisionRect.size.x * renderable.Sprite.getScale().x, collidable.CollisionRect.size.y * renderable.Sprite.getScale().y});
-#if DEBUG
-            
-            renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
-            renderable.DebugRect.setOutlineColor(sf::Color::Red);
-            renderable.DebugRect.setOutlineThickness(1.0f);
-            renderable.DebugRect.setFillColor(sf::Color::Transparent);
-            renderable.DebugRect.setPosition(static_cast<sf::Vector2f>(rectA.position));
-#endif
-
-            processedCollisions[entity] = {};
-            for (auto [otherEntity, otherRenderable, otherCollidable] : s_Data.Registry.view<Renderable, Collidable>().each()) {
-
-                if (s_Data.Registry.any_of<Destructing, Dying>(entity)) {
-                    return;
-                }
-
-                processedCollisions[entity][otherEntity] = true;
-
-                if (s_Data.Registry.any_of<Destructing, Dying>(otherEntity)) {
-                    continue;
-                }
-                
-                if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
-                    continue;
-                }
-
-                if (entity == otherEntity || otherEntity == collidable.Source) {
-                    continue;
-                }
-                
-                if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
-                    continue;
-                }
-                
-                auto rectB = otherCollidable.CollisionRect;
-                rectB.position += RoundVector(otherRenderable.Sprite.getPosition());
-                if (rectA.findIntersection(rectB)) {
-                    spdlog::trace("Collision detected between entity {} and entity {}", 
-                        static_cast<int>(entity), static_cast<int>(otherEntity));
-                    collidable.OnCollision(s_Data.Registry, entity, otherEntity);
-                    otherCollidable.OnCollision(s_Data.Registry, otherEntity, entity);
-                }
-            }
-        });
+        CheckCollisions();
 
         Entity::Update(s_Data.Registry);
 
@@ -298,6 +247,56 @@ namespace OneGunGame {
         });
         
         s_Data.Context.Window.display();
+    }
+
+    void CheckCollisions() {
+        std::unordered_map<entt::entity, std::unordered_map<entt::entity, bool>> processedCollisions;
+        s_Data.Registry.view<Renderable, Collidable>().each([&](auto entity, Renderable &renderable, Collidable& collidable) {
+            spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
+                static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
+            auto rectA = collidable.CollisionRect;
+            rectA.position += RoundVector(renderable.Sprite.getPosition());
+            rectA.size = RoundVector({collidable.CollisionRect.size.x * renderable.Sprite.getScale().x, collidable.CollisionRect.size.y * renderable.Sprite.getScale().y});
+
+#if DEBUG
+            renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
+            renderable.DebugRect.setOutlineColor(sf::Color::Red);
+            renderable.DebugRect.setOutlineThickness(1.0f);
+            renderable.DebugRect.setFillColor(sf::Color::Transparent);
+            renderable.DebugRect.setPosition(static_cast<sf::Vector2f>(rectA.position));
+#endif
+
+            processedCollisions[entity] = {};
+            for (auto [otherEntity, otherRenderable, otherCollidable] : s_Data.Registry.view<Renderable, Collidable>().each()) {
+                if (s_Data.Registry.any_of<Destructing, Dying>(entity)) {
+                   return;
+                }
+                processedCollisions[entity][otherEntity] = true;
+                if (s_Data.Registry.any_of<Destructing, Dying>(otherEntity)) {
+                   continue;
+                }
+
+                if (processedCollisions.contains(otherEntity) && processedCollisions[otherEntity].contains(entity)) {
+                    continue;
+                }
+                if (entity == otherEntity || otherEntity == collidable.Source) {
+                    continue;
+                }
+
+                if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
+                    continue;
+                }
+
+                auto rectB = otherCollidable.CollisionRect;
+                rectB.position += RoundVector(otherRenderable.Sprite.getPosition());
+                if (rectA.findIntersection(rectB)) {
+                    spdlog::trace("Collision detected between entity {} and entity {}", 
+                        static_cast<int>(entity), static_cast<int>(otherEntity));
+                    collidable.OnCollision(s_Data.Registry, entity, otherEntity);
+                    otherCollidable.OnCollision(s_Data.Registry, otherEntity, entity);
+                }
+            }
+        });
     }
 
     void SetupContext() {
