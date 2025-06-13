@@ -249,16 +249,23 @@ namespace OneGunGame {
         s_Data.Context.Window.display();
     }
 
+    sf::Vector2f GetAdjustedCollisionRectSize(const sf::IntRect& originalRect, const sf::Vector2f& renderableScale) {
+        return {originalRect.size.x * renderableScale.x, originalRect.size.y * renderableScale.y};
+    }
+
+    sf::IntRect GetAdjustedCollisionRect(const sf::IntRect& originalRect, const sf::Vector2f& renderablePosition, const sf::Vector2f& renderableScale) {
+        auto newSize = GetAdjustedCollisionRectSize(originalRect, renderableScale);
+        return sf::IntRect{RoundVector(static_cast<sf::Vector2f>(originalRect.position) + renderablePosition - (newSize / 2.0f)), RoundVector(newSize)};
+    }
+
     void CheckCollisions() {
         std::unordered_map<entt::entity, std::unordered_map<entt::entity, bool>> processedCollisions;
         s_Data.Registry.view<Renderable, Collidable>().each([&](auto entity, Renderable &renderable, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
-            auto rectA = collidable.CollisionRect;
-            rectA.size = RoundVector({collidable.CollisionRect.size.x * renderable.Sprite.getScale().x, collidable.CollisionRect.size.y * renderable.Sprite.getScale().y});
-            rectA.position += RoundVector(renderable.Sprite.getPosition() - sf::Vector2f{rectA.size.x / 2.0f, rectA.size.y / 2.0f});
+            auto rectA = GetAdjustedCollisionRect(collidable.CollisionRect, renderable.Sprite.getPosition(), renderable.Sprite.getScale());
 
-#if DEBUGALL
+#if DEBUG
             renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
             renderable.DebugRect.setOutlineColor(sf::Color::Red);
             renderable.DebugRect.setOutlineThickness(1.0f);
@@ -287,8 +294,7 @@ namespace OneGunGame {
                     continue;
                 }
 
-                auto rectB = otherCollidable.CollisionRect;
-                rectB.position += RoundVector(otherRenderable.Sprite.getPosition());
+                auto rectB = GetAdjustedCollisionRect(otherCollidable.CollisionRect, otherRenderable.Sprite.getPosition(), otherRenderable.Sprite.getScale());
                 if (rectA.findIntersection(rectB)) {
                     spdlog::trace("Collision detected between entity {} and entity {}", 
                         static_cast<int>(entity), static_cast<int>(otherEntity));
