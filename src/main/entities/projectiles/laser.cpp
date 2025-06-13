@@ -53,5 +53,17 @@ namespace Projectile::Laser {
         if (component.CompareFlags(Flags::Explode)) {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
+
+        /* GET RELEVANT COMPONENTS */
+        auto &renderable = registry.get<Renderable>(thisEntity);
+        auto &velocity = registry.get<Velocity>(thisEntity);
+
+        /* SPLIT INTO ASTEROIDS */
+        for (int i = 0; i < 2; i++) {
+            sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i/2+1) * (i%2==0?1.0f:-1.0f))).normalized();
+            Projectile::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, registry.get<Collidable>(thisEntity).Source};
+            Projectile::Create(setup, Projectile::Type::Laser);
+        }
+
     }
 }

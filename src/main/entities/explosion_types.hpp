@@ -18,4 +18,10 @@ namespace Explosion {
     };
 
     entt::entity Create(Setup& setup, Type type);
+
+    namespace VisualOnly {
+        namespace BulletHit {
+            void Create(Setup& setup);
+        }
+    }
 }

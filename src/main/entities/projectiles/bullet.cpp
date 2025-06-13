@@ -4,6 +4,8 @@
 
 #include "system/components.hpp"
 
+#include "entities/explosion_types.hpp"
+
 namespace Projectile::Bullet {
     static constexpr std::array<const char*, 3> Name = 
     {"Bullet", "Large Bullet", "Huge Bullet"};
@@ -53,6 +55,14 @@ namespace Projectile::Bullet {
         if (component.CompareFlags(Flags::Explode)) {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
+
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value,
+            registry.get<Collidable>(thisEntity).Source
+        };
+        Explosion::VisualOnly::BulletHit::Create(explosionSetup);
 
         registry.emplace_or_replace<Destructing>(thisEntity);
     }

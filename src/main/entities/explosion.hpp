@@ -10,8 +10,8 @@ namespace Explosion {
         entt::registry &Registry;
         const sf::Vector2f &Position;
         const sf::Vector2f &Velocity;
-        entt::entity ThisEntity = entt::null;
         entt::entity Source = entt::null;
+        entt::entity ThisEntity = entt::null;
     };
 
     entt::entity Create(Setup& setup);

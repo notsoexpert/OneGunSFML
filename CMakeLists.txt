@@ -8,7 +8,7 @@ project(OneGunSFMLProject)            # this sets the project name
 # These instructions search the directory tree when cmake is
 # invoked and put all files that match the pattern in the variables 
 # `sources` and `data`.
-file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp src/main/entities/*.hpp src/main/entities/*.cpp src/main/system/*.hpp src/main/system/*.cpp src/main/entities/enemies/*.cpp)
+file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp src/main/entities/*.hpp src/main/entities/*.cpp src/main/system/*.hpp src/main/system/*.cpp src/main/entities/enemies/*.cpp src/main/entities/explosions/visualonly/*.cpp)
 file(GLOB_RECURSE sources_test src/test/*.cpp)
 file(GLOB_RECURSE data assets/*)
 # You can use set(sources src/main.cpp) etc if you don't want to

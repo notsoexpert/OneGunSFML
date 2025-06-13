@@ -6,6 +6,17 @@
 #include "entities/projectile_types.hpp"
 
 namespace Player {
+    constexpr float BaseMaxHealth = 100.0f;
+    constexpr float BaseMaxEnergy = 100.0f;
+    constexpr float BaseMoveSpeed = 5.0f;
+    constexpr float BaseAcceleration = 1.5f;
+    constexpr float BaseFriction = 0.15f;
+    constexpr float BaseHitInvincibilityDuration = 1.0f;
+    constexpr float BaseDamage = 2.0f;
+    constexpr float BaseFireRate = 10.0f;
+    constexpr float BaseDashSpeedMultiplier = 3.0f;
+    constexpr float BaseDashDuration = 0.25f;
+    constexpr float BaseDashCooldown = 5.0f;
 
     void Update(entt::registry &registry, entt::entity playerEntity) {
         sf::Vector2f inputVector = OneGunGame::GetInputVector();
