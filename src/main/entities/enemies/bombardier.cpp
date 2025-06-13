@@ -8,7 +8,7 @@ namespace Enemy::Bombardier {
     static constexpr const char* Name = "Bombardier";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
-    static constexpr sf::IntRect CollisionRect = {{-8, -8}, {16, 16}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {16, 16}};
     static constexpr float MaxHealth = 300.0f;
     static constexpr float MoveSpeed = 5.0f;
     static constexpr float OffscreenLifetime = 6.0f;

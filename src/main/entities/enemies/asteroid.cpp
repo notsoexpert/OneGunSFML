@@ -8,7 +8,7 @@ namespace Enemy::Asteroid {
     static constexpr const char* Name = "Asteroid";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
-    static constexpr sf::IntRect CollisionRect = {{-8, -8}, {16, 16}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {16, 16}};
     static constexpr float MaxHealth = 10.0f;
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 3.0f;

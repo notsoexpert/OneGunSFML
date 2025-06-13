@@ -9,7 +9,7 @@ namespace Enemy::Drone {
     static constexpr const char* Name = "Drone";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{192, 64}, {64, 64}};
-    static constexpr sf::IntRect CollisionRect = {{-24, -24}, {48, 48}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {48, 48}};
     static constexpr float MaxHealth = 20.0f;
     static constexpr float MoveSpeed = 2.0f;
     static constexpr float OffscreenLifetime = 5.0f;

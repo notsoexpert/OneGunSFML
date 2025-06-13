@@ -255,10 +255,10 @@ namespace OneGunGame {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
             auto rectA = collidable.CollisionRect;
-            rectA.position += RoundVector(renderable.Sprite.getPosition());
             rectA.size = RoundVector({collidable.CollisionRect.size.x * renderable.Sprite.getScale().x, collidable.CollisionRect.size.y * renderable.Sprite.getScale().y});
+            rectA.position += RoundVector(renderable.Sprite.getPosition() - sf::Vector2f{rectA.size.x / 2.0f, rectA.size.y / 2.0f});
 
-#if DEBUG
+#if DEBUGALL
             renderable.DebugRect.setSize(static_cast<sf::Vector2f>(rectA.size));
             renderable.DebugRect.setOutlineColor(sf::Color::Red);
             renderable.DebugRect.setOutlineThickness(1.0f);

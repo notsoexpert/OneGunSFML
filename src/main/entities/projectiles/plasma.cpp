@@ -8,7 +8,7 @@ namespace Projectile::Plasma {
     static constexpr const char* Name = "Plasma";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{512, 256}, {32, 32}};
-    static constexpr sf::IntRect CollisionRect = {{-16, -16}, {32, 32}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr size_t Specification = Flags::Burn;
     static constexpr size_t TotalFrames = 4U;
     static constexpr float BaseDamage = 1.0f;

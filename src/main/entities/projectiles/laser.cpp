@@ -12,7 +12,7 @@ namespace Projectile::Laser {
     static constexpr std::array<sf::IntRect, 3> TextureRect = 
     {sf::IntRect{{256, 0}, {64, 64}}, sf::IntRect{{320, 0}, {64, 64}}, sf::IntRect{{384, 0}, {64, 64}}};
     static constexpr std::array<sf::IntRect, 3> CollisionRect = 
-    {sf::IntRect{{-4, -8}, {8, 17}}, sf::IntRect{{-5, -13}, {10, 26}}, sf::IntRect{{-6, -18}, {12, 36}}};
+    {sf::IntRect{{0, 0}, {8, 17}}, sf::IntRect{{0, 0}, {10, 26}}, sf::IntRect{{0, 0}, {12, 36}}};
     static constexpr std::array<float, 3> BaseDamage = 
     {2.0f, 2.0f, 2.0f};
     static constexpr std::array<float, 3> MoveSpeed = 

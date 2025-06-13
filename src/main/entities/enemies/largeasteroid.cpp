@@ -7,7 +7,7 @@ namespace Enemy::LargeAsteroid {
     static constexpr const char* Name = "Large Asteroid";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{64, 64}, {64, 64}};
-    static constexpr sf::IntRect CollisionRect = {{-23, -23}, {46, 46}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {46, 46}};
     static constexpr float MaxHealth = 25.0f;
     static constexpr float MoveSpeed = 1.0f;
     static constexpr float OffscreenLifetime = 5.0f;
