@@ -5,7 +5,7 @@
 #include "entities/entity.hpp"
 #include "entities/background.hpp"
 #include "entities/player.hpp"
-#include "entities/projectile.hpp"
+#include "entities/projectile_types.hpp"
 #include "entities/enemy_types.hpp"
 
 namespace OneGunGame { 
@@ -362,6 +362,10 @@ namespace OneGunGame {
                 
                 Enemy::Setup setup{s_Data.Registry, spawnPosition, flyDirection, entt::null, entt::null};
                 Enemy::Create(setup, Enemy::Type::HugeAsteroid);
+            }
+            if (keyEvent.code == sf::Keyboard::Key::Q) {
+                auto &weapon = s_Data.Registry.get<Projectile::Weapon>(s_Data.Entities.Player);
+                weapon.ThisType = static_cast<Projectile::Weapon::Type>((static_cast<size_t>(weapon.ThisType) + 1) % static_cast<size_t>(Projectile::Weapon::Type::Total));
             }
         };
     }

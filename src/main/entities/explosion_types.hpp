@@ -32,5 +32,8 @@ namespace Explosion {
         namespace BurnHit {
             void Create(Setup& setup);
         }
+        namespace AsteroidDeath {
+            void Create(Setup& setup);
+        }
     }
 }

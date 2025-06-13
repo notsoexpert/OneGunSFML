@@ -40,7 +40,7 @@ namespace Projectile {
 
         Explosion::Setup explosionSetup{
             registry,
-            registry.get<Renderable>(projectileEntity).Sprite.getPosition(),
+            (registry.get<Renderable>(projectileEntity).Sprite.getPosition() * 0.5f) + (registry.get<Renderable>(otherEntity).Sprite.getPosition() * 0.5f),
             registry.get<Velocity>(projectileEntity).Value,
             registry.get<Collidable>(projectileEntity).Source
         };

@@ -3,6 +3,8 @@
 
 #include "entities/entity.hpp"
 
+#include "entities/explosion_types.hpp"
+
 namespace Enemy::HugeAsteroid {
     static constexpr const char* Name = "Huge Asteroid";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
@@ -40,7 +42,12 @@ namespace Enemy::HugeAsteroid {
         }
 
         /* CREATE DEATH EXPLOSION */
-        //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
-        //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value,
+            registry.get<Collidable>(thisEntity).Source
+        };
+        Explosion::VisualOnly::AsteroidDeath::Create(explosionSetup);
     }
 }

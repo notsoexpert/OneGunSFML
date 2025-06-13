@@ -6,7 +6,7 @@
 
 namespace Projectile::Bomb {
     static constexpr const char* Name = "Bomb";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionRed;
+    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{576, 0}, {64, 64}};
     //static constexpr float BaseDamage = 25.0f;
     static constexpr float MoveSpeed = 2.5f;
