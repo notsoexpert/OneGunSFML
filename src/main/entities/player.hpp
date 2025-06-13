@@ -2,6 +2,8 @@
 
 #include "system/constants.hpp"
 
+struct Collision;
+
 namespace Player {
     constexpr sf::Vector2i Size{64, 64};
     constexpr sf::Vector2i CollisionSize{32, 32}; // Collision size for the player sprite
@@ -11,11 +13,11 @@ namespace Player {
         return {windowSize.x / 2.0f, windowSize.y - Size.y - 10.0f};
     }
     
-    void Update(entt::registry &registry, entt::entity playerEntity);
+    void Update(entt::registry& registry, entt::entity playerEntity);
     entt::entity Create(entt::registry &registry, const sf::Vector2f &startPosition);
     void Move(const sf::Vector2f &inputVector, entt::registry &registry, entt::entity playerEntity);
     entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
     void Dash(entt::registry &registry, entt::entity playerEntity);
-    void OnCollision(entt::registry &registry, entt::entity playerEntity, entt::entity otherEntity);
+    void OnCollision(Collision& collision);
     void OnDeath(entt::registry &registry, entt::entity playerEntity);
 }

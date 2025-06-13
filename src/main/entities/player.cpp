@@ -49,7 +49,7 @@ namespace Player {
         registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
-        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Blaster);
+        registry.emplace<Projectile::Weapon>(entity, Projectile::Weapon::Burner);
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
         registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
         
@@ -97,16 +97,16 @@ namespace Player {
         }
     }
 
-    void OnCollision(entt::registry &registry, entt::entity playerEntity, entt::entity otherEntity) {
+    void OnCollision(Collision& collision) {
         spdlog::info("Player (entity {}) collided with entity {}", 
-            static_cast<int>(playerEntity), static_cast<int>(otherEntity));
+            static_cast<int>(collision.ThisEntity), static_cast<int>(collision.OtherEntity));
 
-        auto &hitInvincibility = registry.get<HitInvincibility>(playerEntity);
+        auto &hitInvincibility = collision.Registry.get<HitInvincibility>(collision.ThisEntity);
         if (hitInvincibility.IsInvincible()) {
             return;
         }
 
-        auto &health = registry.get<Health>(playerEntity);
+        auto &health = collision.Registry.get<Health>(collision.ThisEntity);
         // TEMP
         if (health.Current <= 0.0f) {
             spdlog::warn("You dead");

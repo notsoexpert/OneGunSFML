@@ -157,7 +157,7 @@ namespace OneGunGame {
                     return;
                 }
                 float scalePercentage = scaling.GetScalePercentage();
-                spdlog::warn("Scale percent: {}", scalePercentage);
+                spdlog::trace("Scale percent: {}", scalePercentage);
                 sf::Vector2f scaleFactor = scaling.OriginalScale * (1 - scalePercentage) + scaling.TargetScale * scalePercentage;
                 renderable.Sprite.setScale(scaleFactor);
             }
@@ -172,7 +172,7 @@ namespace OneGunGame {
                     return;
                 }
                 float fadePercentage = fading.GetFadePercentage();
-                spdlog::warn("Fade percent: {}", fadePercentage);
+                spdlog::trace("Fade percent: {}", fadePercentage);
                 color.a = static_cast<uint8_t>(fading.OriginalAlpha * (1 - fadePercentage) + fading.TargetAlpha * fadePercentage);
                 renderable.Sprite.setColor(color);
             }
@@ -298,8 +298,10 @@ namespace OneGunGame {
                 if (rectA.findIntersection(rectB)) {
                     spdlog::trace("Collision detected between entity {} and entity {}", 
                         static_cast<int>(entity), static_cast<int>(otherEntity));
-                    collidable.OnCollision(s_Data.Registry, entity, otherEntity);
-                    otherCollidable.OnCollision(s_Data.Registry, otherEntity, entity);
+                    auto forwardCollision = Collision{s_Data.Registry, entity, otherEntity};
+                    auto reverseCollision = Collision{s_Data.Registry, otherEntity, entity};
+                    collidable.OnCollision(forwardCollision);
+                    otherCollidable.OnCollision(reverseCollision);
                 }
             }
         });

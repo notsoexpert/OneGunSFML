@@ -3,6 +3,8 @@
 #include "system/constants.hpp"
 #include "system/components.hpp"
 
+struct Collision;
+
 namespace Enemy {
     struct Setup {
         entt::registry &Registry;
@@ -29,5 +31,5 @@ namespace Enemy {
     Health& SetupHealth(const Setup& setup, float maxHealth);
     void SetupMovement(const Setup& setup, float moveSpeed);
     void SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds);
-    void OnCollision(entt::registry &registry, entt::entity thisEntity, entt::entity otherEntity);
+    void OnCollision(Collision& collision);
 }

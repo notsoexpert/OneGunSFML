@@ -3,6 +3,7 @@
 #include "system/constants.hpp"
 
 struct Renderable;
+struct Collision;
 
 namespace Explosion {
     // Isn't this just a projectile without Destructing? I don't know how to structure anything
@@ -18,5 +19,5 @@ namespace Explosion {
     Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect);
 
     float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float baseDamage);
-    void OnCollision(entt::registry &registry, entt::entity explosionEntity, entt::entity otherEntity);
+    void OnCollision(Collision& collision);
 }

@@ -179,8 +179,14 @@ struct Confined {
     {}
 };
 
+struct Collision {
+    entt::registry& Registry;
+    entt::entity ThisEntity;
+    entt::entity OtherEntity;
+};
+
 struct Collidable {
-    using Func = std::function<void(entt::registry& registry, entt::entity thisEntity, entt::entity otherEntity)>;
+    using Func = std::function<void(Collision& collision)>;
     
     sf::IntRect CollisionRect;
     entt::entity Source;

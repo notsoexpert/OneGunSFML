@@ -3,6 +3,7 @@
 #include "system/constants.hpp"
 
 struct Renderable;
+struct Collision;
 struct Collidable;
 struct Health;
 
@@ -16,7 +17,7 @@ namespace Projectile {
     };
 
     entt::entity Create(Setup& setup);
-    void OnCollision(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity);
+    void OnCollision(Collision& collision);
     
     Renderable& SetupRenderable(const Setup& setup, 
         OneGunGame::Images imageID, const sf::IntRect& textureRect);

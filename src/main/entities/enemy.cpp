@@ -63,9 +63,9 @@ entt::entity Enemy::Fire(entt::registry &registry, entt::entity sourceEntity) {
     auto projectile = Projectile::Create(setup, projectileType);
     return projectile;
 }
-void Enemy::OnCollision(entt::registry &registry, entt::entity thisEntity, entt::entity otherEntity) {
-    if (registry.valid(thisEntity) && registry.valid(otherEntity)) {
+void Enemy::OnCollision(Collision& collision) {
+    if (collision.Registry.valid(collision.ThisEntity) && collision.Registry.valid(collision.OtherEntity)) {
         spdlog::trace("Enemy::OnCollision invoked between entity {} and entity {}", 
-        static_cast<int>(thisEntity), static_cast<int>(otherEntity));
+        static_cast<int>(collision.ThisEntity), static_cast<int>(collision.OtherEntity));
     }
 }

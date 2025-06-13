@@ -4,6 +4,8 @@
 #include "entities/entity.hpp"
 #include "system/components.hpp"
 
+#include "entities/explosion_types.hpp"
+
 namespace Projectile::Plasma {
     static constexpr const char* Name = "Plasma";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
@@ -28,7 +30,7 @@ namespace Projectile::Plasma {
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed);
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Plasma, 
-            Specification, GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage));
+            Specification, BaseDamage);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
         setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
         setup.Registry.emplace<Scaling>(setup.ThisEntity, renderable.Sprite.getScale(), sf::Vector2f{TargetScale, TargetScale}, sf::seconds(ScaleTimeInSeconds));

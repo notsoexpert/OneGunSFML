@@ -25,12 +25,12 @@ namespace Explosion {
         return setup.ThisEntity;
     }
 
-    void OnCollision(entt::registry &registry, entt::entity explosionEntity, entt::entity otherEntity) {
+    void OnCollision(Collision& collision) {
         //auto &component = registry.get<Component>(explosionEntity);
 
-        float explosionDamage = GetExplosionDamage(registry, explosionEntity, 25.0f);
+        float explosionDamage = GetExplosionDamage(collision.Registry, collision.ThisEntity, 25.0f);
 
-        Entity::Damage(registry, explosionEntity, otherEntity, explosionDamage);
+        Entity::Damage(collision.Registry, collision.ThisEntity, collision.OtherEntity, explosionDamage);
 
         // TODO: Add damaged entity to ignore list
     }

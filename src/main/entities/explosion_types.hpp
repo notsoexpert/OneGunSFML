@@ -29,5 +29,8 @@ namespace Explosion {
             void Create(Setup& setup);
             void SetImageWithTier(Renderable& renderable, size_t tier);
         }
+        namespace BurnHit {
+            void Create(Setup& setup);
+        }
     }
 }
