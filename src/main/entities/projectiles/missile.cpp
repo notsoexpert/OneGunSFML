@@ -12,7 +12,7 @@ namespace Projectile::Missile {
     static constexpr std::array<sf::IntRect, 2> TextureRect = 
     {sf::IntRect{{448, 0}, {64, 64}}, sf::IntRect{{512, 0}, {64, 64}}};
     static constexpr std::array<sf::IntRect, 2> CollisionRect = 
-    {sf::IntRect{{0, 0}, {64, 64}}, sf::IntRect{{0, 0}, {64, 64}}};
+    {sf::IntRect{{0, 0}, {8, 17}}, sf::IntRect{{0, 0}, {8, 17}}};
     static constexpr std::array<float, 2> BaseDamage = 
     {0.0f, 0.0f};
     static constexpr std::array<float, 2> MoveSpeed = 

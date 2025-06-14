@@ -211,9 +211,26 @@ namespace OneGunGame {
 
         Entity::Update(s_Data.Registry);
 
+        s_Data.Registry.view<Attachment>().each(
+            [](auto entity, Attachment& attachment) {
+                if (!s_Data.Registry.valid(attachment.Parent)) {
+                    s_Data.Registry.emplace_or_replace<Dying>(entity, attachment.OnDetach);
+                    s_Data.Registry.remove<Attachment>(entity);
+                    return;
+                }
+                if (s_Data.Registry.any_of<Destructing, Dying>(attachment.Parent)) {
+                    s_Data.Registry.emplace_or_replace<Dying>(entity, attachment.OnDetach);
+                    s_Data.Registry.remove<Attachment>(entity);
+                    return;
+                }
+            }
+        );
+
         s_Data.Registry.view<Dying>().each(
             [](auto entity, Dying& dying) {
-                dying.OnDeath(s_Data.Registry, entity);
+                if (dying.OnDeath) {
+                    dying.OnDeath(s_Data.Registry, entity);
+                }
                 s_Data.Registry.remove<Dying>(entity);
             }
         );
@@ -356,12 +373,12 @@ namespace OneGunGame {
             }
             if (keyEvent.code == sf::Keyboard::Key::N) {
                 sf::Vector2f spawnPosition = {s_Data.Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
-                                            s_Data.Random.generateFloat(-256.0f, -64.0f)};
+                                            s_Data.Random.generateFloat(-96.0f, -32.0f)};
                 sf::Vector2f flyDirection = {0.0f, 1.0f};
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
                 Enemy::Setup setup{s_Data.Registry, spawnPosition, flyDirection, entt::null, entt::null};
-                Enemy::Create(setup, Enemy::Type::HugeAsteroid);
+                Enemy::Create(setup, static_cast<Enemy::Type>(s_Data.Random.generateInt(static_cast<int>(Enemy::Type::Asteroid), static_cast<int>(Enemy::Type::Drone))));
             }
             if (keyEvent.code == sf::Keyboard::Key::Q) {
                 auto &weapon = s_Data.Registry.get<Projectile::Weapon>(s_Data.Entities.Player);

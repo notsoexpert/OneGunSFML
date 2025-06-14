@@ -7,22 +7,24 @@
 namespace Projectile::Ice {
     static constexpr const char* Name = "Ice";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionBlue;
-    static constexpr sf::IntRect TextureRect = {{256, 0}, {64, 64}};
-    static constexpr sf::IntRect CollisionRect = {{0, 0}, {8, 17}};
+    static constexpr sf::IntRect TextureRect = {{0, 32}, {32, 32}};
+    static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
+    static constexpr float DefaultScale = 0.5f;
     static constexpr float BaseDamage = 1.0f;
-    static constexpr float MoveSpeed = 5.0f;
+    static constexpr float MoveSpeed = 6.0f;
     static constexpr float OffscreenLifetime = 1.0f;
     static constexpr size_t Specification = Flags::Destruct;
 
     void Create(const Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
-        SetupRenderable(setup, ImageID, TextureRect);
+        auto& renderable = SetupRenderable(setup, ImageID, TextureRect);
+        renderable.Sprite.setScale({DefaultScale, DefaultScale});
         SetupCollidable(setup, CollisionRect);
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed);
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Ice, 
-            Specification, GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage));
+            Specification, BaseDamage);
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
     }
@@ -33,5 +35,7 @@ namespace Projectile::Ice {
         if (component.CompareFlags(Flags::Explode)) {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
+
+        registry.emplace<Destructing>(thisEntity);
     }
 }

@@ -26,8 +26,7 @@ namespace Projectile {
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
         sf::IntRect centeredRect = collisionRect;
         centeredRect.position -= centeredRect.size / 2;
-        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(
-            setup.Registry.get<Collidable>(setup.Source).Layer);
+        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(OneGunGame::CollisionLayer::Projectile);
         return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, 
             setup.Source, OneGunGame::CollisionLayer::Projectile, mask,
             OnCollision);

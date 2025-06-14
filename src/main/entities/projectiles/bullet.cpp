@@ -44,18 +44,12 @@ namespace Projectile::Bullet {
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bullet, 
-            Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
+            Specification.at(index), BaseDamage.at(index));
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
-        auto &component = registry.get<Component>(thisEntity);
-
-        if (component.CompareFlags(Flags::Explode)) {
-            spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
-        }
-
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),

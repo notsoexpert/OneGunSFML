@@ -329,4 +329,14 @@ struct Fading {
     }
 };
 
+struct Attachment {
+    entt::entity Parent;
+    Callback OnDetach;
+
+    Attachment(entt::entity parent, Callback onDetach = {}) :
+        Parent(parent),
+        OnDetach(onDetach)
+    {}
+};
+
 struct Destructing {};

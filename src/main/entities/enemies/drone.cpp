@@ -11,7 +11,7 @@ namespace Enemy::Drone {
     static constexpr sf::IntRect TextureRect = {{192, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {48, 48}};
     static constexpr float MaxHealth = 20.0f;
-    static constexpr float MoveSpeed = 2.0f;
+    static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 5.0f;
     static constexpr float FireDamage = 1.0f;
     static constexpr float FireRate = 1.0f;

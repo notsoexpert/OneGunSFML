@@ -58,10 +58,6 @@ namespace Projectile::Laser {
     void Death(entt::registry &registry, entt::entity thisEntity) {
         auto &component = registry.get<Component>(thisEntity);
 
-        if (component.CompareFlags(Flags::Explode)) {
-            spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
-        }
-
         /* GET RELEVANT COMPONENTS */
         auto &renderable = registry.get<Renderable>(thisEntity);
         auto &velocity = registry.get<Velocity>(thisEntity);
