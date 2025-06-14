@@ -26,12 +26,12 @@ namespace Enemy::Drone {
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity, FireDamage, FireRate);
-        setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, Projectile::Weapon::Cannon);
+        setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, Projectile::Type::Bullet);
 
     }
 
     void Behavior(entt::registry &registry, entt::entity thisEntity){
-        Fire(registry, thisEntity);
+        Projectile::Fire(registry, thisEntity);
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){

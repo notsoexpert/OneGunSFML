@@ -37,40 +37,20 @@ namespace Projectile {
     };
 
     entt::entity Create(Setup& setup, Type type);
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
     
     struct Weapon {
-        enum Type {
-            Cannon = 0,
-            Blaster,
-            Burner,
-            Launcher,
-            SeekerLauncher,
-            Dropper,
-            Total
-        };
-        Weapon::Type ThisType;
+        Projectile::Type ProjectileType;
+        std::optional<sf::Vector2f> Direction;
+        std::optional<uint8_t> TierOverride;
 
-        Weapon(Weapon::Type type) : ThisType(type) {}
-
-        [[nodiscard]] Projectile::Type GetBulletType() const {
-            switch (ThisType) {
-                case Cannon:
-                    return Projectile::Type::Bullet;
-                case Blaster:
-                    return Projectile::Type::Laser;
-                case Burner:
-                    return Projectile::Type::Plasma;
-                case Launcher:
-                    return Projectile::Type::Missile;
-                case SeekerLauncher:
-                    return Projectile::Type::Missile;
-                case Dropper:
-                    return Projectile::Type::Bomb;
-                default:
-                    spdlog::warn("Unknown weapon type, defaulting projectile to Bullet");
-                    return Projectile::Type::Bullet;
-            }
-        }
+        Weapon(Projectile::Type type) : ProjectileType(type) {}
+        Weapon(Projectile::Type type, const sf::Vector2f& direction) :
+            ProjectileType(type), Direction(direction) {}
+        Weapon(Projectile::Type type, uint8_t tier) :
+            ProjectileType(type), TierOverride(tier) {}
+        Weapon(Projectile::Type type, const sf::Vector2f& direction, uint8_t tier) :
+            ProjectileType(type), Direction(direction), TierOverride(tier) {}
     };
     
     namespace Bullet {

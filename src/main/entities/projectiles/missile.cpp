@@ -14,7 +14,7 @@ namespace Projectile::Missile {
     static constexpr std::array<sf::IntRect, 2> CollisionRect = 
     {sf::IntRect{{0, 0}, {64, 64}}, sf::IntRect{{0, 0}, {64, 64}}};
     static constexpr std::array<float, 2> BaseDamage = 
-    {4.0f, 4.0f};
+    {0.0f, 0.0f};
     static constexpr std::array<float, 2> MoveSpeed = 
     {6.0f, 5.0f};
     static constexpr std::array<float, 2> OffscreenLifetime = 
@@ -22,17 +22,16 @@ namespace Projectile::Missile {
     static constexpr std::array<size_t, 2> Specification = 
     {Flags::Destruct | Flags::Explode, Flags::Destruct | Flags::Explode | Flags::Home};
 
-    static size_t GetIndex(const Setup &setup) {
-        auto weapComp = setup.Registry.try_get<Projectile::Weapon>(setup.Source);
-        if (!weapComp) {
-            spdlog::warn("MissileSetup - GetIndex - Source {} has no weapon component", static_cast<int>(setup.Source));
-            return 0;
-        }
-        return weapComp->ThisType == Projectile::Weapon::SeekerLauncher ? 1 : 0;
-    }
-
     void Create(const Projectile::Setup& setup) {
-        size_t index = GetIndex(setup);
+        size_t index = 0U;
+
+        auto weapComp = setup.Registry.try_get<Projectile::Weapon>(setup.Source);
+        if (weapComp) {
+            index = weapComp->TierOverride.value_or(0U);
+        } else {
+            spdlog::warn("MissileSetup - GetIndex - Source {} has no weapon component", static_cast<int>(setup.Source));
+        }
+
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
@@ -40,7 +39,7 @@ namespace Projectile::Missile {
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Missile, 
-            Specification.at(index), GetProjectileDamage(setup.Registry, setup.ThisEntity, BaseDamage.at(index)));
+            Specification.at(index), BaseDamage.at(index));
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
     }

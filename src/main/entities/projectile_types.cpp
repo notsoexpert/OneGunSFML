@@ -29,6 +29,33 @@ namespace Projectile {
         return setup.ThisEntity;
     }
 
+    entt::entity Fire(entt::registry &registry, entt::entity thisEntity) {
+        auto fireComponent = registry.try_get<Fireable>(thisEntity);
+        if (!fireComponent) {
+            spdlog::warn("Projectile::Fire - Entity {} does not have a Fireable component", static_cast<int>(thisEntity));
+            return entt::null;
+        }
+
+        if (!fireComponent->Fire()) {
+            spdlog::trace("Entity {} not ready to fire", static_cast<int>(thisEntity));
+            return entt::null;
+        }
+
+        auto weaponComponent = registry.try_get<Projectile::Weapon>(thisEntity);
+        if (!weaponComponent) {
+            spdlog::warn("Projectile::Fire - Entity {} does not have a Weapon component", static_cast<int>(thisEntity));
+            return entt::null;
+        }
+
+        spdlog::trace("Entity {} firing projectile", static_cast<int>(thisEntity));
+        auto projectileType = weaponComponent->ProjectileType;
+        auto fireDirection = weaponComponent->Direction.value_or(sf::Vector2f{0.0f, 1.0f});
+        spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
+        Projectile::Setup setup{registry, registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
+            fireDirection, thisEntity};
+        return Projectile::Create(setup, projectileType);
+    }
+
     void BurnEntity(entt::registry &registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent) {
         if (!burningComponent.CanBurn(otherEntity)) {
             return;

@@ -365,7 +365,7 @@ namespace OneGunGame {
             }
             if (keyEvent.code == sf::Keyboard::Key::Q) {
                 auto &weapon = s_Data.Registry.get<Projectile::Weapon>(s_Data.Entities.Player);
-                weapon.ThisType = static_cast<Projectile::Weapon::Type>((static_cast<size_t>(weapon.ThisType) + 1) % static_cast<size_t>(Projectile::Weapon::Type::Total));
+                weapon.ProjectileType = static_cast<Projectile::Type>((static_cast<size_t>(weapon.ProjectileType) + 1) % static_cast<size_t>(Projectile::Type::Total));
             }
         };
     }

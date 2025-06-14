@@ -42,27 +42,6 @@ void Enemy::SetupMovement(const Setup& setup, float moveSpeed){
 void Enemy::SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds){
     setup.Registry.emplace<ScreenTrigger>(setup.ThisEntity, Entity::RemoveOffscreenLifetime, Entity::AddOffscreenLifetime, expireTimeInSeconds);
 }
-entt::entity Enemy::Fire(entt::registry &registry, entt::entity sourceEntity) {
-    auto fireComponent = registry.try_get<Fireable>(sourceEntity);
-    if (!fireComponent) {
-        spdlog::warn("Source entity {} does not have a Fireable component", static_cast<int>(sourceEntity));
-        return entt::null;
-    }
-    if (!fireComponent->Fire())
-        return entt::null;
-    auto weaponComponent = registry.try_get<Projectile::Weapon>(sourceEntity);
-    if (!weaponComponent) {
-        spdlog::warn("Source entity {} does not have a Weapon component", static_cast<int>(sourceEntity));
-        return entt::null;
-    }
-    spdlog::trace("Player firing projectile");
-    auto projectileType = weaponComponent->GetBulletType();
-    spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
-    Projectile::Setup setup{registry, registry.get<Renderable>(sourceEntity).Sprite.getPosition(),
-    sf::Vector2f{0.0f, 1.0f}, sourceEntity};
-    auto projectile = Projectile::Create(setup, projectileType);
-    return projectile;
-}
 void Enemy::OnCollision(Collision& collision) {
     if (collision.Registry.valid(collision.ThisEntity) && collision.Registry.valid(collision.OtherEntity)) {
         spdlog::trace("Enemy::OnCollision invoked between entity {} and entity {}", 

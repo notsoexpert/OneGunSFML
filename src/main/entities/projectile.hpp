@@ -28,8 +28,10 @@ namespace Projectile {
     struct Splitting {
         size_t MaxSplits;
         size_t CurrentSplits = 0;
+        sf::Vector2f OriginalDirection;
 
-        Splitting(size_t maxSplits = 2) : MaxSplits(maxSplits) {}
+        Splitting(size_t maxSplits = 2, const sf::Vector2f& originalDirection = {0.0f, 1.0f}) : MaxSplits(maxSplits), OriginalDirection(originalDirection) {}
+        
         [[nodiscard]] bool CanSplit() const {
             return CurrentSplits < MaxSplits;
         }

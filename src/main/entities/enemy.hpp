@@ -15,7 +15,6 @@ namespace Enemy {
     };
 
     entt::entity Create(Setup& setup);
-    entt::entity Fire(entt::registry &registry, entt::entity sourceEntity);
     void Update(entt::registry& registry);
 
     struct Behavior {

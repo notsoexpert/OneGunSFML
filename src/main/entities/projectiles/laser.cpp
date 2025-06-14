@@ -50,7 +50,7 @@ namespace Projectile::Laser {
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Laser, 
             Specification.at(index), BaseDamage.at(index));
         setup.Registry.emplace<HitLimiting>(setup.ThisEntity);
-        setup.Registry.emplace<Splitting>(setup.ThisEntity, TotalSplits);
+        setup.Registry.emplace<Splitting>(setup.ThisEntity, TotalSplits, setup.Direction);
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
     }
@@ -85,8 +85,8 @@ namespace Projectile::Laser {
         }
 
         for (auto i : std::ranges::iota_view{0U, SplitProjectiles}) {
-            sf::Angle rotation = sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f) * (1 + splitting.CurrentSplits));
-            sf::Vector2f newDirection = velocity.Value.rotatedBy(rotation).normalized();
+            sf::Angle rotation = sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f));
+            sf::Vector2f newDirection = splitting.OriginalDirection.rotatedBy(rotation).normalized();
 
             Projectile::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, registry.get<Collidable>(thisEntity).Source};
             Projectile::Create(setup, Projectile::Type::Laser);
@@ -100,6 +100,7 @@ namespace Projectile::Laser {
             splitRenderable.Sprite.setTextureRect(TextureRect.at(GetTier(splitComponent.BaseDamage)));
             Splitting& splitSplitting = registry.get<Splitting>(setup.ThisEntity);
             splitSplitting.CurrentSplits = splitting.CurrentSplits + 1;
+            splitSplitting.OriginalDirection = splitting.OriginalDirection;
         }
 
     }
