@@ -84,7 +84,7 @@ namespace Projectile::Laser {
             return;
         }
 
-        for (int i = 0; i < SplitProjectiles; i++) {
+        for (auto i : std::ranges::iota_view{0U, SplitProjectiles}) {
             sf::Angle rotation = sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f) * (1 + splitting.CurrentSplits));
             sf::Vector2f newDirection = velocity.Value.rotatedBy(rotation).normalized();
 

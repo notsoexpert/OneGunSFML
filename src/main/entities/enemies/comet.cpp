@@ -11,7 +11,7 @@ namespace Enemy::Comet {
     static constexpr float MaxHealth = 100.0f;
     static constexpr float MoveSpeed = 6.0f;
     static constexpr float OffscreenLifetime = 2.5f;
-    //static constexpr int DeathProjectiles = 8;
+    //static constexpr size_t DeathProjectiles = 8U;
 
     void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -39,7 +39,7 @@ namespace Enemy::Comet {
         //auto &velocity = registry.get<Velocity>(thisEntity);
 
         /* LAUNCH ICE PROJECTILES */
-        //for (int i = 0; i < DeathProjectiles; i++) {
+        //for (auto i : std::ranges::iota_view{0U, DeathProjectiles}) {
             //sf::Vector2f direction = velocity.Value.rotatedBy((OneGunGame::PI * 2) / (DeathProjectiles==0?1:DeathProjectiles) * i);
             //Projectile::Setup setup{registry, renderable.Sprite.getPosition(), direction, entt::null, thisEntity};
             //Projectile::Create(setup, Projectile::Type::IceShard);

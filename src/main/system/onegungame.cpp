@@ -18,7 +18,7 @@ namespace OneGunGame {
         spdlog::info("EnTT Version: {0}.{1}.{2}", ENTT_VERSION_MAJOR, ENTT_VERSION_MINOR, ENTT_VERSION_PATCH);
 
         spdlog::info("Argc: {0}", argc);
-        for (int i = 0; i < argc; ++i) {
+        for (auto i : std::ranges::iota_view{0, argc}) {
             spdlog::info("Argv[{0}]: {1}", i, argv[i]);
     
             std::string_view arg{argv[i]};

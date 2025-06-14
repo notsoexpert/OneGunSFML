@@ -11,7 +11,7 @@ namespace Enemy::LargeAsteroid {
     static constexpr float MaxHealth = 25.0f;
     static constexpr float MoveSpeed = 1.0f;
     static constexpr float OffscreenLifetime = 5.0f;
-    static constexpr int DeathAsteroids = 2;
+    static constexpr size_t DeathAsteroids = 2U;
 
     void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -33,8 +33,8 @@ namespace Enemy::LargeAsteroid {
         auto &velocity = registry.get<Velocity>(thisEntity);
 
         /* SPLIT INTO ASTEROIDS */
-        for (int i = 0; i < DeathAsteroids; i++) {
-            sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i/2+1) * (i%2==0?1.0f:-1.0f))).normalized();
+        for (auto i : std::ranges::iota_view{0U, DeathAsteroids}) {
+            sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f))).normalized();
             Enemy::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, entt::null, thisEntity};
             Enemy::Create(setup, Enemy::Type::Asteroid);
         }

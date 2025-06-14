@@ -8,9 +8,9 @@ struct Collision;
 namespace Explosion {
     // Isn't this just a projectile without Destructing? I don't know how to structure anything
     struct Setup {
-        entt::registry &Registry;
-        const sf::Vector2f &Position;
-        const sf::Vector2f &Velocity;
+        entt::registry& Registry;
+        const sf::Vector2f& Position;
+        const sf::Vector2f& Velocity;
         entt::entity Source = entt::null;
         entt::entity ThisEntity = entt::null;
     };
