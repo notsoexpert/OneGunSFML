@@ -3,10 +3,10 @@
 
 #include "system/components.hpp"
 
-namespace Explosion::VisualOnly::BulletHit {
-    static constexpr const char* Name = "Bullet Hit";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
-    static constexpr sf::IntRect TextureRect = {{192, 224}, {32, 32}};
+namespace Explosion::AsteroidDeath {
+    static constexpr const char* Name = "Asteroid Death";
+    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionViolet;
+    static constexpr sf::IntRect TextureRect = {{512, 448}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float LifetimeDuration = TotalFrames*FrameTimeInSeconds;

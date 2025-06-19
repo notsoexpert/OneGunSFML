@@ -71,7 +71,7 @@ namespace Projectile {
             registry.get<Velocity>(projectileEntity).Value,
             registry.get<Collidable>(projectileEntity).Source
         };
-        Explosion::VisualOnly::BurnHit::Create(explosionSetup);
+        Explosion::BurnHit::Create(explosionSetup);
 
         spdlog::info("Entity {} burned by entity {}", static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
     }

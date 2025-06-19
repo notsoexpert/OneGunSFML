@@ -1,13 +1,12 @@
 #include "pch.hpp"
 #include "entities/explosion_types.hpp"
 
-#include "system/onegungame.hpp"
 #include "system/components.hpp"
 
-namespace Explosion::VisualOnly::BurnHit {
-    static constexpr const char* Name = "Burn Hit";
+namespace Explosion::BulletHit {
+    static constexpr const char* Name = "Bullet Hit";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
-    static constexpr sf::IntRect TextureRect = {{192, 160}, {32, 32}};
+    static constexpr sf::IntRect TextureRect = {{192, 224}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float LifetimeDuration = TotalFrames*FrameTimeInSeconds;
@@ -22,4 +21,5 @@ namespace Explosion::VisualOnly::BurnHit {
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
     }
+
 }

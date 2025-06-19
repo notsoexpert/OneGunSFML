@@ -69,8 +69,8 @@ namespace Projectile::Laser {
             velocity.Value,
             registry.get<Collidable>(thisEntity).Source
         };
-        Explosion::VisualOnly::LaserHit::Create(explosionSetup);
-        Explosion::VisualOnly::LaserHit::SetImageWithTier(registry.get<Renderable>(explosionSetup.ThisEntity), GetTier(component.BaseDamage));
+        Explosion::LaserHit::Create(explosionSetup);
+        Explosion::LaserHit::SetImageWithTier(registry.get<Renderable>(explosionSetup.ThisEntity), GetTier(component.BaseDamage));
 
         registry.emplace_or_replace<Destructing>(thisEntity);
 

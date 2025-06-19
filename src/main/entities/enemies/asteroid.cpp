@@ -35,7 +35,7 @@ namespace Enemy::Asteroid {
             registry.get<Velocity>(thisEntity).Value,
             registry.get<Collidable>(thisEntity).Source
         };
-        Explosion::VisualOnly::AsteroidDeath::Create(explosionSetup);
+        Explosion::AsteroidDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({0.75f, 0.75f});
     }
 }

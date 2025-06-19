@@ -21,19 +21,17 @@ namespace Explosion {
 
     entt::entity Create(Setup& setup, Type type);
 
-    namespace VisualOnly {
-        namespace BulletHit {
-            void Create(Setup& setup);
-        }
-        namespace LaserHit {
-            void Create(Setup& setup);
-            void SetImageWithTier(Renderable& renderable, size_t tier);
-        }
-        namespace BurnHit {
-            void Create(Setup& setup);
-        }
-        namespace AsteroidDeath {
-            void Create(Setup& setup);
-        }
+    namespace BulletHit {
+        void Create(Setup& setup);
+    }
+    namespace LaserHit {
+        void Create(Setup& setup);
+        void SetImageWithTier(Renderable& renderable, size_t tier);
+    }
+    namespace BurnHit {
+        void Create(Setup& setup);
+    }
+    namespace AsteroidDeath {
+        void Create(Setup& setup);
     }
 }

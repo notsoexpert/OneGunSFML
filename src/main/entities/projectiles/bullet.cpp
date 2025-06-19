@@ -56,7 +56,7 @@ namespace Projectile::Bullet {
             registry.get<Velocity>(thisEntity).Value,
             registry.get<Collidable>(thisEntity).Source
         };
-        Explosion::VisualOnly::BulletHit::Create(explosionSetup);
+        Explosion::BulletHit::Create(explosionSetup);
 
         registry.emplace_or_replace<Destructing>(thisEntity);
     }
