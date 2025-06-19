@@ -2,6 +2,7 @@
 #include "entities/enemy_types.hpp"
 
 #include "entities/entity.hpp"
+#include "entities/explosion_types.hpp"
 
 namespace Enemy::LargeAsteroid {
     static constexpr const char* Name = "Large Asteroid";
@@ -28,19 +29,22 @@ namespace Enemy::LargeAsteroid {
     void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
         
-        /* GET RELEVANT COMPONENTS */
         auto &renderable = registry.get<Renderable>(thisEntity);
         auto &velocity = registry.get<Velocity>(thisEntity);
 
-        /* SPLIT INTO ASTEROIDS */
         for (auto i : std::ranges::iota_view{0U, DeathAsteroids}) {
             sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f))).normalized();
             Enemy::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, entt::null, thisEntity};
             Enemy::Create(setup, Enemy::Type::Asteroid);
         }
 
-        /* CREATE DEATH EXPLOSION */
-        //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
-        //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value,
+            registry.get<Collidable>(thisEntity).Source
+        };
+        Explosion::VisualOnly::AsteroidDeath::Create(explosionSetup);
+        registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({1.25f, 1.25f});
     }
 }

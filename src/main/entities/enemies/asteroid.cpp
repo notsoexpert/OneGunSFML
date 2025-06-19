@@ -3,6 +3,7 @@
 
 #include "system/components.hpp"
 #include "entities/entity.hpp"
+#include "entities/explosion_types.hpp"
 
 namespace Enemy::Asteroid {
     static constexpr const char* Name = "Asteroid";
@@ -28,10 +29,13 @@ namespace Enemy::Asteroid {
     void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
-        /* CREATE DEATH EXPLOSION */
-        //auto &renderable = registry.get<Renderable>(thisEntity);
-        //auto &velocity = registry.get<Velocity>(thisEntity);
-        //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
-        //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value,
+            registry.get<Collidable>(thisEntity).Source
+        };
+        Explosion::VisualOnly::AsteroidDeath::Create(explosionSetup);
+        registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({0.75f, 0.75f});
     }
 }
