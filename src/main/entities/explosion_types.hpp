@@ -31,7 +31,40 @@ namespace Explosion {
     namespace BurnHit {
         void Create(Setup& setup);
     }
+    namespace Missile {
+        void Create(Setup& setup);
+    }
+    namespace Bomb {
+        void Create(Setup& setup);
+    }
+    namespace IceHit {
+        void Create(Setup& setup);
+    }
+    namespace PlayerDeath {
+        void Create(Setup& setup);
+    }
     namespace AsteroidDeath {
+        void Create(Setup& setup);
+    }
+    namespace CometDeath {
+        void Create(Setup& setup);
+    }
+    namespace DroneDeath {
+        void Create(Setup& setup);
+    }
+    namespace FighterDeath {
+        void Create(Setup& setup);
+    }
+    namespace BomberDeath {
+        void Create(Setup& setup);
+    }
+    namespace HunterDeath {
+        void Create(Setup& setup);
+    }
+    namespace BombardierDeath {
+        void Create(Setup& setup);
+    }
+    namespace GalaxisDeath {
         void Create(Setup& setup);
     }
 }

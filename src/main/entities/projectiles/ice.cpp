@@ -3,6 +3,7 @@
 
 #include "entities/entity.hpp"
 #include "system/components.hpp"
+#include "entities/explosion_types.hpp"
 
 namespace Projectile::Ice {
     static constexpr const char* Name = "Ice";
@@ -30,12 +31,14 @@ namespace Projectile::Ice {
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
-        auto &component = registry.get<Component>(thisEntity);
-
-        if (component.CompareFlags(Flags::Explode)) {
-            spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
-        }
-
         registry.emplace<Destructing>(thisEntity);
+        
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value,
+            registry.get<Collidable>(thisEntity).Source
+        };
+        Explosion::IceHit::Create(explosionSetup);
     }
 }
