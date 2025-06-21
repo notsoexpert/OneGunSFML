@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "entities/projectile_types.hpp"
 
+#include "system/onegungame.hpp"
 #include "entities/entity.hpp"
 #include "system/components.hpp"
 #include "entities/explosion_types.hpp"
@@ -20,7 +21,7 @@ namespace Projectile::Bomb {
         SetupRenderable(setup, ImageID, TextureRect);
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed);
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bomb, Specification, 0.0f);
-        setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifeTimeInSeconds));
+        setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifeTimeInSeconds), Death);
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
@@ -30,7 +31,7 @@ namespace Projectile::Bomb {
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             registry.get<Velocity>(thisEntity).Value,
-            registry.get<Collidable>(thisEntity).Source
+            OneGunGame::GetPlayerEntity()
         };
         Explosion::Bomb::Create(explosionSetup);
     }

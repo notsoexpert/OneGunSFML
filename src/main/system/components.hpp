@@ -219,11 +219,15 @@ struct ScreenTrigger {
     ScreenTrigger(Func enter, Func leave, int iArg) : Enter(enter), Leave(leave), Arg(iArg) {}
     ScreenTrigger(Func enter, Func leave, float fArg) : Enter(enter), Leave(leave), Arg(fArg) {}
 };
+
 struct Lifetime {
     sf::Time Duration;
     sf::Clock Clock;
-    Lifetime(sf::Time duration) : 
-        Duration(duration)
+    Callback OnDeath;
+
+    Lifetime(sf::Time duration, Callback onDeath = {}) : 
+        Duration(duration),
+        OnDeath(onDeath)
     {}
 };
 

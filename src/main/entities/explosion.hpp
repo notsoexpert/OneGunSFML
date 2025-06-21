@@ -3,6 +3,7 @@
 #include "system/constants.hpp"
 
 struct Renderable;
+struct Collidable;
 struct Collision;
 
 namespace Explosion {
@@ -17,6 +18,7 @@ namespace Explosion {
 
     entt::entity Create(Setup& setup);
     Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect);
+    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect);
 
     float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float baseDamage);
     void OnCollision(Collision& collision);

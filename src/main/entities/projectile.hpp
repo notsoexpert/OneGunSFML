@@ -21,7 +21,7 @@ namespace Projectile {
     
     Renderable& SetupRenderable(const Setup& setup, 
         OneGunGame::Images imageID, const sf::IntRect& textureRect);
-        Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect);
+    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect);
         
     float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, float damage);
 

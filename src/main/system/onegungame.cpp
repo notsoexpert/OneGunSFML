@@ -226,7 +226,7 @@ namespace OneGunGame {
             }
         );
 
-        s_Data.Registry.view<Dying>().each(
+        s_Data.Registry.view<Dying>(entt::exclude<Destructing>).each(
             [](auto entity, Dying& dying) {
                 if (dying.OnDeath) {
                     dying.OnDeath(s_Data.Registry, entity);
@@ -235,12 +235,16 @@ namespace OneGunGame {
             }
         );
 
-        s_Data.Registry.view<Lifetime>().each(
+        s_Data.Registry.view<Lifetime>(entt::exclude<Destructing, Dying>).each(
             [](auto entity, Lifetime& lifetime) {
-            if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
-                spdlog::trace("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
-                s_Data.Registry.emplace_or_replace<Destructing>(entity);
-            }
+                if (lifetime.Clock.getElapsedTime() >= lifetime.Duration) {
+                    spdlog::trace("Destructing entity {} due to lifetime expiration", static_cast<int>(entity));
+                    if (lifetime.OnDeath) {
+                        s_Data.Registry.emplace_or_replace<Dying>(entity, lifetime.OnDeath);
+                        return;
+                    }
+                    s_Data.Registry.emplace_or_replace<Destructing>(entity);
+                }
         });
 
         s_Data.Registry.view<Destructing>().each(
