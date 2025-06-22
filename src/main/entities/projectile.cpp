@@ -1,13 +1,44 @@
 #include "pch.hpp"
 #include "projectile.hpp"
 
-#include "entities/entity.hpp"
 #include "system/onegungame.hpp"
 #include "system/components.hpp"
-
+#include "entities/entity.hpp"
 #include "entities/player.hpp"
+#include "entities/enemy_types.hpp"
 
 namespace Projectile {
+    void Update(entt::registry &registry) {
+        registry.view<Renderable, Velocity, Homing>().each(
+            [&](Renderable& renderable, Velocity& velocity, Homing& homing) {
+                if (!registry.valid(homing.Target) || registry.any_of<Destructing, Dying>(homing.Target)) {
+                    // Try to find new target
+                    std::pair<entt::entity, float> closestTarget = {entt::null, std::numeric_limits<float>::max()};
+                    registry.view<Renderable, Enemy::Component>().each(
+                        [&](entt::entity targetEntity, Renderable& targetRenderable, [[maybe_unused]]Enemy::Component& enemyComponent) {
+                            float distSquared = OneGunGame::GetDistanceSquared(renderable.Sprite.getPosition(), targetRenderable.Sprite.getPosition());
+                            if (distSquared < closestTarget.second) {
+                                closestTarget = {targetEntity, distSquared};
+                            }
+                        }
+                    );
+                    homing.Target = closestTarget.first;
+                    homing.Reset();
+                    return;
+                }
+                auto& otherRenderable = registry.get<Renderable>(homing.Target);
+
+                // Track the target
+                sf::Angle angleToTarget = renderable.Sprite.getPosition().angleTo(otherRenderable.Sprite.getPosition());
+                sf::Angle currentHeading = renderable.Sprite.getRotation();
+                sf::Angle rotationAngle = homing.GetRotationAngle(angleToTarget - currentHeading);
+                renderable.Sprite.rotate(rotationAngle);
+                velocity.Value = velocity.Value.rotatedBy(rotationAngle);
+                homing.Reset();
+            }
+        );
+    }
+
     entt::entity Create(Setup& setup)
     {
         entt::entity entity = setup.Registry.create();

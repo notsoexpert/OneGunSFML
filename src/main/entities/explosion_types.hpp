@@ -34,6 +34,10 @@ namespace Explosion {
     namespace Missile {
         void Create(Setup& setup);
     }
+    namespace Prebomb {
+        void Create(Setup& setup);
+        void Death(entt::registry &registry, entt::entity thisEntity);
+    }
     namespace Bomb {
         void Create(Setup& setup);
     }

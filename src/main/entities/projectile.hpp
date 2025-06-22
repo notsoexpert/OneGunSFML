@@ -16,6 +16,7 @@ namespace Projectile {
         entt::entity ThisEntity = entt::null;
     };
 
+    void Update(entt::registry& registry);
     entt::entity Create(Setup& setup);
     void OnCollision(Collision& collision);
     
@@ -44,6 +45,24 @@ namespace Projectile {
         [[nodiscard]] bool CanBurn(entt::entity other) const {
             return !BurnClocks.contains(other) || 
                     BurnClocks.at(other).getElapsedTime() >= sf::seconds(BurnPeriodSeconds);
+        }
+    };
+
+    struct Homing {
+        entt::entity Target = entt::null;
+        sf::Angle MaxRotationPerSecond = sf::degrees(90.0f);
+        sf::Clock HomingClock;
+
+        Homing() {
+            Reset();
+        }
+
+        void Reset() {
+            HomingClock.restart();
+        }
+
+        sf::Angle GetRotationAngle(const sf::Angle& angleDifference) const {
+            return std::clamp(angleDifference, -MaxRotationPerSecond * HomingClock.getElapsedTime().asSeconds(), MaxRotationPerSecond * HomingClock.getElapsedTime().asSeconds());
         }
     };
 

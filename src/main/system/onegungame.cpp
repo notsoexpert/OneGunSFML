@@ -91,6 +91,17 @@ namespace OneGunGame {
         return (mask & type) != 0;
     }
 
+    template<typename T>
+    requires std::integral<T>
+    T ConstrainValueLooped(T value, T min, T max) {
+        if (value < min) {
+            return max - (min - value) % (max - min);
+        } else if (value >= max) {
+            return min + (value - max) % (max - min);
+        }
+        return value;
+    }
+
     void Update() {
         s_Data.Context.Window.handleEvents(s_Data.EventHandlers.OnClose, s_Data.EventHandlers.KeyPressed);
 
@@ -100,6 +111,8 @@ namespace OneGunGame {
         // Handle Enemy Behavior
         Enemy::Update(s_Data.Registry);
         
+        // Handle Projectile Behavior
+        Projectile::Update(s_Data.Registry);
 
         // TODO: Use DeltaTime
         s_Data.Registry.view<Acceleration, Velocity>().each(
@@ -138,13 +151,7 @@ namespace OneGunGame {
                 }
 
                 auto texRect = renderable.Sprite.getTextureRect();
-                if (animation.CurrentFrame + 1 >= animation.TotalFrames) {
-                    texRect.position = animation.TextureRectStartPosition;
-                    animation.CurrentFrame = 0;
-                } else {
-                    texRect.position.x += texRect.size.x;
-                    animation.CurrentFrame++;
-                }
+                animation.SetFrame(ConstrainValueLooped<int>(animation.CurrentFrame + animation.AnimationDirection, 0, animation.TotalFrames), texRect);
                 renderable.Sprite.setTextureRect(texRect);
             }
         );
@@ -453,15 +460,6 @@ namespace OneGunGame {
     const sf::Texture& GetTexture(Images image) {
         return s_Data.Textures[image].Texture;
     }
-
-    sf::Vector2i RoundVector(sf::Vector2f vec) {
-        return sf::Vector2i{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
-    }
-
-    int RoundCoordinate(float coord) {
-        return static_cast<int>(std::round(coord));
-    }
-
     entt::registry& GetRegistry() { return s_Data.Registry; }
     entt::entity GetPlayerEntity() { return s_Data.Entities.Player; }
     RandomGenerator& GetRandomGenerator() { return s_Data.Random; }
@@ -480,4 +478,5 @@ namespace OneGunGame {
         sf::Image img{{2u, 2u}, sf::Color::Magenta};
         return s_Data.Textures[Unknown].Texture.loadFromImage(img);
     }
+
 }

@@ -153,11 +153,13 @@ struct Animation {
     size_t TotalFrames;
     sf::Clock AnimationClock;
     sf::Time FrameTime;
+    int AnimationDirection;
 
-    Animation(const sf::Vector2i& texRectStartPos, size_t totalFrames, sf::Time frameTime) :
+    Animation(const sf::Vector2i& texRectStartPos, size_t totalFrames, sf::Time frameTime, int animationDirection = 1) :
         TextureRectStartPosition(texRectStartPos),
         TotalFrames(totalFrames),
-        FrameTime(frameTime)
+        FrameTime(frameTime),
+        AnimationDirection(animationDirection)
     {
         AnimationClock.restart();
     }
@@ -168,6 +170,11 @@ struct Animation {
             return true;
         }
         return false;
+    }
+
+    void SetFrame(size_t frame, sf::IntRect& rTexRect) {
+        CurrentFrame = frame;
+        rTexRect.position = TextureRectStartPosition + rTexRect.size.componentWiseMul(sf::Vector2i{static_cast<int>(CurrentFrame), 0});
     }
 };
 

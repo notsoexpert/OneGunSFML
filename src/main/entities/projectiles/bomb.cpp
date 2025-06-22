@@ -33,6 +33,6 @@ namespace Projectile::Bomb {
             registry.get<Velocity>(thisEntity).Value,
             OneGunGame::GetPlayerEntity()
         };
-        Explosion::Bomb::Create(explosionSetup);
+        Explosion::Prebomb::Create(explosionSetup);
     }
 }
