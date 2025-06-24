@@ -151,7 +151,7 @@ namespace OneGunGame {
                 }
 
                 auto texRect = renderable.Sprite.getTextureRect();
-                animation.SetFrame(ConstrainValueLooped<int>(animation.CurrentFrame + animation.AnimationDirection, 0, animation.TotalFrames), texRect);
+                animation.SetFrame(ConstrainValueLooped<int>(static_cast<int>(animation.CurrentFrame) + animation.AnimationDirection, 0, static_cast<int>(animation.TotalFrames)), texRect);
                 renderable.Sprite.setTextureRect(texRect);
             }
         );

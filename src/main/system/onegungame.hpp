@@ -31,7 +31,7 @@ namespace OneGunGame {
         return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
     }
     constexpr int RoundCoordinate(float coord) {
-        return static_cast<int>(std::round(coord));
+        return static_cast<int>(coord + 0.5f);
     }
     constexpr sf::Vector2i RoundVector(sf::Vector2f vec){
         return sf::Vector2i{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
