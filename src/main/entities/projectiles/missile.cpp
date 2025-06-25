@@ -38,7 +38,7 @@ namespace Projectile::Missile {
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
         SetupCollidable(setup, CollisionRect.at(index));
-        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
+        SetupMovement(setup, MoveSpeed.at(index));
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Missile, 
             Specification.at(index), BaseDamage.at(index));

@@ -10,7 +10,7 @@
 namespace Projectile {
     void Update(entt::registry &registry) {
         registry.view<Renderable, Velocity, Homing>().each(
-            [&](Renderable& renderable, Velocity& velocity, Homing& homing) {
+            [&](Renderable& renderable, [[maybe_unused]]Velocity& velocity, Homing& homing) {
                 if (!registry.valid(homing.Target) || registry.any_of<Destructing, Dying>(homing.Target)) {
                     // Try to find new target
                     std::pair<entt::entity, float> closestTarget = {entt::null, std::numeric_limits<float>::max()};
@@ -28,12 +28,15 @@ namespace Projectile {
                 }
                 auto& otherRenderable = registry.get<Renderable>(homing.Target);
 
-                // Track the target
-                sf::Angle angleToTarget = renderable.Sprite.getPosition().angleTo(otherRenderable.Sprite.getPosition());
-                sf::Angle currentHeading = renderable.Sprite.getRotation();
-                sf::Angle rotationAngle = homing.GetRotationAngle(angleToTarget - currentHeading);
-                renderable.Sprite.rotate(rotationAngle);
-                velocity.Value = velocity.Value.rotatedBy(rotationAngle);
+                float speed = velocity.Value.length();
+                sf::Vector2f desiredVector = (otherRenderable.Sprite.getPosition() - renderable.Sprite.getPosition()).normalized();
+                //sf::Vector2f approachVector = 
+                //sf::Angle currentHeading = renderable.Sprite.getRotation();
+                //spdlog::warn("Angles: {:.3f}, {:.3f}", vectorToTarget.x, vectorToTarget.y);
+
+                velocity.Value = desiredVector * speed;
+
+                renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f,1.0f}));
                 homing.Reset();
             }
         );
@@ -61,6 +64,12 @@ namespace Projectile {
         return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, 
             setup.Source, OneGunGame::CollisionLayer::Projectile, mask,
             OnCollision);
+    }
+
+    void SetupMovement(const Setup& setup, float moveSpeed){
+        setup.Registry.emplace<Velocity>(setup.ThisEntity);
+        setup.Registry.emplace<Acceleration>(setup.ThisEntity, setup.Direction * moveSpeed);
+        setup.Registry.emplace<MaxSpeed>(setup.ThisEntity, moveSpeed);
     }
 
     float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, float baseDamage) {
