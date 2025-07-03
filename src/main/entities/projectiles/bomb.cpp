@@ -10,9 +10,14 @@ namespace Projectile::Bomb {
     static constexpr const char* Name = "Bomb";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{576, 0}, {64, 64}};
+    static constexpr sf::IntRect WaveTextureRect = {{0, 128},{32, 32}};
+    static constexpr sf::Vector2f WaveStartScale = {0.1f, 0.1f};
+    static constexpr sf::Vector2f WaveEndScale = {100.0f, 100.0f};
+    static constexpr float WaveLifeTimeInSeconds = 1.0f;
     //static constexpr float BaseDamage = 25.0f;
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float LifeTimeInSeconds = 2.0f;
+    static constexpr float BoomDelayInSeconds = 0.5f;
     static constexpr size_t Specification = Flags::Explode;
 
     void Create(const Setup& setup) {
@@ -23,16 +28,37 @@ namespace Projectile::Bomb {
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bomb, Specification, 0.0f);
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifeTimeInSeconds), Death);
     }
+    
+    void CreateBoomWave(entt::registry &registry, entt::entity boomTicker) {
+        registry.emplace<Destructing>(boomTicker);
+
+        auto waveEntity = registry.create();
+        auto& waveRenderable = registry.emplace<Renderable>(waveEntity, OneGunGame::GetTexture(OneGunGame::Images::ExplosionYellow));
+        waveRenderable.Sprite.setTextureRect(WaveTextureRect);
+        waveRenderable.Sprite.setPosition(registry.get<Renderable>(boomTicker).Sprite.getPosition());
+        waveRenderable.Sprite.setScale(WaveStartScale);
+        registry.emplace<Scaling>(waveEntity, WaveStartScale, WaveEndScale, sf::seconds(WaveLifeTimeInSeconds));
+        registry.emplace<Fading>(waveEntity, 255, 0, sf::seconds(WaveLifeTimeInSeconds));
+        //registry.emplace<Collidable>(waveEntity, )
+    }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace<Destructing>(thisEntity);
 
+        auto pos = registry.get<Renderable>(thisEntity).Sprite.getPosition();
+
         Explosion::Setup explosionSetup{
             registry,
-            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            pos,
             registry.get<Velocity>(thisEntity).Value,
             OneGunGame::GetPlayerEntity()
         };
         Explosion::Prebomb::Create(explosionSetup);
+
+        auto boomTickerEntity = registry.create();
+        auto& renderable = registry.emplace<Renderable>(boomTickerEntity, OneGunGame::GetTexture(OneGunGame::Images::Unknown), 1000);
+        renderable.Sprite.setPosition(pos);
+        registry.emplace<Lifetime>(boomTickerEntity, BoomDelayInSeconds, CreateBoomWave);
     }
+
 }
