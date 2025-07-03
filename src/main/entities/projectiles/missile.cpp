@@ -45,7 +45,8 @@ namespace Projectile::Missile {
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
 
-        setup.Registry.emplace<Homing>(setup.ThisEntity);
+        auto& homing = setup.Registry.emplace<Homing>(setup.ThisEntity);
+        homing.RotationForce = MoveSpeed.at(index) / 50.0f;
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {

@@ -51,7 +51,7 @@ namespace Projectile {
 
     struct Homing {
         entt::entity Target = entt::null;
-        sf::Angle MaxRotationPerSecond = sf::degrees(90.0f);
+        float RotationForce = 1.0f;
         sf::Clock HomingClock;
 
         Homing() {
@@ -60,10 +60,6 @@ namespace Projectile {
 
         void Reset() {
             HomingClock.restart();
-        }
-
-        sf::Angle GetRotationAngle(const sf::Angle& angleDifference) const {
-            return std::clamp(angleDifference, -MaxRotationPerSecond * HomingClock.getElapsedTime().asSeconds(), MaxRotationPerSecond * HomingClock.getElapsedTime().asSeconds());
         }
     };
 

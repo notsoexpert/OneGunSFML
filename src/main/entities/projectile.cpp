@@ -9,8 +9,8 @@
 
 namespace Projectile {
     void Update(entt::registry &registry) {
-        registry.view<Renderable, Velocity, Homing>().each(
-            [&](Renderable& renderable, [[maybe_unused]]Velocity& velocity, Homing& homing) {
+        registry.view<Renderable, Velocity, Acceleration, Homing>().each(
+            [&](Renderable& renderable, [[maybe_unused]]Velocity& velocity, Acceleration& accel, Homing& homing) {
                 if (!registry.valid(homing.Target) || registry.any_of<Destructing, Dying>(homing.Target)) {
                     // Try to find new target
                     std::pair<entt::entity, float> closestTarget = {entt::null, std::numeric_limits<float>::max()};
@@ -28,15 +28,10 @@ namespace Projectile {
                 }
                 auto& otherRenderable = registry.get<Renderable>(homing.Target);
 
-                float speed = velocity.Value.length();
-                sf::Vector2f desiredVector = (otherRenderable.Sprite.getPosition() - renderable.Sprite.getPosition()).normalized();
-                //sf::Vector2f approachVector = 
-                //sf::Angle currentHeading = renderable.Sprite.getRotation();
-                //spdlog::warn("Angles: {:.3f}, {:.3f}", vectorToTarget.x, vectorToTarget.y);
+                sf::Vector2f desiredVector = (otherRenderable.Sprite.getPosition() - renderable.Sprite.getPosition()).normalized() * velocity.Value.length();
+                accel.Value += (desiredVector - velocity.Value).normalized() * homing.RotationForce;
 
-                velocity.Value = desiredVector * speed;
-
-                renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f,1.0f}));
+                renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f, 1.0f}));
                 homing.Reset();
             }
         );
