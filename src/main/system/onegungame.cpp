@@ -285,7 +285,7 @@ namespace OneGunGame {
     }
 
     void CheckCollisions() {
-        std::unordered_map<entt::entity, std::unordered_map<entt::entity, bool>> processedCollisions;
+        std::unordered_map<entt::entity, std::unordered_set<entt::entity>> processedCollisions;
         s_Data.Registry.view<Renderable, Collidable>().each([&](auto entity, Renderable &renderable, Collidable& collidable) {
             spdlog::trace("Checking collisions for entity {}: CollisionRect ({}, {}, {}, {})", 
                 static_cast<int>(entity), collidable.CollisionRect.position.x, collidable.CollisionRect.position.y, collidable.CollisionRect.size.x, collidable.CollisionRect.size.y);
@@ -305,7 +305,7 @@ namespace OneGunGame {
                 if (s_Data.Registry.any_of<Destructing, Dying>(entity)) {
                    return;
                 }
-                processedCollisions[entity][otherEntity] = true;
+                processedCollisions[entity].insert(otherEntity);
                 if (s_Data.Registry.any_of<Destructing, Dying>(otherEntity)) {
                    continue;
                 }

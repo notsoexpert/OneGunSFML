@@ -58,7 +58,7 @@ namespace Projectile::Bomb {
         auto boomTickerEntity = registry.create();
         auto& renderable = registry.emplace<Renderable>(boomTickerEntity, OneGunGame::GetTexture(OneGunGame::Images::Unknown), 1000);
         renderable.Sprite.setPosition(pos);
-        registry.emplace<Lifetime>(boomTickerEntity, BoomDelayInSeconds, CreateBoomWave);
+        registry.emplace<Lifetime>(boomTickerEntity, sf::seconds(BoomDelayInSeconds), CreateBoomWave);
     }
 
 }
