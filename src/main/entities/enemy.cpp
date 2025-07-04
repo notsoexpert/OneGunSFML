@@ -26,8 +26,6 @@ Renderable& Enemy::SetupRenderable(const Setup& setup, OneGunGame::Images imageI
     return renderable;
 }
 Collidable& Enemy::SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
-    sf::IntRect centeredRect = collisionRect;
-    centeredRect.position -= centeredRect.size / 2;
     return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, setup.Source, OneGunGame::CollisionLayer::Enemy,
         static_cast<OneGunGame::CollisionLayer>(OneGunGame::Player | OneGunGame::Projectile),
         OnCollision);

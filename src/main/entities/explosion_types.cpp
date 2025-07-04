@@ -26,12 +26,18 @@ namespace Explosion {
     }
 
     void OnCollision(Collision& collision) {
-        //auto &component = registry.get<Component>(explosionEntity);
+        auto hitLimiting = collision.Registry.try_get<HitLimiting>(collision.ThisEntity);
+        if (hitLimiting) {
+            if (hitLimiting->HitEntities.contains(collision.OtherEntity)) {
+                return;
+            }
+            hitLimiting->HitEntities.insert(collision.OtherEntity);
+        }
 
-        float explosionDamage = GetExplosionDamage(collision.Registry, collision.ThisEntity, 25.0f);
+        auto& component = collision.Registry.get<Explosion::Component>(collision.ThisEntity);
+
+        float explosionDamage = GetExplosionDamage(collision.Registry, collision.ThisEntity, component.BaseDamage);
 
         Entity::Damage(collision.Registry, collision.ThisEntity, collision.OtherEntity, explosionDamage);
-
-        // TODO: Add damaged entity to ignore list
     }
 }

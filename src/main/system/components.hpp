@@ -213,7 +213,7 @@ struct Collidable {
 };
 
 struct HitLimiting {
-    std::unordered_map<entt::entity, bool> HitEntities;
+    std::unordered_set<entt::entity> HitEntities;
 };
 
 struct ScreenTrigger {

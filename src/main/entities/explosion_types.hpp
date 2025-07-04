@@ -15,8 +15,9 @@ namespace Explosion {
 
     struct Component {
         Type ThisType;
+        float BaseDamage;
 
-        Component(Type type) : ThisType(type) {}
+        Component(Type type, float baseDamage = 0.0f) : ThisType(type), BaseDamage(baseDamage) {}
     };
 
     entt::entity Create(Setup& setup, Type type);

@@ -31,7 +31,7 @@ namespace Projectile {
                 sf::Vector2f desiredVector = (otherRenderable.Sprite.getPosition() - renderable.Sprite.getPosition()).normalized() * velocity.Value.length();
                 accel.Value += (desiredVector - velocity.Value).normalized() * homing.RotationForce;
 
-                renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f, 1.0f}));
+                renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f, -1.0f}));
                 homing.Reset();
             }
         );
@@ -53,8 +53,6 @@ namespace Projectile {
         return renderable;
     }
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
-        sf::IntRect centeredRect = collisionRect;
-        centeredRect.position -= centeredRect.size / 2;
         OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(OneGunGame::CollisionLayer::Projectile);
         return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, 
             setup.Source, OneGunGame::CollisionLayer::Projectile, mask,

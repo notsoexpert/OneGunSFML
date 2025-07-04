@@ -21,7 +21,7 @@ namespace Explosion::Bomb {
 
         auto& renderable = SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
-        setup.Registry.emplace<Component>(setup.ThisEntity, Explosion::Type::VisualOnly);
+        setup.Registry.emplace<Component>(setup.ThisEntity, Explosion::Type::Bomb);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
         setup.Registry.emplace<Scaling>(setup.ThisEntity, renderable.Sprite.getScale(), TargetScale, sf::seconds(ScaleTimeInSeconds));

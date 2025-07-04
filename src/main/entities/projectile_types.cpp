@@ -82,9 +82,9 @@ namespace Projectile {
             if (hitLimiting->HitEntities.contains(collision.OtherEntity)) {
                 return;
             }
-            hitLimiting->HitEntities[collision.OtherEntity] = true;
+            hitLimiting->HitEntities.insert(collision.OtherEntity);
         }
-
+        
         auto &component = collision.Registry.get<Component>(collision.ThisEntity);
         float projectileDamage = GetProjectileDamage(collision.Registry, collision.ThisEntity, component.BaseDamage);
 

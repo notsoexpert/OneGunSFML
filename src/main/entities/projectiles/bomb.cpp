@@ -14,10 +14,10 @@ namespace Projectile::Bomb {
     static constexpr sf::Vector2f WaveStartScale = {0.1f, 0.1f};
     static constexpr sf::Vector2f WaveEndScale = {100.0f, 100.0f};
     static constexpr float WaveLifeTimeInSeconds = 1.0f;
-    //static constexpr float BaseDamage = 25.0f;
+    static constexpr float BaseDamage = 100.0f;
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float LifeTimeInSeconds = 2.0f;
-    static constexpr float BoomDelayInSeconds = 0.5f;
+    static constexpr float BoomDelayInSeconds = 0.45f;
     static constexpr size_t Specification = Flags::Explode;
 
     void Create(const Setup& setup) {
@@ -37,9 +37,19 @@ namespace Projectile::Bomb {
         waveRenderable.Sprite.setTextureRect(WaveTextureRect);
         waveRenderable.Sprite.setPosition(registry.get<Renderable>(boomTicker).Sprite.getPosition());
         waveRenderable.Sprite.setScale(WaveStartScale);
+        waveRenderable.Sprite.setOrigin({WaveTextureRect.size.x / 2.0f, WaveTextureRect.size.y / 2.0f});
+
         registry.emplace<Scaling>(waveEntity, WaveStartScale, WaveEndScale, sf::seconds(WaveLifeTimeInSeconds));
         registry.emplace<Fading>(waveEntity, 255, 0, sf::seconds(WaveLifeTimeInSeconds));
-        //registry.emplace<Collidable>(waveEntity, )
+        registry.emplace<Rotating>(waveEntity, sf::radians(4*OneGunGame::Pi));
+
+        sf::IntRect collisionRect = {{0, 0}, {16,16}};
+        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(OneGunGame::CollisionLayer::Projectile);
+        registry.emplace<Collidable>(waveEntity, collisionRect, entt::null, OneGunGame::CollisionLayer::Projectile, mask,
+            Explosion::OnCollision);
+        registry.emplace<HitLimiting>(waveEntity);
+        registry.emplace<Explosion::Component>(waveEntity, Explosion::Type::Bomb, BaseDamage);
+        registry.emplace<Lifetime>(waveEntity, sf::seconds(WaveLifeTimeInSeconds), [](entt::registry& registry, entt::entity thisEntity) { registry.emplace<Destructing>(thisEntity); });
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {

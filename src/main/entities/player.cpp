@@ -90,6 +90,9 @@ namespace Player {
     }
 
     void OnDeath(entt::registry &registry, entt::entity playerEntity) {
-        registry.emplace<Destructing>(playerEntity);
+        //registry.emplace<Destructing>(playerEntity);
+        auto& health = registry.get<Health>(playerEntity);
+        spdlog::warn("Player died! Healing to full :)");
+        health.Heal(health.Max);
     }
 }
