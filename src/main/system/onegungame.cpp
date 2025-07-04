@@ -119,8 +119,7 @@ namespace OneGunGame {
             [](auto entity, Acceleration& acceleration, Velocity& velocity) {
             spdlog::trace("Updating entity {}: Velocity ({}, {}) with Acceleration ({}, {})",
                 static_cast<int>(entity), velocity.Value.x, velocity.Value.y, acceleration.Value.x, acceleration.Value.y);
-            velocity.Value.x += acceleration.Value.x;
-            velocity.Value.y += acceleration.Value.y;
+            velocity.Value += acceleration.Value;
             if (std::abs(velocity.Value.x) < 0.01f) velocity.Value.x = 0.0f;
             if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
         });
@@ -130,8 +129,7 @@ namespace OneGunGame {
             [](auto Entity, Friction& friction, Velocity& velocity) {
             spdlog::trace("Applying friction to entity {}: Velocity ({}, {}) with Friction ({})",
                 static_cast<int>(Entity), velocity.Value.x, velocity.Value.y, friction.Value);
-            velocity.Value.x *= (1.0f - friction.Value);
-            velocity.Value.y *= (1.0f - friction.Value);
+            velocity.Value *= (1.0f - friction.Value);
             if (std::abs(velocity.Value.x) < 0.01f) velocity.Value.x = 0.0f;
             if (std::abs(velocity.Value.y) < 0.01f) velocity.Value.y = 0.0f;
         });
