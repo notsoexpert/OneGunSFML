@@ -40,7 +40,7 @@ namespace Projectile::Bomb {
         waveRenderable.Sprite.setOrigin({WaveTextureRect.size.x / 2.0f, WaveTextureRect.size.y / 2.0f});
 
         registry.emplace<Scaling>(waveEntity, WaveStartScale, WaveEndScale, sf::seconds(WaveLifeTimeInSeconds));
-        registry.emplace<Fading>(waveEntity, 255, 0, sf::seconds(WaveLifeTimeInSeconds));
+        registry.emplace<Fading>(waveEntity, static_cast<uint8_t>(255), static_cast<uint8_t>(0), sf::seconds(WaveLifeTimeInSeconds));
         registry.emplace<Rotating>(waveEntity, sf::radians(4*OneGunGame::Pi));
 
         sf::IntRect collisionRect = {{0, 0}, {16,16}};

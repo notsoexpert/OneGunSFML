@@ -19,8 +19,8 @@ namespace Projectile::Missile {
     {0.0f, 0.0f};
     static constexpr std::array<float, 2> MoveSpeed = 
     {6.0f, 5.0f};
-    static constexpr std::array<float, 2> OffscreenLifetime = 
-    {1.0f, 1.0f};
+    static constexpr std::array<float, 2> ProjectileLifetime = 
+    {4.0f, 3.0f};
     static constexpr std::array<size_t, 2> Specification = 
     {Flags::Destruct | Flags::Explode, Flags::Destruct | Flags::Explode | Flags::Home};
 
@@ -43,7 +43,7 @@ namespace Projectile::Missile {
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Missile, 
             Specification.at(index), BaseDamage.at(index));
 
-        Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
+        setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(ProjectileLifetime.at(index)), Death);
 
         auto& homing = setup.Registry.emplace<Homing>(setup.ThisEntity);
         homing.RotationForce = MoveSpeed.at(index) / 50.0f;
