@@ -83,17 +83,14 @@ struct HitInvincibility {
 };
 
 struct Fireable {
-    float BaseDamage;
-    float BaseFireRate;
     sf::Clock Clock;
 
-    Fireable(float baseDamage = 1.0f, float baseFireRate = 1.0f) :
-        BaseDamage(baseDamage),
-        BaseFireRate(baseFireRate)
-    {}
+    Fireable() {
+        Clock.restart();
+    }
 
-    bool Fire(float weaponRate = 1.0f) {
-        if (Clock.getElapsedTime().asSeconds() >= 1.0f / std::clamp(weaponRate * BaseFireRate, 0.001f, INFINITY)) {
+    bool Fire(float fireRate = 1.0f) {
+        if (Clock.getElapsedTime().asSeconds() >= 1.0f / std::clamp(fireRate, 0.0001f, INFINITY)) {
             Clock.restart();
             return true;
         }

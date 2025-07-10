@@ -4,6 +4,8 @@
 #include "system/onegungame.hpp"
 #include "system/components.hpp"
 
+#include "entities/projectile_types.hpp"
+
 namespace Entity {
 
     void Update(entt::registry& registry) {
@@ -22,12 +24,12 @@ namespace Entity {
     }
 
     float GetBasePower(entt::registry &registry, entt::entity thisEntity) {
-        auto fireComp = registry.try_get<Fireable>(thisEntity);
-        if (!fireComp){
-            spdlog::warn("GetBasePower called on entity {} with no Fireable component, returning 1.0f", static_cast<int>(thisEntity));
+        auto weapComp = registry.try_get<Projectile::Weapon>(thisEntity);
+        if (!weapComp){
+            spdlog::warn("GetBasePower called on entity {} with no Weapon component, returning 1.0f", static_cast<int>(thisEntity));
             return 1.0f;
         }
-        return fireComp->BaseDamage;
+        return weapComp->BaseDamage;
     }
 
     bool Damage(entt::registry &registry, entt::entity attacker, entt::entity target, float damage) {

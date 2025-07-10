@@ -5,6 +5,8 @@
 #include "system/onegungame.hpp"
 #include "system/components.hpp"
 
+#include "entities/projectile_types.hpp"
+
 namespace Explosion {
 
     entt::entity Create(Setup& setup) {   
@@ -31,19 +33,19 @@ namespace Explosion {
             OnCollision);
     }
 
-    float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float baseDamage) {
+    float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float damageFactor) {
         entt::entity sourceEntity = registry.get<Collidable>(explosionEntity).Source;
         if (!registry.valid(sourceEntity)) {
             spdlog::warn("Explosion entity {} - Source entity {} is invalid", static_cast<int>(explosionEntity), static_cast<int>(sourceEntity));
-            return baseDamage;
+            return damageFactor;
         }
         
-        auto sourceFireable = registry.try_get<Fireable>(sourceEntity);
-        if (!sourceFireable) {
-            spdlog::warn("Explosion entity {} - Source entity {} is missing Fireable component", static_cast<int>(explosionEntity), static_cast<int>(sourceEntity));
-            return baseDamage;
+        auto sourceWeapon = registry.try_get<Projectile::Weapon>(sourceEntity);
+        if (!sourceWeapon) {
+            spdlog::warn("Explosion entity {} - Source entity {} is missing Weapon component", static_cast<int>(explosionEntity), static_cast<int>(sourceEntity));
+            return damageFactor;
         }
 
-        return baseDamage * sourceFireable->BaseDamage;
+        return damageFactor * sourceWeapon->BaseDamage;
     }
 }

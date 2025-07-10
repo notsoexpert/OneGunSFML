@@ -44,26 +44,20 @@ namespace Projectile {
     entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
     
     struct Weapon {
+        float BaseDamage = 1.0f;
+        float BaseFireRate = 1.0f;
+        float BaseShotSpeed = 1.0f;
         Projectile::Type ProjectileType;
-        std::optional<sf::Vector2f> Direction;
-        std::optional<uint8_t> TierOverride;
+        sf::Vector2f ForwardVector{0.0f, -1.0f};
 
         Weapon(Projectile::Type type) : ProjectileType(type) {}
-        Weapon(Projectile::Type type, const sf::Vector2f& direction) :
-            ProjectileType(type), Direction(direction) {}
-        Weapon(Projectile::Type type, uint8_t tier) :
-            ProjectileType(type), TierOverride(tier) {}
-        Weapon(Projectile::Type type, const sf::Vector2f& direction, uint8_t tier) :
-            ProjectileType(type), Direction(direction), TierOverride(tier) {}
     };
     
     namespace Bullet {
-        size_t GetTier(float basePower);
         void Create(const Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Laser {
-        size_t GetTier(float basePower);
         void Create(const Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }

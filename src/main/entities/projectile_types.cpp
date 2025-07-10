@@ -36,20 +36,27 @@ namespace Projectile {
             return entt::null;
         }
 
-        if (!fireComponent->Fire()) {
-            spdlog::trace("Entity {} not ready to fire", static_cast<int>(thisEntity));
-            return entt::null;
-        }
-
         auto weaponComponent = registry.try_get<Projectile::Weapon>(thisEntity);
         if (!weaponComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Weapon component", static_cast<int>(thisEntity));
             return entt::null;
         }
+        
+        if (!fireComponent->Fire(weaponComponent->BaseFireRate)) {
+            spdlog::trace("Entity {} not ready to fire", static_cast<int>(thisEntity));
+            return entt::null;
+        }
+        
+        auto fireDirection = weaponComponent->ForwardVector;
+
+        auto renderableComponent = registry.try_get<Renderable>(thisEntity);
+        if (renderableComponent) {
+            fireDirection = fireDirection.rotatedBy(renderableComponent->Sprite.getRotation());
+        }
+
 
         spdlog::trace("Entity {} firing projectile", static_cast<int>(thisEntity));
         auto projectileType = weaponComponent->ProjectileType;
-        auto fireDirection = weaponComponent->Direction.value_or(sf::Vector2f{0.0f, 1.0f});
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
         Projectile::Setup setup{registry, registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
             fireDirection, thisEntity};

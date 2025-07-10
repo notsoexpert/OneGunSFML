@@ -13,8 +13,10 @@ namespace Enemy::Drone {
     static constexpr float MaxHealth = 20.0f;
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 5.0f;
+
     static constexpr float FireDamage = 1.0f;
     static constexpr float FireRate = 1.0f;
+    static constexpr Projectile::Type FireType = Projectile::Type::Bullet;
 
     void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -25,8 +27,12 @@ namespace Enemy::Drone {
         health.OnDeath = Death;
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
-        setup.Registry.emplace<Fireable>(setup.ThisEntity, FireDamage, FireRate);
-        setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, Projectile::Type::Bullet);
+        setup.Registry.emplace<Fireable>(setup.ThisEntity);
+
+        auto &weapon = setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, FireType);
+        weapon.BaseDamage = FireDamage;
+        weapon.BaseFireRate = FireRate;
+        weapon.ForwardVector = {0.0f, 1.0f};
 
     }
 

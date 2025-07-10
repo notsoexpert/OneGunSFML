@@ -31,7 +31,7 @@ namespace Projectile::Bullet {
 
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
         SetupCollidable(setup, CollisionRect.at(index));
-        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
+        SetupMovement(setup, MoveSpeed.at(index));
 
         auto &component = setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bullet, 
             Specification.at(index), DamageFactor.at(index));

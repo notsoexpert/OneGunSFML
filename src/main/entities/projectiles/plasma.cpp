@@ -13,8 +13,8 @@ namespace Projectile::Plasma {
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr uint8_t Specification = Flags::Burn;
     static constexpr size_t TotalFrames = 4U;
-    static constexpr float DamageFactor = 1.0f;
-    static constexpr float MoveSpeed = 3.0f;
+    static constexpr float DamageFactor = 0.33f;
+    static constexpr float MoveSpeed = 4.0f;
     static constexpr float LifetimeDuration = 1.25f;
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float ScaleTimeInSeconds = 1.25f;

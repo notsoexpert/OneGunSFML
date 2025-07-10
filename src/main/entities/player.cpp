@@ -14,6 +14,7 @@ namespace Player {
     constexpr float BaseHitInvincibilityDuration = 1.0f;
     constexpr float BaseDamage = 10.0f;
     constexpr float BaseFireRate = 4.0f;
+    constexpr float BaseShotSpeed = 1.0f;
     constexpr float BaseDashSpeedMultiplier = 3.0f;
     constexpr float BaseDashDuration = 0.25f;
     constexpr float BaseDashCooldown = 5.0f;
@@ -33,23 +34,27 @@ namespace Player {
     entt::entity Create(entt::registry &registry, const sf::Vector2f &startPosition) {
         entt::entity entity = registry.create();
         auto &renderable = registry.emplace<Renderable>(entity, OneGunGame::GetTexture(OneGunGame::SpriteSheet), 10);
-        renderable.Sprite.setOrigin({Player::Size.x / 2.0f, Player::Size.y / 2.0f}); // Set origin to center of the sprite
+        renderable.Sprite.setOrigin({Size.x / 2.0f, Size.y / 2.0f}); // Set origin to center of the sprite
         renderable.Sprite.setPosition(startPosition);
-        renderable.Sprite.setTextureRect(sf::IntRect({0, 0}, Player::Size));
+        renderable.Sprite.setTextureRect(sf::IntRect({0, 0}, Size));
         
-        registry.emplace<Collidable>(entity, sf::IntRect{Player::CollisionOffset, Player::CollisionSize}, entity,
+        registry.emplace<Collidable>(entity, sf::IntRect{CollisionOffset, CollisionSize}, entity,
             OneGunGame::CollisionLayer::Player,
             static_cast<OneGunGame::CollisionLayer>(OneGunGame::Enemy | OneGunGame::Projectile | OneGunGame::Obstacle),
             OnCollision);
         registry.emplace<Velocity>(entity);
         registry.emplace<Acceleration>(entity);
-        registry.emplace<Friction>(entity, Player::BaseFriction);
-        registry.emplace<Health>(entity, Player::BaseMaxHealth, OnDeath);
-        registry.emplace<Energy>(entity, Player::BaseMaxEnergy);
-        registry.emplace<MaxSpeed>(entity, Player::BaseMoveSpeed);
-        registry.emplace<HitInvincibility>(entity, Player::BaseHitInvincibilityDuration);
-        registry.emplace<Fireable>(entity, Player::BaseDamage, Player::BaseFireRate);
-        registry.emplace<Projectile::Weapon>(entity, Projectile::Type::Bullet, sf::Vector2f{0.0f, -1.0f});
+        registry.emplace<Friction>(entity, BaseFriction);
+        registry.emplace<Health>(entity, BaseMaxHealth, OnDeath);
+        registry.emplace<Energy>(entity, BaseMaxEnergy);
+        registry.emplace<MaxSpeed>(entity, BaseMoveSpeed);
+        registry.emplace<HitInvincibility>(entity, BaseHitInvincibilityDuration);
+        registry.emplace<Fireable>(entity);
+        auto &weapon = registry.emplace<Projectile::Weapon>(entity, Projectile::Type::Bullet);
+        weapon.BaseDamage = BaseDamage;
+        weapon.BaseFireRate = BaseFireRate;
+        weapon.BaseShotSpeed = BaseShotSpeed;
+
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
         registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
         
