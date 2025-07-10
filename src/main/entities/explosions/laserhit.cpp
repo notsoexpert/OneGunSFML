@@ -27,7 +27,7 @@ namespace Explosion::LaserHit {
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
     }
 
-    void SetImageWithTier(Renderable& renderable, size_t tier) {
+    void SetImageIndex(Renderable& renderable, size_t tier) {
         if (tier > 2) {
             spdlog::error("Projectile::Laser::SetImageWithTier - Tier {} out of range", tier);
             return;

@@ -14,6 +14,7 @@ namespace Projectile {
         const sf::Vector2f &Direction;
         entt::entity Source = entt::null;
         entt::entity ThisEntity = entt::null;
+        std::optional<uint8_t> Tier{};
     };
 
     void Update(entt::registry& registry);
@@ -52,15 +53,6 @@ namespace Projectile {
     struct Homing {
         entt::entity Target = entt::null;
         float RotationForce = 1.0f;
-        sf::Clock HomingClock;
-
-        Homing() {
-            Reset();
-        }
-
-        void Reset() {
-            HomingClock.restart();
-        }
     };
 
     void BurnEntity(entt::registry& registry, entt::entity projectileEntity, entt::entity otherEntity, float damage, Burning& burningComponent);

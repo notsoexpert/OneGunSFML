@@ -11,9 +11,9 @@ namespace Projectile::Plasma {
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{512, 256}, {32, 32}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
-    static constexpr size_t Specification = Flags::Burn;
+    static constexpr uint8_t Specification = Flags::Burn;
     static constexpr size_t TotalFrames = 4U;
-    static constexpr float BaseDamage = 1.0f;
+    static constexpr float DamageFactor = 1.0f;
     static constexpr float MoveSpeed = 3.0f;
     static constexpr float LifetimeDuration = 1.25f;
     static constexpr float FrameTimeInSeconds = 0.05f;
@@ -30,7 +30,7 @@ namespace Projectile::Plasma {
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed);
 
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Plasma, 
-            Specification, BaseDamage);
+            Specification, DamageFactor);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
         setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
         setup.Registry.emplace<Scaling>(setup.ThisEntity, renderable.Sprite.getScale(), sf::Vector2f{TargetScale, TargetScale}, sf::seconds(ScaleTimeInSeconds));

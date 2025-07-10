@@ -23,7 +23,6 @@ namespace Projectile {
                         }
                     );
                     homing.Target = closestTarget.first;
-                    homing.Reset();
                     return;
                 }
                 auto& otherRenderable = registry.get<Renderable>(homing.Target);
@@ -32,7 +31,6 @@ namespace Projectile {
                 accel.Value += (desiredVector - velocity.Value).normalized() * homing.RotationForce;
 
                 renderable.Sprite.setRotation(-velocity.Value.angleTo({0.0f, -1.0f}));
-                homing.Reset();
             }
         );
     }

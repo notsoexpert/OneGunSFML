@@ -7,48 +7,39 @@
 #include "entities/explosion_types.hpp"
 
 namespace Projectile::Laser {
-    static constexpr std::array<const char*, 3> Name = 
+    static constexpr uint8_t Tiers = 3;
+    static constexpr std::array<const char*, Tiers> Name = 
     {"Green Laser", "Yellow Laser", "Red Laser"};
-    static constexpr std::array<OneGunGame::Images, 3> ImageID = 
+    static constexpr std::array<OneGunGame::Images, Tiers> ImageID = 
     {OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet};
-    static constexpr std::array<sf::IntRect, 3> TextureRect = 
+    static constexpr std::array<sf::IntRect, Tiers> TextureRect = 
     {sf::IntRect{{256, 0}, {64, 64}}, sf::IntRect{{320, 0}, {64, 64}}, sf::IntRect{{384, 0}, {64, 64}}};
-    static constexpr std::array<sf::IntRect, 3> CollisionRect = 
+    static constexpr std::array<sf::IntRect, Tiers> CollisionRect = 
     {sf::IntRect{{0, 0}, {8, 17}}, sf::IntRect{{0, 0}, {10, 26}}, sf::IntRect{{0, 0}, {12, 36}}};
-    static constexpr std::array<float, 3> BaseDamage = 
+    static constexpr std::array<float, Tiers> DamageFactor = 
     {2.0f, 2.0f, 2.0f};
-    static constexpr std::array<float, 3> MoveSpeed = 
+    static constexpr std::array<float, Tiers> MoveSpeed = 
     {6.0f, 6.0f, 6.0f};
-    static constexpr std::array<float, 3> OffscreenLifetime = 
+    static constexpr std::array<float, Tiers> OffscreenLifetime = 
     {1.0f, 1.0f, 1.0f};
-    static constexpr std::array<size_t, 3> Specification = 
+    static constexpr std::array<uint8_t, Tiers> Specification = 
     {Flags::Destruct | Flags::Split, Flags::Destruct | Flags::Split, Flags::Destruct | Flags::Split};
 
     static constexpr size_t SplitProjectiles = 2;
     static constexpr size_t TotalSplits = 2;
     static constexpr float SplitDamageFactor = 0.50f;
 
-    size_t GetTier(float basePower){
-        if (basePower < 5.0f){
-            return 0;
-        }
-        if (basePower < 10.0f){
-            return 1;
-        }
-        return 2;
-    }
-
     void Create(const Setup& setup) {
-        float power = Entity::GetBasePower(setup.Registry, setup.Source);
-        size_t index = GetTier(power);
+        auto index = setup.Tier.value_or(0U);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
         SetupCollidable(setup, CollisionRect.at(index));
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
-        setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Laser, 
-            Specification.at(index), BaseDamage.at(index));
+        auto &component = setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Laser, 
+            Specification.at(index), DamageFactor.at(index));
+        component.Tier = index;
         setup.Registry.emplace<HitLimiting>(setup.ThisEntity);
         setup.Registry.emplace<Splitting>(setup.ThisEntity, TotalSplits, setup.Direction);
 
@@ -56,6 +47,8 @@ namespace Projectile::Laser {
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
+        registry.emplace_or_replace<Destructing>(thisEntity);
+
         auto &component = registry.get<Component>(thisEntity);
 
         /* GET RELEVANT COMPONENTS */
@@ -70,9 +63,8 @@ namespace Projectile::Laser {
             registry.get<Collidable>(thisEntity).Source
         };
         Explosion::LaserHit::Create(explosionSetup);
-        Explosion::LaserHit::SetImageWithTier(registry.get<Renderable>(explosionSetup.ThisEntity), GetTier(component.BaseDamage));
+        Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier.value_or(0U));
 
-        registry.emplace_or_replace<Destructing>(thisEntity);
 
         /* SPLIT INTO WEAKER LASERS */
         auto& splitting = registry.get<Splitting>(thisEntity);
@@ -92,8 +84,9 @@ namespace Projectile::Laser {
             HitLimiting& splitHitLimiting = registry.get<HitLimiting>(setup.ThisEntity);
             splitHitLimiting.HitEntities = registry.get<HitLimiting>(thisEntity).HitEntities;
             Component& splitComponent = registry.get<Component>(setup.ThisEntity);
-            splitComponent.BaseDamage = component.BaseDamage * SplitDamageFactor;
-            splitRenderable.Sprite.setTextureRect(TextureRect.at(GetTier(splitComponent.BaseDamage)));
+            splitComponent.DamageFactor = component.DamageFactor * SplitDamageFactor;
+            splitComponent.Tier = static_cast<uint8_t>(std::clamp<int>(component.Tier.value_or(0U) - 1, 0, Tiers - 1));
+            splitRenderable.Sprite.setTextureRect(TextureRect.at(splitComponent.Tier.value_or(0U)));
             Splitting& splitSplitting = registry.get<Splitting>(setup.ThisEntity);
             splitSplitting.CurrentSplits = splitting.CurrentSplits + 1;
             splitSplitting.OriginalDirection = splitting.OriginalDirection;

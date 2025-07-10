@@ -14,11 +14,11 @@ namespace Projectile::Bomb {
     static constexpr sf::Vector2f WaveStartScale = {0.1f, 0.1f};
     static constexpr sf::Vector2f WaveEndScale = {100.0f, 100.0f};
     static constexpr float WaveLifeTimeInSeconds = 1.0f;
-    static constexpr float BaseDamage = 100.0f;
+    static constexpr float DamageFactor = 100.0f;
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float LifeTimeInSeconds = 2.0f;
     static constexpr float BoomDelayInSeconds = 0.45f;
-    static constexpr size_t Specification = Flags::Explode;
+    static constexpr uint8_t Specification = Flags::Explode;
 
     void Create(const Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -48,7 +48,7 @@ namespace Projectile::Bomb {
         registry.emplace<Collidable>(waveEntity, collisionRect, entt::null, OneGunGame::CollisionLayer::Projectile, mask,
             Explosion::OnCollision);
         registry.emplace<HitLimiting>(waveEntity);
-        registry.emplace<Explosion::Component>(waveEntity, Explosion::Type::Bomb, BaseDamage);
+        registry.emplace<Explosion::Component>(waveEntity, Explosion::Type::Bomb, DamageFactor);
         registry.emplace<Lifetime>(waveEntity, sf::seconds(WaveLifeTimeInSeconds), [](entt::registry& registry, entt::entity thisEntity) { registry.emplace<Destructing>(thisEntity); });
     }
 

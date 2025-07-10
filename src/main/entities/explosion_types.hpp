@@ -27,7 +27,7 @@ namespace Explosion {
     }
     namespace LaserHit {
         void Create(Setup& setup);
-        void SetImageWithTier(Renderable& renderable, size_t tier);
+        void SetImageIndex(Renderable& renderable, size_t tier);
     }
     namespace BurnHit {
         void Create(Setup& setup);

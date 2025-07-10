@@ -86,7 +86,7 @@ namespace Projectile {
         }
         
         auto &component = collision.Registry.get<Component>(collision.ThisEntity);
-        float projectileDamage = GetProjectileDamage(collision.Registry, collision.ThisEntity, component.BaseDamage);
+        float projectileDamage = GetProjectileDamage(collision.Registry, collision.ThisEntity, component.DamageFactor);
 
         if (component.CompareFlags(Flags::Burn)) {
             auto &burning = collision.Registry.get<Burning>(collision.ThisEntity);

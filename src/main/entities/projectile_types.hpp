@@ -13,7 +13,7 @@ namespace Projectile {
         Total
     };
 
-    enum Flags {
+    enum Flags : uint8_t {
         Destruct = 1 << 0,
         Split = 1 << 1,
         Burn = 1 << 2,
@@ -23,15 +23,19 @@ namespace Projectile {
 
     struct Component {
         Type ThisType;
-        size_t Specification;
-        float BaseDamage;
+        uint8_t Specification;
+        float DamageFactor;
+        std::optional<uint8_t> Tier{};
 
         Component(Type type = Type::Bullet, 
-            size_t specification = Flags::Destruct, 
-            float baseDamage = 1.0f) : 
-            ThisType(type), Specification(specification), BaseDamage(baseDamage) {}
+            uint8_t specification = Flags::Destruct, 
+            float damageFactor = 1.0f) : 
+            ThisType(type), 
+            Specification(specification), 
+            DamageFactor(damageFactor)
+        {}
 
-        [[nodiscard]] bool CompareFlags(size_t flags) const {
+        [[nodiscard]] bool CompareFlags(uint8_t flags) const {
             return (Specification & flags) != 0;
         }
     };

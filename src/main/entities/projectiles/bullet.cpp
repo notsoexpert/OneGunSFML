@@ -7,44 +7,35 @@
 #include "entities/explosion_types.hpp"
 
 namespace Projectile::Bullet {
-    static constexpr std::array<const char*, 3> Name = 
+    static constexpr uint8_t Tiers = 3;
+    static constexpr std::array<const char*, Tiers> Name = 
     {"Bullet", "Large Bullet", "Huge Bullet"};
-    static constexpr std::array<OneGunGame::Images, 3> ImageID = 
+    static constexpr std::array<OneGunGame::Images, Tiers> ImageID = 
     {OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet};
-    static constexpr std::array<sf::IntRect, 3> TextureRect = 
+    static constexpr std::array<sf::IntRect, Tiers> TextureRect = 
     {sf::IntRect{{64, 0}, {64, 64}}, sf::IntRect{{128, 0}, {64, 64}}, sf::IntRect{{192, 0}, {64, 64}}};
-    static constexpr std::array<sf::IntRect, 3> CollisionRect = 
+    static constexpr std::array<sf::IntRect, Tiers> CollisionRect = 
     {sf::IntRect{{0, 0}, {8, 17}}, sf::IntRect{{0, 0}, {10, 26}}, sf::IntRect{{0, 0}, {12, 36}}};
-    static constexpr std::array<float, 3> BaseDamage = 
+    static constexpr std::array<float, Tiers> DamageFactor = 
     {1.0f, 1.0f, 1.0f};
-    static constexpr std::array<float, 3> MoveSpeed = 
+    static constexpr std::array<float, Tiers> MoveSpeed = 
     {10.0f, 10.0f, 10.0f};
-    static constexpr std::array<float, 3> OffscreenLifetime = 
+    static constexpr std::array<float, Tiers> OffscreenLifetime = 
     {1.0f, 1.0f, 1.0f};
-    static constexpr std::array<uint8_t, 3> Specification = 
+    static constexpr std::array<uint8_t, Tiers> Specification = 
     {Flags::Destruct, Flags::Destruct, Flags::Destruct};
 
-    size_t GetTier(float basePower){
-        if (basePower < 5.0f){
-            return 0;
-        }
-        if (basePower < 10.0f){
-            return 1;
-        }
-        return 2;
-    }
-
     void Create(const Setup& setup) {
-        float power = Entity::GetBasePower(setup.Registry, setup.Source);
-        size_t index = GetTier(power);
+        auto index = setup.Tier.value_or(0U);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
 
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
         SetupCollidable(setup, CollisionRect.at(index));
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * MoveSpeed.at(index));
 
-        setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bullet, 
-            Specification.at(index), BaseDamage.at(index));
+        auto &component = setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Bullet, 
+            Specification.at(index), DamageFactor.at(index));
+        component.Tier = index;
 
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime.at(index));
     }
