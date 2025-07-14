@@ -14,7 +14,7 @@ namespace Projectile {
         const sf::Vector2f &Direction;
         entt::entity Source = entt::null;
         entt::entity ThisEntity = entt::null;
-        std::optional<uint8_t> Tier{};
+        uint8_t Tier = 0U;
     };
 
     void Update(entt::registry& registry);

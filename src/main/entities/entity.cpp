@@ -5,6 +5,7 @@
 #include "system/components.hpp"
 
 #include "entities/projectile_types.hpp"
+#include "entities/weapon.hpp"
 
 namespace Entity {
 
@@ -24,7 +25,7 @@ namespace Entity {
     }
 
     float GetBasePower(entt::registry &registry, entt::entity thisEntity) {
-        auto weapComp = registry.try_get<Projectile::Weapon>(thisEntity);
+        auto weapComp = registry.try_get<Weapon::Component>(thisEntity);
         if (!weapComp){
             spdlog::warn("GetBasePower called on entity {} with no Weapon component, returning 1.0f", static_cast<int>(thisEntity));
             return 1.0f;

@@ -41,17 +41,7 @@ namespace Projectile {
     };
 
     entt::entity Create(Setup& setup, Type type);
-    entt::entity Fire(entt::registry &registry, entt::entity playerEntity);
-    
-    struct Weapon {
-        float BaseDamage = 1.0f;
-        float BaseFireRate = 1.0f;
-        float BaseShotSpeed = 1.0f;
-        Projectile::Type ProjectileType;
-        sf::Vector2f ForwardVector{0.0f, -1.0f};
-
-        Weapon(Projectile::Type type) : ProjectileType(type) {}
-    };
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, uint8_t tier = 0);
     
     namespace Bullet {
         void Create(const Setup& setup);

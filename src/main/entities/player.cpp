@@ -4,6 +4,7 @@
 #include "system/onegungame.hpp"
 #include "system/components.hpp"
 #include "entities/projectile_types.hpp"
+#include "entities/weapon.hpp"
 
 namespace Player {
     constexpr float BaseMaxHealth = 100.0f;
@@ -50,10 +51,7 @@ namespace Player {
         registry.emplace<MaxSpeed>(entity, BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, BaseHitInvincibilityDuration);
         registry.emplace<Fireable>(entity);
-        auto &weapon = registry.emplace<Projectile::Weapon>(entity, Projectile::Type::Bullet);
-        weapon.BaseDamage = BaseDamage;
-        weapon.BaseFireRate = BaseFireRate;
-        weapon.BaseShotSpeed = BaseShotSpeed;
+        registry.emplace<Weapon::Component>(entity, Weapon::Type::MainCannon);
 
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
         registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});

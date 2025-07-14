@@ -7,6 +7,7 @@
 #include "entities/player.hpp"
 #include "entities/projectile_types.hpp"
 #include "entities/enemy_types.hpp"
+#include "entities/weapon.hpp"
 
 namespace OneGunGame { 
 
@@ -390,8 +391,8 @@ namespace OneGunGame {
                 Enemy::Create(setup, static_cast<Enemy::Type>(s_Data.Random.generateInt(static_cast<int>(Enemy::Type::Asteroid), static_cast<int>(Enemy::Type::Drone))));
             }
             if (keyEvent.code == sf::Keyboard::Key::Q) {
-                auto &weapon = s_Data.Registry.get<Projectile::Weapon>(s_Data.Entities.Player);
-                weapon.ProjectileType = static_cast<Projectile::Type>((static_cast<size_t>(weapon.ProjectileType) + 1) % static_cast<size_t>(Projectile::Type::Total));
+                auto &weapon = s_Data.Registry.get<Weapon::Component>(s_Data.Entities.Player);
+                Weapon::ChangePreset(weapon, static_cast<Weapon::Type>((static_cast<uint8_t>(weapon.WeaponType) + 1U) % static_cast<uint8_t>(Weapon::Type::DroneCannon + 1U)));
             }
         };
     }

@@ -6,6 +6,7 @@
 #include "entities/entity.hpp"
 
 #include "entities/explosion_types.hpp"
+#include "entities/weapon.hpp"
 
 namespace Projectile {
     static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> ProjectileSetup = {
@@ -29,14 +30,14 @@ namespace Projectile {
         return setup.ThisEntity;
     }
 
-    entt::entity Fire(entt::registry &registry, entt::entity thisEntity) {
+    entt::entity Fire(entt::registry &registry, entt::entity thisEntity, uint8_t tier) {
         auto fireComponent = registry.try_get<Fireable>(thisEntity);
         if (!fireComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Fireable component", static_cast<int>(thisEntity));
             return entt::null;
         }
 
-        auto weaponComponent = registry.try_get<Projectile::Weapon>(thisEntity);
+        auto weaponComponent = registry.try_get<Weapon::Component>(thisEntity);
         if (!weaponComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Weapon component", static_cast<int>(thisEntity));
             return entt::null;
@@ -54,12 +55,11 @@ namespace Projectile {
             fireDirection = fireDirection.rotatedBy(renderableComponent->Sprite.getRotation());
         }
 
-
         spdlog::trace("Entity {} firing projectile", static_cast<int>(thisEntity));
         auto projectileType = weaponComponent->ProjectileType;
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
         Projectile::Setup setup{registry, registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
-            fireDirection, thisEntity};
+            fireDirection, thisEntity, entt::null, tier};
         return Projectile::Create(setup, projectileType);
     }
 

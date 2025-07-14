@@ -6,6 +6,7 @@
 #include "system/components.hpp"
 
 #include "entities/projectile_types.hpp"
+#include "entities/weapon.hpp"
 
 namespace Explosion {
 
@@ -40,7 +41,7 @@ namespace Explosion {
             return damageFactor;
         }
         
-        auto sourceWeapon = registry.try_get<Projectile::Weapon>(sourceEntity);
+        auto sourceWeapon = registry.try_get<Weapon::Component>(sourceEntity);
         if (!sourceWeapon) {
             spdlog::warn("Explosion entity {} - Source entity {} is missing Weapon component", static_cast<int>(explosionEntity), static_cast<int>(sourceEntity));
             return damageFactor;

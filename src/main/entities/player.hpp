@@ -2,6 +2,10 @@
 
 #include "system/constants.hpp"
 
+namespace Projectile {
+    struct Weapon;
+}
+
 struct Collision;
 
 namespace Player {
@@ -19,4 +23,5 @@ namespace Player {
     void Dash(entt::registry &registry, entt::entity playerEntity);
     void OnCollision(Collision& collision);
     void OnDeath(entt::registry &registry, entt::entity playerEntity);
+    void ChangeWeapon(Projectile::Weapon& weaponComponent);
 }

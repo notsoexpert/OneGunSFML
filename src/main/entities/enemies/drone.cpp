@@ -4,6 +4,7 @@
 #include "entities/projectile_types.hpp"
 #include "system/components.hpp"
 #include "entities/entity.hpp"
+#include "entities/weapon.hpp"
 
 namespace Enemy::Drone {
     static constexpr const char* Name = "Drone";
@@ -29,9 +30,7 @@ namespace Enemy::Drone {
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity);
 
-        auto &weapon = setup.Registry.emplace<Projectile::Weapon>(setup.ThisEntity, FireType);
-        weapon.BaseDamage = FireDamage;
-        weapon.BaseFireRate = FireRate;
+        auto &weapon = setup.Registry.emplace<Weapon::Component>(setup.ThisEntity, Weapon::Type::DroneCannon);
         weapon.ForwardVector = {0.0f, 1.0f};
 
     }

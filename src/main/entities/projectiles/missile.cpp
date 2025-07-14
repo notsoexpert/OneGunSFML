@@ -26,7 +26,7 @@ namespace Projectile::Missile {
     {Flags::Destruct | Flags::Explode, Flags::Destruct | Flags::Explode | Flags::Home};
 
     void Create(const Projectile::Setup& setup) {
-        auto index = setup.Tier.value_or(0U);
+        auto index = setup.Tier;
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
