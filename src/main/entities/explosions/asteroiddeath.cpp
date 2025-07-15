@@ -5,7 +5,7 @@
 
 namespace Explosion::AsteroidDeath {
     static constexpr const char* Name = "Asteroid Death";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionViolet;
+    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionRed;
     static constexpr sf::IntRect TextureRect = {{512, 448}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr float FrameTimeInSeconds = 0.05f;

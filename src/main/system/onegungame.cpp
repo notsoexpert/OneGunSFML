@@ -268,7 +268,7 @@ namespace OneGunGame {
             spdlog::trace("Rendering entity {}: Position ({}, {})", 
                 static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
             s_Data.Context.Window.draw(renderable.Sprite);
-#if DEBUG
+#if DEBUGN
             s_Data.Context.Window.draw(renderable.DebugRect);
 #endif
         });

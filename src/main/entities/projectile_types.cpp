@@ -30,7 +30,7 @@ namespace Projectile {
         return setup.ThisEntity;
     }
 
-    entt::entity Fire(entt::registry &registry, entt::entity thisEntity, uint8_t tier) {
+    entt::entity Fire(entt::registry &registry, entt::entity thisEntity, std::optional<uint8_t> tierOverride) {
         auto fireComponent = registry.try_get<Fireable>(thisEntity);
         if (!fireComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Fireable component", static_cast<int>(thisEntity));
@@ -59,7 +59,7 @@ namespace Projectile {
         auto projectileType = weaponComponent->ProjectileType;
         spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
         Projectile::Setup setup{registry, registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
-            fireDirection, thisEntity, entt::null, tier};
+            fireDirection, thisEntity, entt::null, tierOverride ? tierOverride.value() : weaponComponent->ProjectileTier};
         return Projectile::Create(setup, projectileType);
     }
 

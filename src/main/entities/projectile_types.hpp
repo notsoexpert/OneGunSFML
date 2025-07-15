@@ -25,7 +25,7 @@ namespace Projectile {
         Type ThisType;
         uint8_t Specification;
         float DamageFactor;
-        std::optional<uint8_t> Tier{};
+        uint8_t Tier = 0;
 
         Component(Type type = Type::Bullet, 
             uint8_t specification = Flags::Destruct, 
@@ -41,7 +41,7 @@ namespace Projectile {
     };
 
     entt::entity Create(Setup& setup, Type type);
-    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, uint8_t tier = 0);
+    entt::entity Fire(entt::registry &registry, entt::entity playerEntity, std::optional<uint8_t> tierOverride = std::nullopt);
     
     namespace Bullet {
         void Create(const Setup& setup);

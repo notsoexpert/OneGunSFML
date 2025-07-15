@@ -63,7 +63,7 @@ namespace Projectile::Laser {
             registry.get<Collidable>(thisEntity).Source
         };
         Explosion::LaserHit::Create(explosionSetup);
-        Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier.value_or(0U));
+        Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier);
 
 
         /* SPLIT INTO WEAKER LASERS */
@@ -85,8 +85,8 @@ namespace Projectile::Laser {
             splitHitLimiting.HitEntities = registry.get<HitLimiting>(thisEntity).HitEntities;
             Component& splitComponent = registry.get<Component>(setup.ThisEntity);
             splitComponent.DamageFactor = component.DamageFactor * SplitDamageFactor;
-            splitComponent.Tier = static_cast<uint8_t>(std::clamp<int>(component.Tier.value_or(0U) - 1, 0, Tiers - 1));
-            splitRenderable.Sprite.setTextureRect(TextureRect.at(splitComponent.Tier.value_or(0U)));
+            splitComponent.Tier = static_cast<uint8_t>(std::clamp<int>(component.Tier - 1, 0, Tiers - 1));
+            splitRenderable.Sprite.setTextureRect(TextureRect.at(splitComponent.Tier));
             Splitting& splitSplitting = registry.get<Splitting>(setup.ThisEntity);
             splitSplitting.CurrentSplits = splitting.CurrentSplits + 1;
             splitSplitting.OriginalDirection = splitting.OriginalDirection;
