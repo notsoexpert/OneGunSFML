@@ -39,10 +39,17 @@ namespace Player {
         renderable.Sprite.setPosition(startPosition);
         renderable.Sprite.setTextureRect(sf::IntRect({0, 0}, Size));
         
-        registry.emplace<Collidable>(entity, sf::IntRect{CollisionOffset, CollisionSize}, entity,
-            OneGunGame::CollisionLayer::Player,
-            static_cast<OneGunGame::CollisionLayer>(OneGunGame::Enemy | OneGunGame::Projectile | OneGunGame::Obstacle),
-            OnCollision);
+        registry.emplace<Collidable>(
+            entity, 
+            sf::IntRect{CollisionOffset, CollisionSize}, 
+            entity,
+            OneGunGame::CollisionLayer::Player, 
+            static_cast<uint8_t>(
+                OneGunGame::Enemy | OneGunGame::EnemyProjectile | 
+                OneGunGame::Obstacle | OneGunGame::NeutralProjectile
+            ),
+            OnCollision
+        );
         registry.emplace<Velocity>(entity);
         registry.emplace<Acceleration>(entity);
         registry.emplace<Friction>(entity, BaseFriction);

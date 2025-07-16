@@ -47,12 +47,15 @@ namespace Projectile::Missile {
 
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace<Destructing>(thisEntity);
+        auto& collidable = registry.get<Collidable>(thisEntity);
 
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             registry.get<Velocity>(thisEntity).Value,
-            registry.get<Collidable>(thisEntity).Source
+            collidable.CollisionLayer,
+            collidable.CollisionMask,
+            collidable.Source
         };
         Explosion::Missile::Create(explosionSetup);
     }

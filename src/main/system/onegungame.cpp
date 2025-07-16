@@ -87,8 +87,8 @@ namespace OneGunGame {
     void Cleanup() {
     }
 
-    bool FilterCollidable(OneGunGame::CollisionLayer mask, OneGunGame::CollisionLayer type) {
-        return (mask & type) != 0;
+    bool FilterCollidable(uint8_t mask, OneGunGame::CollisionLayer type) {
+        return (mask & static_cast<uint8_t>(type)) != 0;
     }
 
     template<typename T>
@@ -315,7 +315,7 @@ namespace OneGunGame {
                 if (entity == otherEntity || otherEntity == collidable.Source) {
                     continue;
                 }
-                if (!FilterCollidable(collidable.Mask, otherCollidable.Layer)) {
+                if (!FilterCollidable(collidable.CollisionMask, otherCollidable.CollisionLayer)) {
                     continue;
                 }
 
@@ -386,7 +386,18 @@ namespace OneGunGame {
                 sf::Vector2f flyDirection = {0.0f, 1.0f};
                 flyDirection = flyDirection.rotatedBy(sf::radians(s_Data.Random.generateFloat(-HalfPi, HalfPi)));
                 
-                Enemy::Setup setup{s_Data.Registry, spawnPosition, flyDirection, entt::null, entt::null};
+                Enemy::Setup setup{
+                    s_Data.Registry, 
+                    spawnPosition, 
+                    flyDirection, 
+                    CollisionLayer::Enemy,
+                    static_cast<uint8_t>(
+                        CollisionLayer::Player | CollisionLayer::PlayerProjectile |
+                        CollisionLayer::NeutralProjectile
+                    ),
+                    entt::null, 
+                    entt::null
+                };
                 Enemy::Create(setup, static_cast<Enemy::Type>(s_Data.Random.generateInt(static_cast<int>(Enemy::Type::Asteroid), static_cast<int>(Enemy::Type::Drone))));
             }
             if (keyEvent.code == sf::Keyboard::Key::Q) {
@@ -425,26 +436,6 @@ namespace OneGunGame {
             inputVector = inputVector / std::sqrt(inputVector.x * inputVector.x + inputVector.y * inputVector.y);
         }
         return inputVector;
-    }
-
-    CollisionLayer GetHitMask(CollisionLayer layer){
-        switch (layer) {
-            case CollisionLayer::Player:
-                return static_cast<CollisionLayer>
-                (CollisionLayer::Enemy | CollisionLayer::Obstacle);
-            case CollisionLayer::Projectile:
-                return static_cast<CollisionLayer>
-                (CollisionLayer::Player | CollisionLayer::Enemy | 
-                    CollisionLayer::Obstacle);
-            case CollisionLayer::Enemy:
-                return static_cast<CollisionLayer>
-                (CollisionLayer::Player | CollisionLayer::Obstacle);
-            case CollisionLayer::Obstacle:
-                return static_cast<CollisionLayer>
-                (CollisionLayer::Player | CollisionLayer::Projectile | 
-                    CollisionLayer::Enemy);
-        }
-        return CollisionLayer::Obstacle;
     }
 
     uint32_t GetEntityCount() {

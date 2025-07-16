@@ -12,6 +12,8 @@ namespace Projectile {
         entt::registry &Registry;
         const sf::Vector2f &Position;
         const sf::Vector2f &Direction;
+        std::optional<OneGunGame::CollisionLayer> CollisionLayer;
+        std::optional<uint8_t> CollisionMask;
         entt::entity Source = entt::null;
         entt::entity ThisEntity = entt::null;
         uint8_t Tier = 0U;

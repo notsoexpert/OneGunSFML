@@ -41,6 +41,7 @@ namespace Explosion {
     }
     namespace Bomb {
         void Create(Setup& setup);
+        void CreateBoomWave(entt::registry &registry, entt::entity boomTicker);
     }
     namespace IceHit {
         void Create(Setup& setup);

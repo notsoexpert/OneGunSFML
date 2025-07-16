@@ -31,7 +31,10 @@ namespace Enemy::Drone {
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity);
 
-        auto &weapon = setup.Registry.emplace<Weapon::Component>(setup.ThisEntity, Weapon::Type::DroneCannon);
+        auto &weapon = setup.Registry.emplace<Weapon::Component>(
+            setup.ThisEntity, 
+            Weapon::Type::DroneCannon
+        );
         weapon.ForwardVector = {0.0f, 1.0f};
 
     }
@@ -46,8 +49,7 @@ namespace Enemy::Drone {
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value,
-            registry.get<Collidable>(thisEntity).Source
+            registry.get<Velocity>(thisEntity).Value
         };
         Explosion::DroneDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});

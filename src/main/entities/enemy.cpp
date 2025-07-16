@@ -26,8 +26,18 @@ Renderable& Enemy::SetupRenderable(const Setup& setup, OneGunGame::Images imageI
     return renderable;
 }
 Collidable& Enemy::SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
-    return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, setup.Source, OneGunGame::CollisionLayer::Enemy,
-        static_cast<OneGunGame::CollisionLayer>(OneGunGame::Player | OneGunGame::Projectile),
+    return setup.Registry.emplace<Collidable>(
+        setup.ThisEntity, 
+        collisionRect, 
+        setup.Source, 
+        setup.CollisionLayer.value_or(
+            OneGunGame::CollisionLayer::Enemy
+        ),
+        setup.CollisionMask.value_or(
+            static_cast<uint8_t>(
+                OneGunGame::Player | OneGunGame::PlayerProjectile
+            )
+        ),
         OnCollision);
 }
 Health& Enemy::SetupHealth(const Setup& setup, float maxHealth){

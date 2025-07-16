@@ -28,10 +28,18 @@ namespace Explosion {
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
         sf::IntRect centeredRect = collisionRect;
         centeredRect.position -= centeredRect.size / 2;
-        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(OneGunGame::CollisionLayer::Projectile);
-        return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, 
-            setup.Source, OneGunGame::CollisionLayer::Projectile, mask,
-            OnCollision);
+        return setup.Registry.emplace<Collidable>(
+            setup.ThisEntity, 
+            collisionRect, 
+            setup.Source, 
+            setup.CollisionLayer.value_or(
+                OneGunGame::CollisionLayer::NeutralProjectile
+            ), 
+            setup.CollisionMask.value_or(
+                static_cast<uint8_t>(OneGunGame::CollisionLayer::Obstacle)
+            ),
+            OnCollision
+        );
     }
 
     float GetExplosionDamage(entt::registry &registry, entt::entity explosionEntity, float damageFactor) {

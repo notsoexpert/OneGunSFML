@@ -50,23 +50,18 @@ namespace Projectile::Laser {
         registry.emplace_or_replace<Destructing>(thisEntity);
 
         auto &component = registry.get<Component>(thisEntity);
-
-        /* GET RELEVANT COMPONENTS */
         auto &renderable = registry.get<Renderable>(thisEntity);
         auto &velocity = registry.get<Velocity>(thisEntity);
+        auto &collidable = registry.get<Collidable>(thisEntity);
 
-        /* CREATE EXPLOSION */
         Explosion::Setup explosionSetup{
             registry,
             renderable.Sprite.getPosition(),
-            velocity.Value,
-            registry.get<Collidable>(thisEntity).Source
+            velocity.Value
         };
         Explosion::LaserHit::Create(explosionSetup);
         Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier);
 
-
-        /* SPLIT INTO WEAKER LASERS */
         auto& splitting = registry.get<Splitting>(thisEntity);
         if (!splitting.CanSplit()) {
             return;
@@ -76,7 +71,14 @@ namespace Projectile::Laser {
             sf::Angle rotation = sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f));
             sf::Vector2f newDirection = splitting.OriginalDirection.rotatedBy(rotation).normalized();
 
-            Projectile::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, registry.get<Collidable>(thisEntity).Source};
+            Projectile::Setup setup{
+                registry, 
+                renderable.Sprite.getPosition(), 
+                newDirection, 
+                collidable.CollisionLayer,
+                collidable.CollisionMask,
+                collidable.Source
+            };
             Projectile::Create(setup, Projectile::Type::Laser);
 
             Renderable& splitRenderable = registry.get<Renderable>(setup.ThisEntity);

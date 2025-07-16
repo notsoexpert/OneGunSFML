@@ -23,14 +23,16 @@ namespace OneGunGame {
     constexpr auto PiSquared = Pi * Pi;
     constexpr auto HalfPi = Pi / 2.0f;
 
-    enum CollisionLayer {
-        Player = 1 << 0,      // Player layer
-        Projectile = 1 << 1,  // Projectile layer
-        Enemy = 1 << 2,       // Enemy layer
-        Obstacle = 1 << 3     // Obstacle layer
+    enum CollisionLayer : uint8_t {
+        Player = 1 << 0,
+        PlayerProjectile = 1 << 1,
+        Enemy = 1 << 2,
+        EnemyProjectile = 1 << 3,
+        Obstacle = 1 << 4,
+        NeutralProjectile = 1 << 5
     };
 
-    enum Images {
+    enum Images : uint8_t {
         Background = 0,
         SpriteSheet,
         ExplosionRed,

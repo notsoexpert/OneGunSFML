@@ -31,18 +31,31 @@ namespace Enemy::LargeAsteroid {
         
         auto &renderable = registry.get<Renderable>(thisEntity);
         auto &velocity = registry.get<Velocity>(thisEntity);
+        auto &collidable = registry.get<Collidable>(thisEntity);
 
         for (auto i : std::ranges::iota_view{0U, DeathAsteroids}) {
-            sf::Vector2f newDirection = velocity.Value.rotatedBy(sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f))).normalized();
-            Enemy::Setup setup{registry, renderable.Sprite.getPosition(), newDirection, entt::null, thisEntity};
+            sf::Vector2f newDirection = velocity.Value.rotatedBy(
+                sf::radians(
+                    OneGunGame::HalfPi / 2.0f * 
+                    (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f)
+                )
+            ).normalized();
+            Enemy::Setup setup{
+                registry, 
+                renderable.Sprite.getPosition(), 
+                newDirection, 
+                collidable.CollisionLayer,
+                collidable.CollisionMask,
+                collidable.Source,
+                thisEntity
+            };
             Enemy::Create(setup, Enemy::Type::Asteroid);
         }
 
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value,
-            registry.get<Collidable>(thisEntity).Source
+            registry.get<Velocity>(thisEntity).Value
         };
         Explosion::AsteroidDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({1.25f, 1.25f});

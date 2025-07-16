@@ -21,7 +21,6 @@ namespace OneGunGame {
     void Render();
 
     sf::Vector2f GetInputVector();
-    CollisionLayer GetHitMask(CollisionLayer layer);
 
     sf::Vector2f GetWindowSize();
     uint32_t GetEntityCount();

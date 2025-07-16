@@ -33,7 +33,15 @@ namespace Enemy::Comet {
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
 
-        auto trailSetup = Enemy::Setup{setup.Registry, {}, setup.Direction, setup.Source, setup.Registry.create()};
+        auto trailSetup = Enemy::Setup{
+            setup.Registry, 
+            sf::Vector2f{}, 
+            setup.Direction, 
+            std::nullopt,
+            std::nullopt,
+            setup.Source, 
+            setup.Registry.create()
+        };
         SetupMovement(trailSetup, MoveSpeed);
         trailSetup.Position = setup.Position - setup.Direction.componentWiseMul(static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size).componentWiseMul(renderable.Sprite.getScale()));
 
@@ -61,12 +69,28 @@ namespace Enemy::Comet {
         /* DEATH STUFF */
         auto &renderable = registry.get<Renderable>(thisEntity);
         auto &velocity = registry.get<Velocity>(thisEntity);
+        auto &collidable = registry.get<Collidable>(thisEntity);
 
         /* LAUNCH ICE PROJECTILES */
         for (auto i : std::ranges::iota_view{0U, DeathProjectiles}) {
-            sf::Vector2f direction = velocity.Value.rotatedBy(sf::radians((OneGunGame::Pi * 2) / (DeathProjectiles==0?1:DeathProjectiles) * i)).normalized();
+            sf::Vector2f direction = velocity.Value.rotatedBy(
+                sf::radians(
+                    (OneGunGame::Pi * 2) / 
+                    (DeathProjectiles==0?1:DeathProjectiles) * i
+                )
+            ).normalized();
 
-            Projectile::Setup setup{registry, renderable.Sprite.getPosition(), direction, registry.get<Collidable>(thisEntity).Source};
+            Projectile::Setup setup{
+                registry, 
+                renderable.Sprite.getPosition(), 
+                direction, 
+                OneGunGame::NeutralProjectile,
+                static_cast<uint8_t>(
+                    OneGunGame::Player | OneGunGame::Enemy | 
+                    OneGunGame::Obstacle
+                ),
+                collidable.Source
+            };
             Projectile::Create(setup, Projectile::Type::Ice);
         }
 

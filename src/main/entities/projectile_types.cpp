@@ -4,8 +4,8 @@
 #include "system/components.hpp"
 #include "system/onegungame.hpp"
 #include "entities/entity.hpp"
-
 #include "entities/explosion_types.hpp"
+#include "entities/enemy_types.hpp"
 #include "entities/weapon.hpp"
 
 namespace Projectile {
@@ -55,11 +55,27 @@ namespace Projectile {
             fireDirection = fireDirection.rotatedBy(renderableComponent->Sprite.getRotation());
         }
 
-        spdlog::trace("Entity {} firing projectile", static_cast<int>(thisEntity));
         auto projectileType = weaponComponent->ProjectileType;
-        spdlog::trace("Projectile type: {}", static_cast<int>(projectileType));
-        Projectile::Setup setup{registry, registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
-            fireDirection, thisEntity, entt::null, tierOverride ? tierOverride.value() : weaponComponent->ProjectileTier};
+        auto collisionLayer = OneGunGame::CollisionLayer::NeutralProjectile;
+        auto collisionMask = OneGunGame::CollisionLayer::Player | OneGunGame::CollisionLayer::Enemy | OneGunGame::CollisionLayer::Obstacle;
+        if (thisEntity == OneGunGame::GetPlayerEntity()) {
+            collisionLayer = OneGunGame::CollisionLayer::PlayerProjectile;
+            collisionMask &= ~OneGunGame::CollisionLayer::Player;
+        } else if (registry.try_get<Enemy::Component>(thisEntity)) {
+            collisionLayer = OneGunGame::CollisionLayer::EnemyProjectile;
+            collisionMask &= ~OneGunGame::CollisionLayer::Enemy;
+        }
+        
+        Projectile::Setup setup{
+            registry, 
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
+            fireDirection,
+            collisionLayer,
+            static_cast<uint8_t>(collisionMask),
+            thisEntity, 
+            entt::null, 
+            tierOverride.value_or(weaponComponent->ProjectileTier)
+        };
         return Projectile::Create(setup, projectileType);
     }
 
@@ -75,8 +91,7 @@ namespace Projectile {
         Explosion::Setup explosionSetup{
             registry,
             (registry.get<Renderable>(projectileEntity).Sprite.getPosition() * 0.5f) + (registry.get<Renderable>(otherEntity).Sprite.getPosition() * 0.5f),
-            registry.get<Velocity>(projectileEntity).Value,
-            registry.get<Collidable>(projectileEntity).Source
+            registry.get<Velocity>(projectileEntity).Value
         };
         Explosion::BurnHit::Create(explosionSetup);
 

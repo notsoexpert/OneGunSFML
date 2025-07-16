@@ -194,17 +194,17 @@ struct Collidable {
     
     sf::IntRect CollisionRect;
     entt::entity Source;
-    OneGunGame::CollisionLayer Layer;
-    OneGunGame::CollisionLayer Mask;
+    OneGunGame::CollisionLayer CollisionLayer;
+    uint8_t CollisionMask;
 
     Func OnCollision;
 
     Collidable(const sf::IntRect& rect, entt::entity source, OneGunGame::CollisionLayer layer, 
-        OneGunGame::CollisionLayer mask, Func onCollision = {}) : 
+        uint8_t mask, Func onCollision = {}) : 
         CollisionRect(rect),
         Source(source),
-        Layer(layer),
-        Mask(mask),
+        CollisionLayer(layer),
+        CollisionMask(mask),
         OnCollision(onCollision)
     {}
 };

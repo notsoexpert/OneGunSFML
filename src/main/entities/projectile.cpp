@@ -43,23 +43,39 @@ namespace Projectile {
     }
 
     Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect) {
-        auto &renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
-            OneGunGame::GetTexture(imageID), 25);
+        auto &renderable = setup.Registry.emplace<Renderable>(
+            setup.ThisEntity, 
+            OneGunGame::GetTexture(imageID), 
+            25
+        );
         renderable.Sprite.setTextureRect(textureRect);
-        renderable.Sprite.setOrigin({textureRect.size.x / 2.0f, textureRect.size.y / 2.0f});
+        renderable.Sprite.setOrigin(
+            {textureRect.size.x / 2.0f, textureRect.size.y / 2.0f}
+        );
         renderable.Sprite.setPosition(setup.Position);
         return renderable;
     }
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
-        OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(OneGunGame::CollisionLayer::Projectile);
-        return setup.Registry.emplace<Collidable>(setup.ThisEntity, collisionRect, 
-            setup.Source, OneGunGame::CollisionLayer::Projectile, mask,
-            OnCollision);
+        return setup.Registry.emplace<Collidable>(
+            setup.ThisEntity, 
+            collisionRect, 
+            setup.Source, 
+            setup.CollisionLayer.value_or(
+                OneGunGame::CollisionLayer::NeutralProjectile
+            ), 
+            setup.CollisionMask.value_or(
+                static_cast<uint8_t>(OneGunGame::CollisionLayer::Obstacle)
+            ),
+            OnCollision
+        );
     }
 
     void SetupMovement(const Setup& setup, float moveSpeed){
         setup.Registry.emplace<Velocity>(setup.ThisEntity);
-        setup.Registry.emplace<Acceleration>(setup.ThisEntity, setup.Direction * moveSpeed);
+        setup.Registry.emplace<Acceleration>(
+            setup.ThisEntity, 
+            setup.Direction * moveSpeed
+        );
         setup.Registry.emplace<MaxSpeed>(setup.ThisEntity, moveSpeed);
     }
 
