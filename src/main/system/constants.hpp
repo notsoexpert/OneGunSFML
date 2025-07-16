@@ -9,14 +9,14 @@ namespace OneGunGame {
     };
     
     struct {
-        sf::Vector2u WindowSize = Default::WindowSize;
+        //sf::Vector2u WindowSize = Default::WindowSize; // For if I want to use preset window sizes
         sf::ContextSettings ContextSettings = Default::ContextSettings;
         sf::State WindowState = Default::WindowState;
         int FrameRateLimit = Default::FrameRateLimit;
     } Configuration;
     
     constexpr auto WindowTitle = "One Gun - SFML";
-    constexpr auto WindowStyle = sf::Style::Titlebar;
+    constexpr auto WindowStyle = sf::Style::Default;
     constexpr auto ViewSize = sf::Vector2f{800.0f, 600.0f};
 
     constexpr auto Pi = 3.1415926535f;

@@ -21,7 +21,7 @@ namespace OneGunGame {
         spdlog::info("Argc: {0}", argc);
         for (auto i : std::ranges::iota_view{0, argc}) {
             spdlog::info("Argv[{0}]: {1}", i, argv[i]);
-    
+
             std::string_view arg{argv[i]};
 
             if (arg.starts_with("-l")) {
@@ -47,7 +47,7 @@ namespace OneGunGame {
         auto setupResult = Setup(/*pass command line arguments for specific window config*/);
         if (!setupResult) {
             spdlog::error("Setup failed: {}", setupResult.error());
-            return -1;
+            return 1;
         }
         spdlog::info("Setup completed successfully.");
 
@@ -64,8 +64,7 @@ namespace OneGunGame {
 
     std::expected<void, std::string> Setup() {
         SetupContext();
-        auto setupResult = SetupTextures();
-        if (!setupResult) {
+        if (auto setupResult = SetupTextures(); !setupResult) {
             return setupResult;
         }
         SetupEventHandlers();
@@ -335,7 +334,7 @@ namespace OneGunGame {
     }
 
     void SetupContext() {
-        s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(Configuration.WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
+        s_Data.Context.Window = sf::RenderWindow(sf::VideoMode(OneGunGame::Default::WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
         s_Data.Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
         s_Data.Context.View.setCenter(sf::Vector2f{ViewSize.x / 2, ViewSize.y / 2});
         s_Data.Context.View.setSize(static_cast<sf::Vector2f>(ViewSize));
