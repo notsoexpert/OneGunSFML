@@ -9,7 +9,7 @@ namespace Weapon {
             return;
         }
 
-        spdlog::warn("Updating weapon preset to {}", static_cast<uint8_t>(newType));
+        spdlog::trace("Updating weapon preset to {}", static_cast<uint8_t>(newType));
         weap.WeaponType = newType;
         switch (newType) {
             case Type::MainCannon:
