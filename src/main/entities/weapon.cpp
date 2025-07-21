@@ -13,58 +13,58 @@ namespace Weapon {
         weap.WeaponType = newType;
         switch (newType) {
             case Type::MainCannon:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 2.0f;
-                weap.BaseShotSpeed = 1.0f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 2.0f;
+                weap.CurrentShotSpeedFactor = 1.0f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 2U;
                 return;
             case Type::ChainGun:
-                weap.BaseDamage = 0.15f;
-                weap.BaseFireRate = 6.0f;
-                weap.BaseShotSpeed = 1.0f;
+                weap.CurrentDamageFactor = 0.15f;
+                weap.CurrentFireRateFactor = 6.0f;
+                weap.CurrentShotSpeedFactor = 1.0f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::Blaster:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 1.5f;
-                weap.BaseShotSpeed = 0.75f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 1.5f;
+                weap.CurrentShotSpeedFactor = 0.75f;
                 weap.ProjectileType = Projectile::Type::Laser;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::PlasmaThrower:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 4.0f;
-                weap.BaseShotSpeed = 0.5f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 4.0f;
+                weap.CurrentShotSpeedFactor = 0.5f;
                 weap.ProjectileType = Projectile::Type::Plasma;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::Launcher:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 1.0f;
-                weap.BaseShotSpeed = 1.0f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 1.0f;
+                weap.CurrentShotSpeedFactor = 1.0f;
                 weap.ProjectileType = Projectile::Type::Missile;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::GuidedLauncher:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 1.0f;
-                weap.BaseShotSpeed = 0.8f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 1.0f;
+                weap.CurrentShotSpeedFactor = 0.8f;
                 weap.ProjectileType = Projectile::Type::Missile;
                 weap.ProjectileTier = 1U;
                 return;
             case Type::Dropper:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 1.0f;
-                weap.BaseShotSpeed = 1.0f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 1.0f;
+                weap.CurrentShotSpeedFactor = 1.0f;
                 weap.ProjectileType = Projectile::Type::Bomb;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::DroneCannon:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 0.5f;
-                weap.BaseShotSpeed = 0.5f;
+                weap.CurrentDamageFactor = 1.0f;
+                weap.CurrentFireRateFactor = 0.5f;
+                weap.CurrentShotSpeedFactor = 0.5f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 0U;
         }

@@ -30,7 +30,7 @@ namespace Entity {
             spdlog::warn("GetBasePower called on entity {} with no Weapon component, returning 1.0f", static_cast<int>(thisEntity));
             return 1.0f;
         }
-        return weapComp->BaseDamage;
+        return weapComp->GetDamage();
     }
 
     bool Damage(entt::registry &registry, entt::entity attacker, entt::entity target, float damage) {

@@ -55,6 +55,6 @@ namespace Explosion {
             return damageFactor;
         }
 
-        return damageFactor * sourceWeapon->BaseDamage;
+        return damageFactor * sourceWeapon->GetDamage();
     }
 }

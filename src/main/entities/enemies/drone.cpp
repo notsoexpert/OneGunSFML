@@ -6,6 +6,7 @@
 #include "entities/entity.hpp"
 #include "entities/weapon.hpp"
 #include "entities/explosion_types.hpp"
+#include "system/onegungame.hpp"
 
 namespace Enemy::Drone {
     static constexpr const char* Name = "Drone";
@@ -18,7 +19,8 @@ namespace Enemy::Drone {
 
     static constexpr float FireDamage = 1.0f;
     static constexpr float FireRate = 1.0f;
-    static constexpr Projectile::Type FireType = Projectile::Type::Bullet;
+
+    static constexpr sf::Vector2f BaseForwardVector = {0.0f, 1.0f};
 
     void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -35,12 +37,39 @@ namespace Enemy::Drone {
             setup.ThisEntity, 
             Weapon::Type::DroneCannon
         );
-        weapon.ForwardVector = {0.0f, 1.0f};
+        weapon.SetBaseStats(FireDamage, FireRate);
+        weapon.ForwardVector = BaseForwardVector;
 
     }
 
     void Behavior(entt::registry &registry, entt::entity thisEntity){
+        auto &renderable = registry.get<Renderable>(thisEntity);
+        
+        // helper function probably needed
+        sf::IntRect drone = renderable.Sprite.getTextureRect();
+        drone.position = OneGunGame::RoundVector(renderable.Sprite.getPosition());
+        drone.size = OneGunGame::RoundVector(static_cast<sf::Vector2f>(drone.size).componentWiseMul(renderable.Sprite.getScale()));
+        sf::IntRect window = {{0,0}, sf::Vector2i(OneGunGame::GetWindowSize())};
+        if (!drone.findIntersection(window)){
+            return;
+        }
+
         Projectile::Fire(registry, thisEntity);
+
+        auto playerEntity = OneGunGame::GetPlayerEntity();
+
+        if (!registry.valid(playerEntity)){
+            spdlog::warn("Drone::Behavior - player entity invalid");
+            return;
+        }
+
+        auto playerRenderable = registry.try_get<Renderable>(playerEntity);
+        if (!playerRenderable) {
+            spdlog::warn("Drone::Behavior - player entity missing Renderable component");
+            return;
+        }
+        
+        renderable.Sprite.setRotation((playerRenderable->Sprite.getPosition() - renderable.Sprite.getPosition()).angle() - sf::radians(OneGunGame::HalfPi));
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){

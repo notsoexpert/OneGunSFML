@@ -38,12 +38,34 @@ namespace Weapon {
         float BaseDamage = 1.0f;
         float BaseFireRate = 1.0f;
         float BaseShotSpeed = 1.0f;
+        float CurrentDamageFactor = BaseDamage;
+        float CurrentFireRateFactor = BaseFireRate;
+        float CurrentShotSpeedFactor = BaseShotSpeed;
         uint8_t ProjectileTier = 0U;
         Projectile::Type ProjectileType;
         Weapon::Type WeaponType;
 
         Component(Weapon::Type type) : WeaponType(type) {
             ChangePreset(*this, type);
+        }
+
+        void SetBaseStats(float damage = 1.0f, float fireRate = 1.0f, float shotSpeed = 1.0f) {
+            BaseDamage = damage;
+            BaseFireRate = fireRate;
+            BaseShotSpeed = shotSpeed;
+            ChangePreset(*this, type);
+        }
+
+        float GetDamage() const {
+            return BaseDamage * CurrentDamageFactor;
+        }
+
+        float GetFireRate() const {
+            return BaseFireRate * CurrentFireRateFactor;
+        }
+
+        float GetShotSpeed() const {
+            return BaseShotSpeed * CurrentShotSpeedFactor;
         }
     };
 }

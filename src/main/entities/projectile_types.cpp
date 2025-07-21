@@ -43,7 +43,7 @@ namespace Projectile {
             return entt::null;
         }
         
-        if (!fireComponent->Fire(weaponComponent->BaseFireRate)) {
+        if (!fireComponent->Fire(weaponComponent->GetFireRate())) {
             spdlog::trace("Entity {} not ready to fire", static_cast<int>(thisEntity));
             return entt::null;
         }
