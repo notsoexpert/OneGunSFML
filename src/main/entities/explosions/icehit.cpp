@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "entities/explosion_types.hpp"
 
-#include "system/onegungame.hpp"
-#include "system/components.hpp"
+#include "systems/onegungame.hpp"
+#include "systems/components.hpp"
 
 namespace Explosion::IceHit {
     static constexpr const char* Name = "Ice Hit";

@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "projectile_types.hpp"
 
-#include "system/components.hpp"
-#include "system/onegungame.hpp"
+#include "systems/components.hpp"
+#include "systems/onegungame.hpp"
 #include "entities/entity.hpp"
 #include "entities/explosion_types.hpp"
 #include "entities/enemy_types.hpp"

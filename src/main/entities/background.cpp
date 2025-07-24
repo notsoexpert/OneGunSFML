@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "background.hpp"
 
-#include "system/onegungame.hpp"
-#include "system/components.hpp"
+#include "systems/onegungame.hpp"
+#include "systems/components.hpp"
 
 namespace Background {
 

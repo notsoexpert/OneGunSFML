@@ -2,8 +2,8 @@
 #include "explosion.hpp"
 
 #include "entities/entity.hpp"
-#include "system/onegungame.hpp"
-#include "system/components.hpp"
+#include "systems/onegungame.hpp"
+#include "systems/components.hpp"
 
 #include "entities/projectile_types.hpp"
 #include "entities/weapon.hpp"

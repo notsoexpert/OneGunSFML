@@ -1,7 +1,7 @@
 #pragma once
 
-#include "system/constants.hpp"
-#include "system/components.hpp"
+#include "systems/constants.hpp"
+#include "systems/components.hpp"
 
 struct Collision;
 

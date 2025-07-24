@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "entities/explosion_types.hpp"
 
-#include "system/components.hpp"
-#include "system/onegungame.hpp"
+#include "systems/components.hpp"
+#include "systems/onegungame.hpp"
 
 namespace Explosion::Bomb {
     static constexpr const char* Name = "Bomb";

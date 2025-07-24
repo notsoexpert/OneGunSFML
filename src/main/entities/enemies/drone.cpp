@@ -2,11 +2,11 @@
 #include "entities/enemy_types.hpp"
 
 #include "entities/projectile_types.hpp"
-#include "system/components.hpp"
+#include "systems/components.hpp"
 #include "entities/entity.hpp"
 #include "entities/weapon.hpp"
 #include "entities/explosion_types.hpp"
-#include "system/onegungame.hpp"
+#include "systems/onegungame.hpp"
 
 namespace Enemy::Drone {
     static constexpr const char* Name = "Drone";

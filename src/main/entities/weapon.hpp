@@ -53,7 +53,7 @@ namespace Weapon {
             BaseDamage = damage;
             BaseFireRate = fireRate;
             BaseShotSpeed = shotSpeed;
-            ChangePreset(*this, type);
+            ChangePreset(*this, WeaponType);
         }
 
         float GetDamage() const {

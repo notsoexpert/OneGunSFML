@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system/constants.hpp"
+#include "systems/constants.hpp"
 #include "entities/explosion.hpp"
 
 struct Renderable;

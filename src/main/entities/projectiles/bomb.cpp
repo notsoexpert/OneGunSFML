@@ -1,9 +1,9 @@
 #include "pch.hpp"
 #include "entities/projectile_types.hpp"
 
-#include "system/onegungame.hpp"
+#include "systems/onegungame.hpp"
 #include "entities/entity.hpp"
-#include "system/components.hpp"
+#include "systems/components.hpp"
 #include "entities/explosion_types.hpp"
 
 namespace Projectile::Bomb {

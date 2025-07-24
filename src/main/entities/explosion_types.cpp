@@ -1,8 +1,8 @@
 #include "pch.hpp"
 #include "explosion_types.hpp"
 
-#include "system/onegungame.hpp"
-#include "system/components.hpp"
+#include "systems/onegungame.hpp"
+#include "systems/components.hpp"
 #include "entities/entity.hpp"
 
 namespace Explosion {

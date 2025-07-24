@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "entities/explosion_types.hpp"
 
-#include "system/components.hpp"
+#include "systems/components.hpp"
 
 namespace Explosion::HunterDeath {
     static constexpr const char* Name = "Hunter Death";
