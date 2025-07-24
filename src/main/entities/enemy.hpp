@@ -32,5 +32,6 @@ namespace Enemy {
     Health& SetupHealth(const Setup& setup, float maxHealth, Callback callback = {});
     void SetupMovement(const Setup& setup, float moveSpeed);
     void SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds);
+    Behavior& SetupBehavior(const Setup& setup, Callback callback = {});
     void OnCollision(Collision& collision);
 }

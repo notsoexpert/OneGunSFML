@@ -44,9 +44,19 @@ namespace Weapon {
         uint8_t ProjectileTier = 0U;
         Projectile::Type ProjectileType;
         Weapon::Type WeaponType;
+        sf::Clock Clock;
 
         Component(Weapon::Type type) : WeaponType(type) {
             ChangePreset(*this, type);
+            Clock.restart();
+        }
+
+        bool Fire() {
+            if (Clock.getElapsedTime().asSeconds() >= 1.0f / std::clamp(GetFireRate(), 0.0001f, INFINITY)) {
+                Clock.restart();
+                return true;
+            }
+            return false;
         }
 
         void SetBaseStats(float damage = 1.0f, float fireRate = 1.0f, float shotSpeed = 1.0f) {

@@ -82,22 +82,6 @@ struct HitInvincibility {
 
 };
 
-struct Fireable {
-    sf::Clock Clock;
-
-    Fireable() {
-        Clock.restart();
-    }
-
-    bool Fire(float fireRate = 1.0f) {
-        if (Clock.getElapsedTime().asSeconds() >= 1.0f / std::clamp(fireRate, 0.0001f, INFINITY)) {
-            Clock.restart();
-            return true;
-        }
-        return false;
-    }
-};
-
 struct Dashable {
     sf::Clock DashClock;
     sf::Clock DashCooldownClock;

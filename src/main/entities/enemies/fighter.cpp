@@ -18,9 +18,8 @@ namespace Enemy::Fighter {
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
         SetupHealth(setup, MaxHealth, Death);
+        SetupBehavior(setup, Behavior);
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
-
-        setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
     }
 
     void Behavior(entt::registry &registry, entt::entity thisEntity){

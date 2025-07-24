@@ -31,19 +31,13 @@ namespace Projectile {
     }
 
     entt::entity Fire(entt::registry &registry, entt::entity thisEntity, std::optional<uint8_t> tierOverride) {
-        auto fireComponent = registry.try_get<Fireable>(thisEntity);
-        if (!fireComponent) {
-            spdlog::warn("Projectile::Fire - Entity {} does not have a Fireable component", static_cast<int>(thisEntity));
-            return entt::null;
-        }
-
         auto weaponComponent = registry.try_get<Weapon::Component>(thisEntity);
         if (!weaponComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Weapon component", static_cast<int>(thisEntity));
             return entt::null;
         }
         
-        if (!fireComponent->Fire(weaponComponent->GetFireRate())) {
+        if (!weaponComponent->Fire()) {
             spdlog::trace("Entity {} not ready to fire", static_cast<int>(thisEntity));
             return entt::null;
         }

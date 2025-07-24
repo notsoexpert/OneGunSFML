@@ -57,7 +57,6 @@ namespace Player {
         registry.emplace<Energy>(entity, BaseMaxEnergy);
         registry.emplace<MaxSpeed>(entity, BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, BaseHitInvincibilityDuration);
-        registry.emplace<Fireable>(entity);
         auto &weapon = registry.emplace<Weapon::Component>(entity, Weapon::Type::MainCannon);
         weapon.SetBaseStats(BaseDamage, BaseFireRate, BaseShotSpeed);
 

@@ -28,9 +28,8 @@ namespace Enemy::Drone {
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
         SetupHealth(setup, MaxHealth, Death);
+        SetupBehavior(setup, Behavior);
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
-        setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
-        setup.Registry.emplace<Fireable>(setup.ThisEntity);
 
         auto &weapon = setup.Registry.emplace<Weapon::Component>(
             setup.ThisEntity, 
