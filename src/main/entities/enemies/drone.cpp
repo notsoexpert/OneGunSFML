@@ -27,8 +27,7 @@ namespace Enemy::Drone {
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
         SetupMovement(setup, MoveSpeed);
-        auto& health = SetupHealth(setup, MaxHealth);
-        health.OnDeath = Death;
+        SetupHealth(setup, MaxHealth, Death);
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Fireable>(setup.ThisEntity);

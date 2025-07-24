@@ -29,7 +29,7 @@ namespace Enemy {
     Renderable& SetupRenderable(const Setup& setup, 
         OneGunGame::Images imageID, const sf::IntRect& textureRect);
     Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect);
-    Health& SetupHealth(const Setup& setup, float maxHealth);
+    Health& SetupHealth(const Setup& setup, float maxHealth, Callback callback = {});
     void SetupMovement(const Setup& setup, float moveSpeed);
     void SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds);
     void OnCollision(Collision& collision);

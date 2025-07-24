@@ -40,8 +40,8 @@ Collidable& Enemy::SetupCollidable(const Setup& setup, const sf::IntRect& collis
         ),
         OnCollision);
 }
-Health& Enemy::SetupHealth(const Setup& setup, float maxHealth){
-    return setup.Registry.emplace<Health>(setup.ThisEntity, maxHealth);
+Health& Enemy::SetupHealth(const Setup& setup, float maxHealth, Callback callback){
+    return setup.Registry.emplace<Health>(setup.ThisEntity, maxHealth, callback);
 }
 void Enemy::SetupMovement(const Setup& setup, float moveSpeed){
     setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * moveSpeed);
