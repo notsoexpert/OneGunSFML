@@ -2,11 +2,15 @@
 #include "entities/explosion_types.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Explosion::IceHit {
     static constexpr const char* Name = "Ice Hit";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionBlue;
+    static constexpr Images ImageID = Images::ExplosionBlue;
     static constexpr sf::IntRect TextureRect = {{192, 160}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr float FrameTimeInSeconds = 0.05f;
@@ -22,4 +26,5 @@ namespace Explosion::IceHit {
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
     }
+}
 }

@@ -1,13 +1,17 @@
 #include "pch.hpp"
 #include "entities/enemy_types.hpp"
 
-#include "systems/components.hpp"
 #include "entities/entity.hpp"
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Asteroid {
     static constexpr const char* Name = "Asteroid";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {16, 16}};
     static constexpr float MaxHealth = 10.0f;
@@ -22,7 +26,7 @@ namespace Enemy::Asteroid {
         SetupHealth(setup, MaxHealth, Death);
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
-        setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
+        setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*Pi));
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){
@@ -36,4 +40,5 @@ namespace Enemy::Asteroid {
         Explosion::AsteroidDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({0.75f, 0.75f});
     }
+}
 }

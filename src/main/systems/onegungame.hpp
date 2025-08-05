@@ -18,6 +18,7 @@ namespace OneGunGame {
     void Cleanup();
     
     void Update();
+    void Sort();
     void Render();
 
     sf::Vector2f GetInputVector();
@@ -25,19 +26,6 @@ namespace OneGunGame {
     sf::Vector2f GetWindowSize();
     uint32_t GetEntityCount();
     const sf::Texture& GetTexture(Images image);
-
-    constexpr float GetDistanceSquared(const sf::Vector2f& a, const sf::Vector2f& b){
-        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
-    }
-    constexpr int RoundCoordinate(float coord) {
-        if (coord >= 0.0f) {
-            return static_cast<int>(coord + 0.5f);
-        }
-        return static_cast<int>(coord - 0.5f);
-    }
-    constexpr sf::Vector2i RoundVector(sf::Vector2f vec){
-        return sf::Vector2i{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
-    }
 
     entt::registry& GetRegistry();
     entt::entity GetPlayerEntity();
@@ -69,13 +57,13 @@ namespace OneGunGame {
             }
         };
         std::unordered_map<Images, TexData> Textures {
-            {Background, TexData{"./assets/textures/bg1seamless.png", {}}},
-            {SpriteSheet, TexData{"./assets/textures/sprites.png", {}}},
-            {ExplosionRed, TexData{"./assets/textures/explosionRed.png", {}}},
-            {ExplosionYellow, TexData{"./assets/textures/explosionYellow.png", {}}},
-            {ExplosionGreen, TexData{"./assets/textures/explosionGreen.png", {}}},
-            {ExplosionBlue, TexData{"./assets/textures/explosionBlue.png", {}}},
-            {ExplosionViolet, TexData{"./assets/textures/explosionViolet.png", {}}}
+            {Images::BG, TexData{"./assets/textures/bg1seamless.png", {}}},
+            {Images::SpriteSheet, TexData{"./assets/textures/sprites.png", {}}},
+            {Images::ExplosionRed, TexData{"./assets/textures/explosionRed.png", {}}},
+            {Images::ExplosionYellow, TexData{"./assets/textures/explosionYellow.png", {}}},
+            {Images::ExplosionGreen, TexData{"./assets/textures/explosionGreen.png", {}}},
+            {Images::ExplosionBlue, TexData{"./assets/textures/explosionBlue.png", {}}},
+            {Images::ExplosionViolet, TexData{"./assets/textures/explosionViolet.png", {}}}
         };
 
         struct {

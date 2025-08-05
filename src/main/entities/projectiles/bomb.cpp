@@ -3,12 +3,16 @@
 
 #include "systems/onegungame.hpp"
 #include "entities/entity.hpp"
-#include "systems/components.hpp"
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame {
 namespace Projectile::Bomb {
     static constexpr const char* Name = "Bomb";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{576, 0}, {64, 64}};
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float LifeTimeInSeconds = 2.0f;
@@ -37,9 +41,10 @@ namespace Projectile::Bomb {
         Explosion::Prebomb::Create(explosionSetup);
 
         auto boomTickerEntity = registry.create();
-        auto& renderable = registry.emplace<Renderable>(boomTickerEntity, OneGunGame::GetTexture(OneGunGame::Images::Unknown), 1000);
+        auto& renderable = registry.emplace<Renderable>(boomTickerEntity, GetTexture(Images::Unknown), 1000);
         renderable.Sprite.setPosition(pos);
         registry.emplace<Lifetime>(boomTickerEntity, sf::seconds(BoomDelayInSeconds), Explosion::Bomb::CreateBoomWave);
     }
 
+}
 }

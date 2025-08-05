@@ -1,11 +1,15 @@
 #include "pch.hpp"
 #include "entities/explosion_types.hpp"
 
-#include "systems/components.hpp"
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
 
+namespace OneGunGame{
 namespace Explosion::Missile {
     static constexpr const char* Name = "Missile Explosion";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
+    static constexpr Images ImageID = Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{192, 160}, {32, 32}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
@@ -25,4 +29,5 @@ namespace Explosion::Missile {
         setup.Registry.emplace<Lifetime>(setup.ThisEntity, sf::seconds(LifetimeDuration));
     }
 
+}
 }

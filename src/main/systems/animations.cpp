@@ -1,20 +1,13 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "systems/components.hpp"
+#include "utils/math.hpp"
+
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
 
 namespace OneGunGame{
-
-template<typename T>
-requires std::integral<T>
-T ConstrainValueLooped(T value, T min, T max) {
-    if (value < min) {
-        return max - (min - value) % (max - min);
-    } else if (value >= max) {
-        return min + (value - max) % (max - min);
-    }
-    return value;
-}
 
 void UpdateAnimations() {
     GetData().Registry.view<Renderable, Animation>().each(
@@ -38,7 +31,7 @@ void UpdateAnimations() {
             }
             float scalePercentage = scaling.GetScalePercentage();
             spdlog::trace("Scale percent: {}", scalePercentage);
-            sf::Vector2f scaleFactor = scaling.OriginalScale * (1 - scalePercentage) + scaling.TargetScale * scalePercentage;
+            sf::Vector2f scaleFactor = LinearInterpolation(scaling.OriginalScale, scaling.TargetScale, scalePercentage);
             renderable.Sprite.setScale(scaleFactor);
         }
     );
@@ -53,7 +46,7 @@ void UpdateAnimations() {
             }
             float fadePercentage = fading.GetFadePercentage();
             spdlog::trace("Fade percent: {}", fadePercentage);
-            color.a = static_cast<uint8_t>(fading.OriginalAlpha * (1 - fadePercentage) + fading.TargetAlpha * fadePercentage);
+            color.a = LinearInterpolation(fading.OriginalAlpha, fading.TargetAlpha, fadePercentage);
             renderable.Sprite.setColor(color);
         }
     );

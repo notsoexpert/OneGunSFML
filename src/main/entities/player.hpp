@@ -2,6 +2,8 @@
 
 #include "systems/constants.hpp"
 
+namespace OneGunGame{
+
 namespace Projectile {
     struct Weapon;
 }
@@ -24,4 +26,5 @@ namespace Player {
     void OnCollision(Collision& collision);
     void OnDeath(entt::registry &registry, entt::entity playerEntity);
     void ChangeWeapon(Projectile::Weapon& weaponComponent);
+}
 }

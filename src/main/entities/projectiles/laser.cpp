@@ -2,16 +2,22 @@
 #include "entities/projectile_types.hpp"
 
 #include "entities/entity.hpp"
-#include "systems/components.hpp"
 
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile::Laser {
     static constexpr uint8_t Tiers = 3;
     static constexpr std::array<const char*, Tiers> Name = 
     {"Green Laser", "Yellow Laser", "Red Laser"};
-    static constexpr std::array<OneGunGame::Images, Tiers> ImageID = 
-    {OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet};
+    static constexpr std::array<Images, Tiers> ImageID = 
+    {Images::SpriteSheet, Images::SpriteSheet, Images::SpriteSheet};
     static constexpr std::array<sf::IntRect, Tiers> TextureRect = 
     {sf::IntRect{{256, 0}, {64, 64}}, sf::IntRect{{320, 0}, {64, 64}}, sf::IntRect{{384, 0}, {64, 64}}};
     static constexpr std::array<sf::IntRect, Tiers> CollisionRect = 
@@ -68,7 +74,7 @@ namespace Projectile::Laser {
         }
 
         for (auto i : std::ranges::iota_view{0U, SplitProjectiles}) {
-            sf::Angle rotation = sf::radians(OneGunGame::HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f));
+            sf::Angle rotation = sf::radians(HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f));
             sf::Vector2f newDirection = splitting.OriginalDirection.rotatedBy(rotation).normalized();
 
             Projectile::Setup setup{
@@ -95,4 +101,5 @@ namespace Projectile::Laser {
         }
 
     }
+}
 }

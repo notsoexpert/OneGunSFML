@@ -2,6 +2,7 @@
 
 #include "entities/enemy.hpp"
 
+namespace OneGunGame{
 namespace Enemy {
     enum class Type {
         Asteroid = 0,
@@ -72,4 +73,5 @@ namespace Enemy {
         void Behavior(entt::registry &registry, entt::entity thisEntity);
         void Death(entt::registry &registry, entt::entity thisEntity);
     }
+}
 }

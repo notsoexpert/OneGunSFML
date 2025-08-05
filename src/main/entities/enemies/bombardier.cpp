@@ -4,9 +4,12 @@
 
 #include "entities/entity.hpp"
 
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Bombardier {
     static constexpr const char* Name = "Bombardier";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{0, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {16, 16}};
     static constexpr float MaxHealth = 300.0f;
@@ -39,4 +42,5 @@ namespace Enemy::Bombardier {
         // Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
         // Explosion::Create(setup, Explosion::Type::AsteroidDeath);
     }
+}
 }

@@ -2,15 +2,20 @@
 #include "entities/enemy_types.hpp"
 
 #include "entities/projectile_types.hpp"
-#include "systems/components.hpp"
 #include "entities/entity.hpp"
-#include "entities/weapon.hpp"
 #include "entities/explosion_types.hpp"
 #include "systems/onegungame.hpp"
+#include "utils/math.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/weapon.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Drone {
     static constexpr const char* Name = "Drone";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{192, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {48, 48}};
     static constexpr float MaxHealth = 20.0f;
@@ -31,7 +36,7 @@ namespace Enemy::Drone {
         SetupBehavior(setup, Behavior);
         Entity::SetupOffscreenLifetime(setup.Registry, setup.ThisEntity, OffscreenLifetime);
 
-        auto &weapon = setup.Registry.emplace<Weapon::Component>(
+        auto &weapon = setup.Registry.emplace<Weapon>(
             setup.ThisEntity, 
             Weapon::Type::DroneCannon
         );
@@ -45,16 +50,16 @@ namespace Enemy::Drone {
         
         // helper function probably needed
         sf::IntRect drone = renderable.Sprite.getTextureRect();
-        drone.position = OneGunGame::RoundVector(renderable.Sprite.getPosition());
-        drone.size = OneGunGame::RoundVector(static_cast<sf::Vector2f>(drone.size).componentWiseMul(renderable.Sprite.getScale()));
-        sf::IntRect window = {{0,0}, sf::Vector2i(OneGunGame::GetWindowSize())};
+        drone.position = RoundVector(renderable.Sprite.getPosition());
+        drone.size = RoundVector(static_cast<sf::Vector2f>(drone.size).componentWiseMul(renderable.Sprite.getScale()));
+        sf::IntRect window = {{0,0}, sf::Vector2i(GetWindowSize())};
         if (!drone.findIntersection(window)){
             return;
         }
 
         Projectile::Fire(registry, thisEntity);
 
-        auto playerEntity = OneGunGame::GetPlayerEntity();
+        auto playerEntity = GetPlayerEntity();
 
         if (!registry.valid(playerEntity)){
             spdlog::warn("Drone::Behavior - player entity invalid");
@@ -67,7 +72,7 @@ namespace Enemy::Drone {
             return;
         }
         
-        renderable.Sprite.setRotation((playerRenderable->Sprite.getPosition() - renderable.Sprite.getPosition()).angle() - sf::radians(OneGunGame::HalfPi));
+        renderable.Sprite.setRotation((playerRenderable->Sprite.getPosition() - renderable.Sprite.getPosition()).angle() - sf::radians(HalfPi));
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){
@@ -81,4 +86,5 @@ namespace Enemy::Drone {
         Explosion::DroneDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});
     }
+}
 }

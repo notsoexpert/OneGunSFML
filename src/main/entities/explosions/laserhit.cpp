@@ -2,14 +2,18 @@
 #include "entities/explosion_types.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Explosion::LaserHit {
     static constexpr const char* Name = "Laser Hit";
-    static constexpr std::array<OneGunGame::Images, 3> ImageID = {
-            OneGunGame::Images::ExplosionGreen, 
-            OneGunGame::Images::ExplosionYellow, 
-            OneGunGame::Images::ExplosionRed
+    static constexpr std::array<Images, 3> ImageID = {
+            Images::ExplosionGreen, 
+            Images::ExplosionYellow, 
+            Images::ExplosionRed
     };
     static constexpr sf::IntRect TextureRect = {{192, 64}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
@@ -33,6 +37,7 @@ namespace Explosion::LaserHit {
             return;
         }
 
-        renderable.Sprite.setTexture(OneGunGame::GetTexture(ImageID.at(tier)));
+        renderable.Sprite.setTexture(GetTexture(ImageID.at(tier)));
     }
+}
 }

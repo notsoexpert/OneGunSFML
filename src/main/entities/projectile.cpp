@@ -2,11 +2,17 @@
 #include "projectile.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
+#include "utils/math.hpp"
 #include "entities/entity.hpp"
 #include "entities/player.hpp"
 #include "entities/enemy_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile {
     void Update(entt::registry &registry) {
         registry.view<Renderable, Velocity, Acceleration, Homing>().each(
@@ -16,7 +22,7 @@ namespace Projectile {
                     std::pair<entt::entity, float> closestTarget = {entt::null, std::numeric_limits<float>::max()};
                     registry.view<Renderable, Enemy::Component>().each(
                         [&](entt::entity targetEntity, Renderable& targetRenderable, [[maybe_unused]]Enemy::Component& enemyComponent) {
-                            float distSquared = OneGunGame::GetDistanceSquared(renderable.Sprite.getPosition(), targetRenderable.Sprite.getPosition());
+                            float distSquared = GetDistanceSquared(renderable.Sprite.getPosition(), targetRenderable.Sprite.getPosition());
                             if (distSquared < closestTarget.second) {
                                 closestTarget = {targetEntity, distSquared};
                             }
@@ -42,10 +48,10 @@ namespace Projectile {
         return entity;
     }
 
-    Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect) {
+    Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect) {
         auto &renderable = setup.Registry.emplace<Renderable>(
             setup.ThisEntity, 
-            OneGunGame::GetTexture(imageID), 
+            GetTexture(imageID), 
             25
         );
         renderable.Sprite.setTextureRect(textureRect);
@@ -61,10 +67,10 @@ namespace Projectile {
             collisionRect, 
             setup.Source, 
             setup.CollisionLayer.value_or(
-                OneGunGame::CollisionLayer::NeutralProjectile
+                CollisionLayer::NeutralProjectile
             ), 
             setup.CollisionMask.value_or(
-                static_cast<uint8_t>(OneGunGame::CollisionLayer::Obstacle)
+                static_cast<uint8_t>(CollisionLayer::Obstacle)
             ),
             OnCollision
         );
@@ -83,4 +89,5 @@ namespace Projectile {
         float basePower = Entity::GetBasePower(registry, registry.get<Collidable>(projectileEntity).Source);
         return baseDamage * basePower;
     }
+}
 }

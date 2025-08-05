@@ -1,7 +1,11 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "systems/components.hpp"
+#include "utils/math.hpp"
+
+#include "components/renderable.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
 
 namespace OneGunGame{
 sf::Vector2f GetAdjustedCollisionRectSize(const sf::IntRect& originalRect, const sf::Vector2f& renderableScale) {
@@ -13,7 +17,7 @@ sf::IntRect GetAdjustedCollisionRect(const sf::IntRect& originalRect, const sf::
     return sf::IntRect{RoundVector(static_cast<sf::Vector2f>(originalRect.position) + renderablePosition - (newSize / 2.0f)), RoundVector(newSize)};
 }
 
-bool FilterCollidable(uint8_t mask, OneGunGame::CollisionLayer type) {
+bool FilterCollidable(uint8_t mask, CollisionLayer type) {
     return (mask & static_cast<uint8_t>(type)) != 0;
 }
 

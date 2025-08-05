@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "enemy_types.hpp"
 
+namespace OneGunGame{
 namespace Enemy {
     static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> SetupEnemy = {
         Asteroid::Create, LargeAsteroid::Create, HugeAsteroid::Create,
@@ -17,4 +18,5 @@ namespace Enemy {
 
         return setup.ThisEntity;
     }
+}
 }

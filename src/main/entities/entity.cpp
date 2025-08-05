@@ -2,17 +2,21 @@
 #include "entity.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 
 #include "entities/projectile_types.hpp"
-#include "entities/weapon.hpp"
 
+#include "components/lifetime.hpp"
+#include "components/renderable.hpp"
+#include "components/weapon.hpp"
+#include "components/collidable.hpp"
+
+namespace OneGunGame {
 namespace Entity {
 
     void Update(entt::registry& registry) {
         registry.view<Renderable, ScreenTrigger>().each(
             [&](auto entity, Renderable &renderable, ScreenTrigger &screenTrigger) {
-                sf::FloatRect screenRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())};
+                sf::FloatRect screenRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())};
                 sf::Vector2f spriteSize = static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size);
                 sf::FloatRect spriteRect{renderable.Sprite.getPosition(), spriteSize};
                 
@@ -25,7 +29,7 @@ namespace Entity {
     }
 
     float GetBasePower(entt::registry &registry, entt::entity thisEntity) {
-        auto weapComp = registry.try_get<Weapon::Component>(thisEntity);
+        auto weapComp = registry.try_get<Weapon>(thisEntity);
         if (!weapComp){
             spdlog::warn("GetBasePower called on entity {} with no Weapon component, returning 1.0f", static_cast<int>(thisEntity));
             return 1.0f;
@@ -71,4 +75,5 @@ namespace Entity {
             spdlog::trace("Lifetime component added to {}", static_cast<int>(thisEntity));
         }
     }
+}
 }

@@ -2,9 +2,12 @@
 #include "explosion_types.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 #include "entities/entity.hpp"
 
+#include "components/collidable.hpp"
+#include "components/transformation.hpp"
+
+namespace OneGunGame {
 namespace Explosion {
     entt::entity Create(Setup& setup, Type type) 
     {
@@ -18,9 +21,9 @@ namespace Explosion {
         setup.Registry.emplace<Component>(setup.ThisEntity, type);
         setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Velocity);
 
-        //OneGunGame::CollisionLayer mask = OneGunGame::GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
+        //CollisionLayer mask = GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
         //setup.Registry.emplace<Collidable>(setup.ThisEntity, Specifications.at(type).CollisionRect, setup.Source, 
-        //    OneGunGame::CollisionLayer::Projectile, mask, OnCollision);
+        //    CollisionLayer::Projectile, mask, OnCollision);
         
         return setup.ThisEntity;
     }
@@ -34,10 +37,11 @@ namespace Explosion {
             hitLimiting->HitEntities.insert(collision.OtherEntity);
         }
 
-        auto& component = collision.Registry.get<Explosion::Component>(collision.ThisEntity);
+        auto& component = collision.Registry.get<Component>(collision.ThisEntity);
 
         float explosionDamage = GetExplosionDamage(collision.Registry, collision.ThisEntity, component.BaseDamage);
 
         Entity::Damage(collision.Registry, collision.ThisEntity, collision.OtherEntity, explosionDamage);
     }
+}
 }

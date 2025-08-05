@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "systems/components.hpp"
+#include "components/lifetime.hpp"
 
 namespace OneGunGame{
 void ProcessDeaths(){

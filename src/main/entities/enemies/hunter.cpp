@@ -3,9 +3,14 @@
 
 #include "entities/entity.hpp"
 
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Hunter {
     static constexpr const char* Name = "Hunter";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{384, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {64, 64}};
     static constexpr float MaxHealth = 150.0f;
@@ -38,4 +43,5 @@ namespace Enemy::Hunter {
         //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
         //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
     }
+}
 }

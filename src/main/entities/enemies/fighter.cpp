@@ -2,10 +2,17 @@
 #include "entities/enemy_types.hpp"
 
 #include "entities/entity.hpp"
+#include "entities/explosion_types.hpp"
+#include "systems/onegungame.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Fighter {
     static constexpr const char* Name = "Fighter";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::SpriteSheet;
+    static constexpr Images ImageID = Images::SpriteSheet;
     static constexpr sf::IntRect TextureRect = {{256, 64}, {64, 64}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {48, 48}};
     static constexpr float MaxHealth = 40.0f;
@@ -26,15 +33,25 @@ namespace Enemy::Fighter {
         if (registry.valid(thisEntity)){
             spdlog::trace("Fighter Behavior invoked for entity {}", static_cast<int>(thisEntity));
         }
+
+        //auto& renderable = registry.get<Renderable>(thisEntity);
+
+        //auto playerEntity = GetPlayerEntity();
+
+
+
     }
 
     void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
-        /* CREATE DEATH EXPLOSION */
-        // auto &renderable = registry.get<Renderable>(thisEntity);
-        // auto &velocity = registry.get<Velocity>(thisEntity);
-        // Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
-        // Explosion::Create(setup, Explosion::Type::AsteroidDeath);
+        Explosion::Setup explosionSetup{
+            registry,
+            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+            registry.get<Velocity>(thisEntity).Value
+        };
+        Explosion::FighterDeath::Create(explosionSetup);
+        registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});
     }
+}
 }

@@ -2,11 +2,14 @@
 #include "entities/explosion_types.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/lifetime.hpp"
 
+namespace OneGunGame{
 namespace Explosion::Prebomb {
     static constexpr const char* Name = "Prebomb";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
+    static constexpr Images ImageID = Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{192, 224}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr int AnimationDirection = -1;
@@ -38,4 +41,5 @@ namespace Explosion::Prebomb {
         Explosion::Bomb::Create(explosionSetup);
     }
 
+}
 }

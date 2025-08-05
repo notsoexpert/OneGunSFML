@@ -3,11 +3,15 @@
 
 #include "entities/entity.hpp"
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 
 #include "entities/projectile_types.hpp"
-#include "entities/weapon.hpp"
 
+#include "components/renderable.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/weapon.hpp"
+
+namespace OneGunGame{
 namespace Explosion {
 
     entt::entity Create(Setup& setup) {   
@@ -16,9 +20,9 @@ namespace Explosion {
         return entity;
     }
 
-    Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect) {
+    Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect) {
         auto& renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
-            OneGunGame::GetTexture(imageID), 20);
+            GetTexture(imageID), 20);
         renderable.Sprite.setTextureRect(textureRect);
         renderable.Sprite.setOrigin({textureRect.size.x / 2.0f, textureRect.size.y / 2.0f});
         renderable.Sprite.setPosition(setup.Position);
@@ -33,10 +37,10 @@ namespace Explosion {
             collisionRect, 
             setup.Source, 
             setup.CollisionLayer.value_or(
-                OneGunGame::CollisionLayer::NeutralProjectile
+                CollisionLayer::NeutralProjectile
             ), 
             setup.CollisionMask.value_or(
-                static_cast<uint8_t>(OneGunGame::CollisionLayer::Obstacle)
+                static_cast<uint8_t>(CollisionLayer::Obstacle)
             ),
             OnCollision
         );
@@ -49,7 +53,7 @@ namespace Explosion {
             return damageFactor;
         }
         
-        auto sourceWeapon = registry.try_get<Weapon::Component>(sourceEntity);
+        auto sourceWeapon = registry.try_get<Weapon>(sourceEntity);
         if (!sourceWeapon) {
             spdlog::warn("Explosion entity {} - Source entity {} is missing Weapon component", static_cast<int>(explosionEntity), static_cast<int>(sourceEntity));
             return damageFactor;
@@ -57,4 +61,5 @@ namespace Explosion {
 
         return damageFactor * sourceWeapon->GetDamage();
     }
+}
 }

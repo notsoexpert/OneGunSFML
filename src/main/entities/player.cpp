@@ -2,10 +2,16 @@
 #include "player.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 #include "entities/projectile_types.hpp"
-#include "entities/weapon.hpp"
 
+#include "components/renderable.hpp"
+#include "components/lifetime.hpp"
+#include "components/transformation.hpp"
+#include "components/mechanics.hpp"
+#include "components/collidable.hpp"
+#include "components/weapon.hpp"
+
+namespace OneGunGame{
 namespace Player {
     constexpr float BaseMaxHealth = 100.0f;
     constexpr float BaseMaxEnergy = 100.0f;
@@ -16,12 +22,12 @@ namespace Player {
     constexpr float BaseDamage = 5.0f;
     constexpr float BaseFireRate = 4.0f;
     constexpr float BaseShotSpeed = 1.0f;
-    constexpr float BaseDashSpeedMultiplier = 3.0f;
+    constexpr float BaseDashSpeedMultiplier = 10.0f;
     constexpr float BaseDashDuration = 0.25f;
-    constexpr float BaseDashCooldown = 5.0f;
+    constexpr float BaseDashCooldown = 1.0f;
 
     void Update(entt::registry &registry, entt::entity playerEntity) {
-        sf::Vector2f inputVector = OneGunGame::GetInputVector();
+        sf::Vector2f inputVector = GetInputVector();
         Player::Move(inputVector, registry, playerEntity);
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
@@ -34,7 +40,7 @@ namespace Player {
 
     entt::entity Create(entt::registry &registry, const sf::Vector2f &startPosition) {
         entt::entity entity = registry.create();
-        auto &renderable = registry.emplace<Renderable>(entity, OneGunGame::GetTexture(OneGunGame::SpriteSheet), 10);
+        auto &renderable = registry.emplace<Renderable>(entity, GetTexture(Images::SpriteSheet), 10);
         renderable.Sprite.setOrigin({Size.x / 2.0f, Size.y / 2.0f}); // Set origin to center of the sprite
         renderable.Sprite.setPosition(startPosition);
         renderable.Sprite.setTextureRect(sf::IntRect({0, 0}, Size));
@@ -43,11 +49,11 @@ namespace Player {
             entity, 
             sf::IntRect{CollisionOffset, CollisionSize}, 
             entity,
-            OneGunGame::CollisionLayer::Player, 
-            static_cast<uint8_t>(
-                OneGunGame::Enemy | OneGunGame::EnemyProjectile | 
-                OneGunGame::Obstacle | OneGunGame::NeutralProjectile
-            ),
+            CollisionLayer::Player, 
+            GetCollisionMask({
+                CollisionLayer::Enemy, CollisionLayer::EnemyProjectile,
+                CollisionLayer::Obstacle, CollisionLayer::NeutralProjectile
+            }),
             OnCollision
         );
         registry.emplace<Velocity>(entity);
@@ -57,16 +63,21 @@ namespace Player {
         registry.emplace<Energy>(entity, BaseMaxEnergy);
         registry.emplace<MaxSpeed>(entity, BaseMoveSpeed);
         registry.emplace<HitInvincibility>(entity, BaseHitInvincibilityDuration);
-        auto &weapon = registry.emplace<Weapon::Component>(entity, Weapon::Type::MainCannon);
+        auto &weapon = registry.emplace<Weapon>(entity, Weapon::Type::MainCannon);
         weapon.SetBaseStats(BaseDamage, BaseFireRate, BaseShotSpeed);
 
         registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
-        registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(OneGunGame::GetWindowSize())});
+        registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())});
         
         return entity;
     }
 
     void Move(const sf::Vector2f &inputVector, entt::registry &registry, entt::entity playerEntity) {
+        auto &dashable = registry.get<Dashable>(playerEntity);
+        if (dashable.CurrentState != Dashable::DashState::None) {
+            return;
+        }
+
         auto &acceleration = registry.get<Acceleration>(playerEntity);
         
         acceleration.Value = sf::Vector2f{
@@ -76,9 +87,16 @@ namespace Player {
     }
 
     void Dash(entt::registry &registry, entt::entity playerEntity) {
+        auto &velocity = registry.get<Velocity>(playerEntity);
+        auto &acceleration = registry.get<Acceleration>(playerEntity);
         auto &dashable = registry.get<Dashable>(playerEntity);
-        if (dashable.IsDashCooldownComplete()) {
-            // TBD: Do a dash 
+        
+        if (velocity.Value.length() == 0.0f) {
+            return;
+        }
+
+        if (dashable.Dash(velocity.Value.normalized())) {
+            acceleration.Value = {0.0f, 0.0f};
         }
     }
 
@@ -105,4 +123,5 @@ namespace Player {
         spdlog::warn("Player died! Healing to full :)");
         health.Heal(health.Max);
     }
+}
 }

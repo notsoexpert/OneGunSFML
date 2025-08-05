@@ -3,13 +3,13 @@
 
 #include "entities/player.hpp"
 #include "entities/enemy_types.hpp"
-#include "entities/weapon.hpp"
 #include "entities/background.hpp"
 
+#include "components/weapon.hpp"
 
 namespace OneGunGame{
 void SetupContext() {
-    GetData().Context.Window = sf::RenderWindow(sf::VideoMode(OneGunGame::Default::WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
+    GetData().Context.Window = sf::RenderWindow(sf::VideoMode(Default::WindowSize), WindowTitle, WindowStyle, Configuration.WindowState, Configuration.ContextSettings);
     GetData().Context.Window.setFramerateLimit(Configuration.FrameRateLimit);
     GetData().Context.View.setCenter(sf::Vector2f{ViewSize.x / 2, ViewSize.y / 2});
     GetData().Context.View.setSize(static_cast<sf::Vector2f>(ViewSize));
@@ -18,25 +18,25 @@ void SetupContext() {
 }
 
 std::expected<void, std::string> SetupTextures() {
-    if (!LoadTexture(Background, true, true)) {
+    if (!LoadTexture(Images::BG, true, true)) {
         return std::unexpected<std::string>("Failed to load background texture");
     }
-    if (!LoadTexture(SpriteSheet, true)) {
+    if (!LoadTexture(Images::SpriteSheet, true)) {
         return std::unexpected<std::string>("Failed to load sprite sheet texture");
     }
-    if (!LoadTexture(ExplosionRed, true)) {
+    if (!LoadTexture(Images::ExplosionRed, true)) {
         return std::unexpected<std::string>("Failed to load red explosion texture");
     }
-    if (!LoadTexture(ExplosionYellow, true)) {
+    if (!LoadTexture(Images::ExplosionYellow, true)) {
         return std::unexpected<std::string>("Failed to load yellow explosion texture");
     }
-    if (!LoadTexture(ExplosionGreen, true)) {
+    if (!LoadTexture(Images::ExplosionGreen, true)) {
         return std::unexpected<std::string>("Failed to load green explosion texture");
     }
-    if (!LoadTexture(ExplosionBlue, true)) {
+    if (!LoadTexture(Images::ExplosionBlue, true)) {
         return std::unexpected<std::string>("Failed to load blue explosion texture");
     }
-    if (!LoadTexture(ExplosionViolet, true)) {
+    if (!LoadTexture(Images::ExplosionViolet, true)) {
         return std::unexpected<std::string>("Failed to load violet explosion texture");
     }
     if (!GeneratePlaceholderTexture()) {
@@ -44,17 +44,31 @@ std::expected<void, std::string> SetupTextures() {
     }
     return {};
 }
+
+bool PausePressed(auto keyCode) {
+    return keyCode == sf::Keyboard::Key::Escape;
+}
+bool ChangeWeaponPressed(auto keyCode) {
+    return keyCode == sf::Keyboard::Key::Q;
+}
+
 void SetupEventHandlers() {
     GetData().EventHandlers.OnClose = [](const sf::Event::Closed&) {
             GetData().Context.Window.close();
     };
     GetData().EventHandlers.KeyPressed = [](const sf::Event::KeyPressed& keyEvent) {
-        if (keyEvent.code == sf::Keyboard::Key::Escape) {
+        if (PausePressed(keyEvent.code)) {
             GetData().Context.Window.close();
         }
+        if (ChangeWeaponPressed(keyEvent.code)) {
+            auto &weapon = GetData().Registry.get<Weapon>(GetData().Entities.Player);
+            weapon.ChangePreset(static_cast<Weapon::Type>((static_cast<uint8_t>(weapon.WeaponType) + 1U) % static_cast<uint8_t>(Weapon::Type::DroneCannon + 1U)));
+        }
+#ifdef DEBUG
         if (keyEvent.code == sf::Keyboard::Key::T) {
             spdlog::error("TOTAL ENTITIES: {}", GetEntityCount());
         }
+
         if (keyEvent.code == sf::Keyboard::Key::N) {
             sf::Vector2f spawnPosition = {GetData().Random.generateFloat(-50.0f, GetWindowSize().x + 50.0f),
                                         GetData().Random.generateFloat(-96.0f, -32.0f)};
@@ -66,21 +80,19 @@ void SetupEventHandlers() {
                 spawnPosition, 
                 flyDirection, 
                 CollisionLayer::Enemy,
-                static_cast<uint8_t>(
-                    CollisionLayer::Player | CollisionLayer::PlayerProjectile |
-                    CollisionLayer::NeutralProjectile
+                GetCollisionMask({
+                    CollisionLayer::Player, CollisionLayer::PlayerProjectile,
+                    CollisionLayer::NeutralProjectile}
                 ),
                 entt::null, 
                 entt::null
             };
             Enemy::Create(setup, static_cast<Enemy::Type>(GetData().Random.generateInt(static_cast<int>(Enemy::Type::Asteroid), static_cast<int>(Enemy::Type::Drone))));
         }
-        if (keyEvent.code == sf::Keyboard::Key::Q) {
-            auto &weapon = GetData().Registry.get<Weapon::Component>(GetData().Entities.Player);
-            Weapon::ChangePreset(weapon, static_cast<Weapon::Type>((static_cast<uint8_t>(weapon.WeaponType) + 1U) % static_cast<uint8_t>(Weapon::Type::DroneCannon + 1U)));
-        }
+#endif
     };
 }
+
 void SetupRegistry() {
     GetData().Registry.clear();
 }
@@ -100,6 +112,6 @@ bool LoadTexture(Images imgType, bool smooth, bool repeat) {
 
 bool GeneratePlaceholderTexture() {
     sf::Image img{{2u, 2u}, sf::Color::Magenta};
-    return GetData().Textures[Unknown].Texture.loadFromImage(img);
+    return GetData().Textures[Images::Unknown].Texture.loadFromImage(img);
 }
 }

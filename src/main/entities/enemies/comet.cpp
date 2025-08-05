@@ -3,9 +3,16 @@
 #include "entities/entity.hpp"
 #include "entities/projectile_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/collidable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Enemy::Comet {
     static constexpr const char* Name = "Comet";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionBlue;
+    static constexpr Images ImageID = Images::ExplosionBlue;
     static constexpr sf::IntRect TextureRect = {{512, 96}, {32, 32}};
     static constexpr sf::IntRect TrailTextureRect = {{64, 352}, {32, 48}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
@@ -46,7 +53,7 @@ namespace Enemy::Comet {
 
         auto& trailRenderable = SetupRenderable(trailSetup, ImageID, TrailTextureRect);
         trailRenderable.Sprite.setScale(DefaultScale);
-        trailRenderable.Sprite.rotate(setup.Direction.angle() + sf::radians(OneGunGame::HalfPi));
+        trailRenderable.Sprite.rotate(setup.Direction.angle() + sf::radians(HalfPi));
         setup.Registry.emplace<Animation>(trailSetup.ThisEntity, trailRenderable.Sprite.getTextureRect().position, TrailTotalFrames, sf::seconds(TrailFrameTimeInSeconds));
         Entity::SetupOffscreenLifetime(setup.Registry, trailSetup.ThisEntity, OffscreenLifetime);
         setup.Registry.emplace<Attachment>(trailSetup.ThisEntity, setup.ThisEntity, 
@@ -74,7 +81,7 @@ namespace Enemy::Comet {
         for (auto i : std::ranges::iota_view{0U, DeathProjectiles}) {
             sf::Vector2f direction = velocity.Value.rotatedBy(
                 sf::radians(
-                    (OneGunGame::Pi * 2) / 
+                    (Pi * 2) / 
                     (DeathProjectiles==0?1:DeathProjectiles) * i
                 )
             ).normalized();
@@ -83,11 +90,11 @@ namespace Enemy::Comet {
                 registry, 
                 renderable.Sprite.getPosition(), 
                 direction, 
-                OneGunGame::NeutralProjectile,
-                static_cast<uint8_t>(
-                    OneGunGame::Player | OneGunGame::Enemy | 
-                    OneGunGame::Obstacle
-                ),
+                CollisionLayer::NeutralProjectile,
+                GetCollisionMask({
+                    CollisionLayer::Player, CollisionLayer::Enemy,
+                    CollisionLayer::Obstacle
+                }),
                 collidable.Source
             };
             Projectile::Create(setup, Projectile::Type::Ice);
@@ -97,4 +104,5 @@ namespace Enemy::Comet {
         //Explosion::Setup setup{registry, renderable.Sprite.getPosition(), velocity.Value};
         //Explosion::Create(setup, Explosion::Type::AsteroidDeath);
     }
+}
 }

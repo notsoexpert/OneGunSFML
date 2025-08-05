@@ -2,8 +2,11 @@
 #include "background.hpp"
 
 #include "systems/onegungame.hpp"
-#include "systems/components.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+
+namespace OneGunGame{
 namespace Background {
 
 void Update(entt::registry &registry) {
@@ -26,8 +29,8 @@ void Update(entt::registry &registry) {
         [&](auto entity, Renderable& renderable, Background::HorizontalParallax& parallax) {
         spdlog::trace("Updating entity {}: Parallax value ({})", static_cast<int>(entity), parallax.Value);
         const auto &sourcePosition = registry.get<Renderable>(parallax.SourceEntity).Sprite.getPosition();
-        parallax.Value = sourcePosition.x / OneGunGame::GetWindowSize().x;
-        renderable.Sprite.setPosition({OneGunGame::GetWindowSize().x * -parallax.Value, renderable.Sprite.getPosition().y});
+        parallax.Value = sourcePosition.x / GetWindowSize().x;
+        renderable.Sprite.setPosition({GetWindowSize().x * -parallax.Value, renderable.Sprite.getPosition().y});
     });
 }
 
@@ -35,21 +38,21 @@ entt::entity Create(entt::registry &registry) {
     entt::entity entity = registry.create();
     entt::entity copy = registry.create();
 
-    auto &renderable = registry.emplace<Renderable>(entity, OneGunGame::GetTexture(OneGunGame::Background), Background::Order);
-    auto &copyRenderable = registry.emplace<Renderable>(copy, OneGunGame::GetTexture(OneGunGame::Background), Background::Order);
+    auto &renderable = registry.emplace<Renderable>(entity, GetTexture(Images::BG), Background::Order);
+    auto &copyRenderable = registry.emplace<Renderable>(copy, GetTexture(Images::BG), Background::Order);
     renderable.Sprite.setPosition(StartPosition);
     copyRenderable.Sprite.setPosition(StartPosition);
-    copyRenderable.Sprite.move(sf::Vector2f{0.0f, 0.0f - OneGunGame::GetTexture(OneGunGame::Background).getSize().y});
+    copyRenderable.Sprite.move(sf::Vector2f{0.0f, 0.0f - GetTexture(Images::BG).getSize().y});
     
-    registry.emplace<HorizontalParallax>(entity, OneGunGame::GetPlayerEntity());
-    registry.emplace<HorizontalParallax>(copy, OneGunGame::GetPlayerEntity());
+    registry.emplace<HorizontalParallax>(entity, GetPlayerEntity());
+    registry.emplace<HorizontalParallax>(copy, GetPlayerEntity());
 
-    sf::Vector2f fWindowSize = static_cast<sf::Vector2f>(OneGunGame::GetWindowSize());
+    sf::Vector2f fWindowSize = static_cast<sf::Vector2f>(GetWindowSize());
     registry.emplace<Confined>(entity, 
         sf::FloatRect{-fWindowSize, 
             sf::Vector2f{fWindowSize.x, fWindowSize.y * 2}});
     registry.emplace<Confined>(copy, 
-        sf::FloatRect{sf::Vector2f{-fWindowSize.x, -fWindowSize.y - OneGunGame::GetTexture(OneGunGame::Background).getSize().y},
+        sf::FloatRect{sf::Vector2f{-fWindowSize.x, -fWindowSize.y - GetTexture(Images::BG).getSize().y},
             sf::Vector2f{fWindowSize.x, fWindowSize.y * 4}});
 
     registry.emplace<Velocity>(entity, sf::Vector2f(0.0f, ScrollSpeed));
@@ -59,4 +62,5 @@ entt::entity Create(entt::registry &registry) {
     return entity;
 }
 
+}
 }

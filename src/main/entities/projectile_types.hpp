@@ -2,6 +2,7 @@
 
 #include "entities/projectile.hpp"
 
+namespace OneGunGame {
 namespace Projectile {
     enum class Type {
         Bullet = 0,
@@ -67,4 +68,5 @@ namespace Projectile {
         void Create(const Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
+}
 }

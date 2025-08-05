@@ -2,16 +2,22 @@
 #include "entities/projectile_types.hpp"
 
 #include "entities/entity.hpp"
-#include "systems/components.hpp"
 
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile::Missile {
     static constexpr uint8_t Tiers = 2;
     static constexpr std::array<const char*, Tiers> Name = 
     {"Missile", "Homing Missile"};
-    static constexpr std::array<OneGunGame::Images, Tiers> ImageID = 
-    {OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet};
+    static constexpr std::array<Images, Tiers> ImageID = 
+    {Images::SpriteSheet, Images::SpriteSheet};
     static constexpr std::array<sf::IntRect, Tiers> TextureRect = 
     {sf::IntRect{{448, 0}, {64, 64}}, sf::IntRect{{512, 0}, {64, 64}}};
     static constexpr std::array<sf::IntRect, Tiers> CollisionRect = 
@@ -59,4 +65,5 @@ namespace Projectile::Missile {
         };
         Explosion::Missile::Create(explosionSetup);
     }
+}
 }

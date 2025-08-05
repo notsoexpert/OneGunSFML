@@ -1,13 +1,20 @@
 #include "pch.hpp"
 #include "projectile_types.hpp"
 
-#include "systems/components.hpp"
 #include "systems/onegungame.hpp"
 #include "entities/entity.hpp"
 #include "entities/explosion_types.hpp"
 #include "entities/enemy_types.hpp"
-#include "entities/weapon.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/lifetime.hpp"
+#include "components/weapon.hpp"
+#include "components/collidable.hpp"
+
+
+
+namespace OneGunGame {
 namespace Projectile {
     static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> ProjectileSetup = {
         Bullet::Create, Laser::Create, Plasma::Create,
@@ -31,7 +38,7 @@ namespace Projectile {
     }
 
     entt::entity Fire(entt::registry &registry, entt::entity thisEntity, std::optional<uint8_t> tierOverride) {
-        auto weaponComponent = registry.try_get<Weapon::Component>(thisEntity);
+        auto weaponComponent = registry.try_get<Weapon>(thisEntity);
         if (!weaponComponent) {
             spdlog::warn("Projectile::Fire - Entity {} does not have a Weapon component", static_cast<int>(thisEntity));
             return entt::null;
@@ -50,14 +57,14 @@ namespace Projectile {
         }
 
         auto projectileType = weaponComponent->ProjectileType;
-        auto collisionLayer = OneGunGame::CollisionLayer::NeutralProjectile;
-        auto collisionMask = OneGunGame::CollisionLayer::Player | OneGunGame::CollisionLayer::Enemy | OneGunGame::CollisionLayer::Obstacle;
-        if (thisEntity == OneGunGame::GetPlayerEntity()) {
-            collisionLayer = OneGunGame::CollisionLayer::PlayerProjectile;
-            collisionMask &= ~OneGunGame::CollisionLayer::Player;
+        auto collisionLayer = CollisionLayer::NeutralProjectile;
+        auto collisionMask = GetCollisionMask({CollisionLayer::Player, CollisionLayer::Enemy, CollisionLayer::Obstacle});
+        if (thisEntity == GetPlayerEntity()) {
+            collisionLayer = CollisionLayer::PlayerProjectile;
+            collisionMask &= ~static_cast<uint8_t>(CollisionLayer::Player);
         } else if (registry.try_get<Enemy::Component>(thisEntity)) {
-            collisionLayer = OneGunGame::CollisionLayer::EnemyProjectile;
-            collisionMask &= ~OneGunGame::CollisionLayer::Enemy;
+            collisionLayer = CollisionLayer::EnemyProjectile;
+            collisionMask &= ~static_cast<uint8_t>(CollisionLayer::Enemy);
         }
         
         Projectile::Setup setup{
@@ -116,4 +123,5 @@ namespace Projectile {
         }
         
     }
+}
 }

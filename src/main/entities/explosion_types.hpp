@@ -3,6 +3,7 @@
 #include "systems/constants.hpp"
 #include "entities/explosion.hpp"
 
+namespace OneGunGame{
 struct Renderable;
 
 namespace Explosion {
@@ -73,4 +74,5 @@ namespace Explosion {
     namespace GalaxisDeath {
         void Create(Setup& setup);
     }
+}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+namespace OneGunGame{
 namespace Background {
     constexpr sf::Vector2f StartPosition{0.0f, -600.0f};
     constexpr auto Order = 100;
@@ -26,4 +27,5 @@ namespace Background {
 
     void Update(entt::registry &registry);
     entt::entity Create(entt::registry &registry);
+}
 }

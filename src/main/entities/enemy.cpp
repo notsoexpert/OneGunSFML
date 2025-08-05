@@ -5,6 +5,12 @@
 #include "entities/entity.hpp"
 #include "entities/projectile_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+#include "components/transformation.hpp"
+
+namespace OneGunGame {
 namespace Enemy{
 void Update(entt::registry &registry) {
     registry.view<Behavior>().each(
@@ -18,9 +24,9 @@ entt::entity Create(Setup& setup) {
     
     return setup.ThisEntity;
 }
-Renderable& SetupRenderable(const Setup& setup, OneGunGame::Images imageID, const sf::IntRect& textureRect){
+Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect){
     auto &renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
-        OneGunGame::GetTexture(imageID), 50);
+        GetTexture(imageID), 50);
     renderable.Sprite.setTextureRect(textureRect);
     renderable.Sprite.setOrigin(static_cast<sf::Vector2f>(renderable.Sprite.getTextureRect().size) / 2.0f);
     renderable.Sprite.setPosition(setup.Position);
@@ -32,12 +38,12 @@ Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect
         collisionRect, 
         setup.Source, 
         setup.CollisionLayer.value_or(
-            OneGunGame::CollisionLayer::Enemy
+            CollisionLayer::Enemy
         ),
         setup.CollisionMask.value_or(
-            static_cast<uint8_t>(
-                OneGunGame::Player | OneGunGame::PlayerProjectile
-            )
+            GetCollisionMask({
+                CollisionLayer::Player, CollisionLayer::PlayerProjectile
+            })
         ),
         OnCollision);
 }
@@ -59,5 +65,6 @@ void OnCollision(Collision& collision) {
         spdlog::trace("Enemy::OnCollision invoked between entity {} and entity {}", 
         static_cast<int>(collision.ThisEntity), static_cast<int>(collision.OtherEntity));
     }
+}
 }
 }

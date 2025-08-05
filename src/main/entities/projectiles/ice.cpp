@@ -2,12 +2,18 @@
 #include "entities/projectile_types.hpp"
 
 #include "entities/entity.hpp"
-#include "systems/components.hpp"
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile::Ice {
     static constexpr const char* Name = "Ice";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionBlue;
+    static constexpr Images ImageID = Images::ExplosionBlue;
     static constexpr sf::IntRect TextureRect = {{0, 32}, {32, 32}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr float DefaultScale = 0.5f;
@@ -40,4 +46,5 @@ namespace Projectile::Ice {
         };
         Explosion::IceHit::Create(explosionSetup);
     }
+}
 }

@@ -2,13 +2,19 @@
 #include "entities/projectile_types.hpp"
 
 #include "entities/entity.hpp"
-#include "systems/components.hpp"
 
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile::Plasma {
     static constexpr const char* Name = "Plasma";
-    static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
+    static constexpr Images ImageID = Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{512, 256}, {32, 32}};
     static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr uint8_t Specification = Flags::Burn;
@@ -32,7 +38,7 @@ namespace Projectile::Plasma {
         setup.Registry.emplace<Component>(setup.ThisEntity, Projectile::Type::Plasma, 
             Specification, DamageFactor);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
-        setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*OneGunGame::Pi));
+        setup.Registry.emplace<Rotating>(setup.ThisEntity, sf::radians(2*Pi));
         setup.Registry.emplace<Scaling>(setup.ThisEntity, renderable.Sprite.getScale(), sf::Vector2f{TargetScale, TargetScale}, sf::seconds(ScaleTimeInSeconds));
         setup.Registry.emplace<Fading>(setup.ThisEntity, renderable.Sprite.getColor().a, TargetAlpha, sf::seconds(FadeTimeInSeconds));
         setup.Registry.emplace<Burning>(setup.ThisEntity);
@@ -46,4 +52,5 @@ namespace Projectile::Plasma {
             spdlog::info("Entity {} exploding!", static_cast<int>(thisEntity));
         }
     }
+}
 }

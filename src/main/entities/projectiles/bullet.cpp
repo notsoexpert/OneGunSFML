@@ -1,17 +1,21 @@
 #include "pch.hpp"
 #include "entities/projectile_types.hpp"
 #include "entities/entity.hpp"
-
-#include "systems/components.hpp"
-
 #include "entities/explosion_types.hpp"
 
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/animation.hpp"
+#include "components/collidable.hpp"
+#include "components/lifetime.hpp"
+
+namespace OneGunGame{
 namespace Projectile::Bullet {
     static constexpr uint8_t Tiers = 3;
     static constexpr std::array<const char*, Tiers> Name = 
     {"Bullet", "Large Bullet", "Huge Bullet"};
-    static constexpr std::array<OneGunGame::Images, Tiers> ImageID = 
-    {OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet, OneGunGame::Images::SpriteSheet};
+    static constexpr std::array<Images, Tiers> ImageID = 
+    {Images::SpriteSheet, Images::SpriteSheet, Images::SpriteSheet};
     static constexpr std::array<sf::IntRect, Tiers> TextureRect = 
     {sf::IntRect{{64, 0}, {64, 64}}, sf::IntRect{{128, 0}, {64, 64}}, sf::IntRect{{192, 0}, {64, 64}}};
     static constexpr std::array<sf::IntRect, Tiers> CollisionRect = 
@@ -50,4 +54,5 @@ namespace Projectile::Bullet {
         };
         Explosion::BulletHit::Create(explosionSetup);
     }
+}
 }

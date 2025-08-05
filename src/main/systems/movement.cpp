@@ -1,13 +1,56 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
+#include "utils/math.hpp"
 
-#include "systems/components.hpp"
+#include "components/renderable.hpp"
+#include "components/transformation.hpp"
+#include "components/mechanics.hpp"
 
 namespace OneGunGame
 {
 
 void ProcessMovement(/*DeltaTime dt*/) {
     // TODO: Use DeltaTime
+    static std::unordered_set<entt::entity> dashers;
+    GetData().Registry.view<Dashable, Acceleration>().each(
+        [](auto entity, Dashable& dashable, Acceleration& acceleration)
+        {
+            switch (dashable.CurrentState) {
+                case Dashable::DashState::Starting:
+                    spdlog::warn("Dash Starting");
+                    dashable.DashClock.restart();
+                    dashable.CurrentState = Dashable::DashState::Accelerating;
+                    dashers.insert(entity);
+                    break;
+                case Dashable::DashState::Accelerating:
+                    spdlog::warn("Dash Accelerating");
+                    acceleration.Value += dashable.LastDirection * dashable.SpeedMultiplier;
+                    if (dashable.DashClock.getElapsedTime().asSeconds() < dashable.Duration * Dashable::AccelerationDashDurationFactor) {
+                        break;
+                    }
+                    dashable.CurrentState = Dashable::DashState::Decelerating;
+                    dashers.insert(entity);
+                    break;
+                case Dashable::DashState::Decelerating:
+                    spdlog::warn("Dash Decelerating");
+                    acceleration.Value -= acceleration.Value * Dashable::AccelerationDashDurationFactor;
+                    if (dashable.DashClock.getElapsedTime().asSeconds() < dashable.Duration * Dashable::DecelerationDashDurationFactor) {
+                        break;
+                    }
+                    dashable.CurrentState = Dashable::DashState::Ending;
+                    dashers.insert(entity);
+                    break;
+                case Dashable::DashState::Ending:
+                    spdlog::warn("Dash Ending");
+                    dashable.DashCooldownClock.restart();
+                    dashable.CurrentState = Dashable::DashState::None;
+                    break;
+                default:
+                    break;
+            }
+        }
+    );
+
     GetData().Registry.view<Acceleration, Velocity>().each(
         [](auto entity, Acceleration &acceleration, Velocity &velocity)
         {
@@ -35,12 +78,16 @@ void ProcessMovement(/*DeltaTime dt*/) {
 
     GetData().Registry.view<MaxSpeed, Velocity>().each(
         [](auto entity, MaxSpeed &maxSpeed, Velocity &velocity){
+            if (dashers.contains(entity)) {
+                return; // Dashers uncapped
+            }
             spdlog::trace("Clamping speed for entity {}: Velocity ({}, {}) with MaxSpeed ({})", 
                 static_cast<int>(entity), velocity.Value.x, velocity.Value.y, maxSpeed.Value);
 
             if (velocity.Value.length() <= maxSpeed.Value) return;
             velocity.Value = velocity.Value.normalized() * maxSpeed.Value; 
         });
+    dashers.clear();
 }
 
 void ApplyMovement() {

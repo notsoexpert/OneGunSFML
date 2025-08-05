@@ -1,15 +1,13 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
-#include "systems/components.hpp"
 #include "entities/entity.hpp"
 #include "entities/background.hpp"
 #include "entities/player.hpp"
 #include "entities/projectile_types.hpp"
 #include "entities/enemy_types.hpp"
-#include "entities/weapon.hpp"
 
-namespace OneGunGame { 
+namespace OneGunGame {
 
     static Data s_Data(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
 
@@ -81,9 +79,7 @@ namespace OneGunGame {
     void Run() {
         while (s_Data.Context.Window.isOpen()) {
             Update();
-            s_Data.Registry.sort<Renderable>([](const Renderable& a, const Renderable& b) {
-                return a.DrawOrder > b.DrawOrder;
-            });
+            Sort();
             Render();
         }
     }
@@ -118,22 +114,6 @@ namespace OneGunGame {
         ProcessDeaths();
 
         RecycleEntities();
-    }
-
-    void Render() {
-        s_Data.Context.Window.clear(sf::Color::Black);
-
-        s_Data.Registry.view<Renderable>().each(
-            [](auto entity, Renderable& renderable) {
-            spdlog::trace("Rendering entity {}: Position ({}, {})", 
-                static_cast<int>(entity), renderable.Sprite.getPosition().x, renderable.Sprite.getPosition().y);
-            s_Data.Context.Window.draw(renderable.Sprite);
-#if DEBUGN
-            s_Data.Context.Window.draw(renderable.DebugRect);
-#endif
-        });
-        
-        s_Data.Context.Window.display();
     }
 
     sf::Vector2f GetWindowSize() {
