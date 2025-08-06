@@ -16,7 +16,7 @@ namespace OneGunGame{
 namespace Projectile {
     void Update(entt::registry &registry) {
         registry.view<Renderable, Velocity, Acceleration, Homing>().each(
-            [&](Renderable& renderable, [[maybe_unused]]Velocity& velocity, Acceleration& accel, Homing& homing) {
+            [&](Renderable& renderable, Velocity& velocity, Acceleration& accel, Homing& homing) {
                 if (!registry.valid(homing.Target) || registry.any_of<Destructing, Dying>(homing.Target)) {
                     // Try to find new target
                     std::pair<entt::entity, float> closestTarget = {entt::null, std::numeric_limits<float>::max()};

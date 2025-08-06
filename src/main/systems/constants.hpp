@@ -37,7 +37,7 @@ enum class CollisionLayer : uint8_t {
 constexpr uint8_t GetCollisionMask(std::initializer_list<CollisionLayer> layers) {
     uint8_t mask = 0;
     for (CollisionLayer layer : layers) {
-        mask &= static_cast<uint8_t>(layer);
+        mask |= static_cast<uint8_t>(layer);
     }
     return mask;
 }
