@@ -18,35 +18,40 @@ void ProcessMovement(/*DeltaTime dt*/) {
             switch (dashable.CurrentState) {
                 case Dashable::DashState::Starting:
                     spdlog::warn("Dash Starting");
-                    dashable.DashClock.restart();
-                    dashable.CurrentState = Dashable::DashState::Accelerating;
                     dashers.insert(entity);
-                    break;
-                case Dashable::DashState::Accelerating:
-                    spdlog::warn("Dash Accelerating");
-                    acceleration.Value += dashable.LastDirection * dashable.SpeedMultiplier;
-                    if (dashable.DashClock.getElapsedTime().asSeconds() < dashable.Duration * Dashable::AccelerationDashDurationFactor) {
-                        break;
+                    dashable.DashClock.restart(); 
+                    acceleration.Value = 
+                        dashable.LastDirection * 
+                        dashable.SpeedMultiplier * 
+                        GetQuadraticCurvePoint<float>(dashable.AccelerationCurve, 0.0f).y;
+
+                    dashable.CurrentState = Dashable::DashState::Progressing;
+                    return;
+                case Dashable::DashState::Progressing:
+                {
+                    spdlog::warn("Dash Progressing");
+                    dashers.insert(entity);
+
+                    auto dashPercentage = std::clamp(dashable.DashClock.getElapsedTime().asSeconds() / dashable.Duration, 0.0f, 1.0f);
+                    acceleration.Value = 
+                        dashable.LastDirection * 
+                        dashable.SpeedMultiplier * 
+                        GetQuadraticCurvePoint<float>(
+                            dashable.AccelerationCurve, 
+                            dashPercentage
+                        ).y;
+                    if (dashPercentage >= 1.0f) {
+                        dashable.CurrentState = Dashable::DashState::Ending;
                     }
-                    dashable.CurrentState = Dashable::DashState::Decelerating;
-                    dashers.insert(entity);
-                    break;
-                case Dashable::DashState::Decelerating:
-                    spdlog::warn("Dash Decelerating");
-                    acceleration.Value -= acceleration.Value * Dashable::AccelerationDashDurationFactor;
-                    if (dashable.DashClock.getElapsedTime().asSeconds() < dashable.Duration * Dashable::DecelerationDashDurationFactor) {
-                        break;
-                    }
-                    dashable.CurrentState = Dashable::DashState::Ending;
-                    dashers.insert(entity);
-                    break;
+                    return;
+                }
                 case Dashable::DashState::Ending:
                     spdlog::warn("Dash Ending");
                     dashable.DashCooldownClock.restart();
                     dashable.CurrentState = Dashable::DashState::None;
-                    break;
+                    return;
                 default:
-                    break;
+                    return;
             }
         }
     );

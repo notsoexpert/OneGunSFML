@@ -4,6 +4,8 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Clock.hpp>
 
+#include "utils/math.hpp"
+
 namespace OneGunGame {
 struct Energy {
     float Max;
@@ -40,23 +42,23 @@ struct HitInvincibility {
 struct Dashable {
     enum class DashState : uint8_t {
         Starting = 0,
-        Accelerating,
-        Decelerating,
+        Progressing,
         Ending,
         None
     };
-    static constexpr auto AccelerationDashDurationFactor = 0.25f;
-    static constexpr auto DecelerationDashDurationFactor = 1.0f - AccelerationDashDurationFactor;
+    BezierCurve<float, 3> AccelerationCurve;
     sf::Clock DashClock;
     sf::Clock DashCooldownClock;
     sf::Vector2f LastDirection;
     float SpeedMultiplier, Duration, Cooldown;
     DashState CurrentState = DashState::None;
 
-    Dashable(float speedMultiplier = 5.0f, float duration = 0.5f, float cooldownInSeconds = 1.0f) :
+    Dashable(const std::array<sf::Vector2f, 3>& curveControlPoints, 
+        float speedMultiplier = 5.0f, float duration = 0.5f, float cooldownInSeconds = 1.0f) :
         SpeedMultiplier(speedMultiplier),
         Duration(duration),
-        Cooldown(cooldownInSeconds)
+        Cooldown(cooldownInSeconds),
+        AccelerationCurve(curveControlPoints)
     {}
 
     bool IsDashComplete() {
@@ -65,15 +67,6 @@ struct Dashable {
 
     bool IsDashCooldownComplete() {
         return DashCooldownClock.getElapsedTime().asSeconds() >= Cooldown;
-    }
-
-    bool Dash(const sf::Vector2f& direction) {
-        if (CurrentState == DashState::None && IsDashCooldownComplete()){
-            LastDirection = direction;
-            CurrentState = DashState::Starting;
-            return true;
-        }
-        return false;
     }
 };
 }

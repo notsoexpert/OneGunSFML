@@ -9,6 +9,8 @@
 #include "components/renderable.hpp"
 #include "components/weapon.hpp"
 #include "components/collidable.hpp"
+#include "components/mechanics.hpp"
+#include "components/transformation.hpp"
 
 namespace OneGunGame {
 namespace Entity {
@@ -74,6 +76,21 @@ namespace Entity {
             registry.emplace<Lifetime>(thisEntity, sf::seconds(duration));
             spdlog::trace("Lifetime component added to {}", static_cast<int>(thisEntity));
         }
+    }
+
+    void StartDash(Dashable& dashable, Velocity& velocity) {
+        if (velocity.Value.length() == 0.0f) {
+            return;
+        }
+        if (dashable.CurrentState != Dashable::DashState::None) {
+            return;
+        }
+        if (!dashable.IsDashCooldownComplete()) {
+            return;
+        }
+
+        dashable.LastDirection = velocity.Value.normalized();
+        dashable.CurrentState = Dashable::DashState::Starting;
     }
 }
 }

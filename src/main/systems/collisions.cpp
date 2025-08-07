@@ -14,7 +14,7 @@ sf::Vector2f GetAdjustedCollisionRectSize(const sf::IntRect& originalRect, const
 
 sf::IntRect GetAdjustedCollisionRect(const sf::IntRect& originalRect, const sf::Vector2f& renderablePosition, const sf::Vector2f& renderableScale) {
     auto newSize = GetAdjustedCollisionRectSize(originalRect, renderableScale);
-    return sf::IntRect{RoundVector(static_cast<sf::Vector2f>(originalRect.position) + renderablePosition - (newSize / 2.0f)), RoundVector(newSize)};
+    return sf::IntRect{RoundVector<int, float>(static_cast<sf::Vector2f>(originalRect.position) + renderablePosition - (newSize / 2.0f)), RoundVector<int, float>(newSize)};
 }
 
 bool FilterCollidable(uint8_t mask, CollisionLayer type) {

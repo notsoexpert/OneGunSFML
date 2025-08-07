@@ -1,6 +1,9 @@
 #pragma once
 
 namespace OneGunGame {
+struct Dashable;
+struct Velocity;
+
 namespace Entity {
 
     void Update(entt::registry &registry);
@@ -12,5 +15,7 @@ namespace Entity {
     void SetupOffscreenLifetime(entt::registry &registry, entt::entity thisEntity, float duration = 1.0f);
     void RemoveOffscreenLifetime(entt::registry &registry, entt::entity thisEntity, std::variant<int, float> duration);
     void AddOffscreenLifetime(entt::registry &registry, entt::entity thisEntity, std::variant<int, float> duration);
+    
+    void StartDash(Dashable& dashable, Velocity& velocity);
 }
 }

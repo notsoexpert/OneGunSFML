@@ -1,3 +1,4 @@
+#pragma once
 #include <SFML/System/Vector2.hpp>
 #include <concepts>
 
@@ -18,7 +19,7 @@ T ConstrainValueLooped(T value, T min, T max) {
 
 template<Number T1, std::floating_point T2>
 constexpr T1 LinearInterpolation(T1 start, T1 end, T2 t) {
-    return static_cast<T1>(start * (static_cast<T2>(1) - t) + end * t);
+    return static_cast<T1>(start * (static_cast<T1>(1) - t) + end * t);
 }
 template<std::floating_point T2>
 constexpr sf::Vector2<T2> LinearInterpolation(const sf::Vector2<T2>& start, const sf::Vector2<T2>& end, T2 t) {
@@ -38,14 +39,14 @@ constexpr T1 RoundCoordinate(T2 coord) {
 }
 template <std::integral T1, std::floating_point T2>
 constexpr sf::Vector2<T1> RoundVector(const sf::Vector2<T2>& vec){
-    return sf::Vector2<T1>{RoundCoordinate(vec.x), RoundCoordinate(vec.y)};
+    return sf::Vector2<T1>{RoundCoordinate<T1, T2>(vec.x), RoundCoordinate<T1, T2>(vec.y)};
 }
 
 template <std::floating_point T, std::size_t Points>
 struct BezierCurve {
     std::array<sf::Vector2<T>, Points> ControlPoints;
 
-    BezierCurve(std::initializer_list<sf::Vector2<t>> points) :
+    BezierCurve(const std::array<sf::Vector2<T>, Points>& points) :
         ControlPoints(points)
     {}
 };

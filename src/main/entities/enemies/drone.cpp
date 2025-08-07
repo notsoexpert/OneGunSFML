@@ -50,8 +50,8 @@ namespace Enemy::Drone {
         
         // helper function probably needed
         sf::IntRect drone = renderable.Sprite.getTextureRect();
-        drone.position = RoundVector(renderable.Sprite.getPosition());
-        drone.size = RoundVector(static_cast<sf::Vector2f>(drone.size).componentWiseMul(renderable.Sprite.getScale()));
+        drone.position = RoundVector<int, float>(renderable.Sprite.getPosition());
+        drone.size = RoundVector<int, float>(static_cast<sf::Vector2f>(drone.size).componentWiseMul(renderable.Sprite.getScale()));
         sf::IntRect window = {{0,0}, sf::Vector2i(GetWindowSize())};
         if (!drone.findIntersection(window)){
             return;

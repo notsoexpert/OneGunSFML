@@ -3,6 +3,7 @@
 
 #include "systems/onegungame.hpp"
 #include "entities/projectile_types.hpp"
+#include "entities/entity.hpp"
 
 #include "components/renderable.hpp"
 #include "components/lifetime.hpp"
@@ -22,16 +23,19 @@ namespace Player {
     constexpr float BaseDamage = 5.0f;
     constexpr float BaseFireRate = 4.0f;
     constexpr float BaseShotSpeed = 1.0f;
-    constexpr float BaseDashSpeedMultiplier = 10.0f;
+    constexpr float BaseDashSpeedMultiplier = 5.0f;
     constexpr float BaseDashDuration = 0.25f;
-    constexpr float BaseDashCooldown = 1.0f;
+    constexpr float BaseDashCooldown = 0.8f;
+    constexpr std::array<sf::Vector2f, 3> DashAccelerationCurve = {
+        sf::Vector2f{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}
+    };
 
     void Update(entt::registry &registry, entt::entity playerEntity) {
         sf::Vector2f inputVector = GetInputVector();
         Player::Move(inputVector, registry, playerEntity);
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            Player::Dash(registry, playerEntity);
+            Entity::StartDash(registry.get<Dashable>(playerEntity), registry.get<Velocity>(playerEntity));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
             Projectile::Fire(registry, playerEntity);
@@ -66,17 +70,24 @@ namespace Player {
         auto &weapon = registry.emplace<Weapon>(entity, Weapon::Type::MainCannon);
         weapon.SetBaseStats(BaseDamage, BaseFireRate, BaseShotSpeed);
 
-        registry.emplace<Dashable>(entity, Player::BaseDashSpeedMultiplier, Player::BaseDashDuration, Player::BaseDashCooldown);
-        registry.emplace<Confined>(entity, sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())});
+        registry.emplace<Dashable>(entity, 
+            DashAccelerationCurve, 
+            BaseDashSpeedMultiplier, 
+            BaseDashDuration, 
+            BaseDashCooldown
+        );
+        registry.emplace<Confined>(entity, 
+            sf::FloatRect{sf::Vector2f{}, static_cast<sf::Vector2f>(GetWindowSize())}
+        );
         
         return entity;
     }
 
     void Move(const sf::Vector2f &inputVector, entt::registry &registry, entt::entity playerEntity) {
-        auto &dashable = registry.get<Dashable>(playerEntity);
-        if (dashable.CurrentState != Dashable::DashState::None) {
-            return;
-        }
+        // auto &dashable = registry.get<Dashable>(playerEntity);
+        // if (dashable.CurrentState != Dashable::DashState::None) {
+        //     return;
+        // }
 
         auto &acceleration = registry.get<Acceleration>(playerEntity);
         
@@ -84,20 +95,6 @@ namespace Player {
             inputVector.x * Player::BaseAcceleration,
             inputVector.y * Player::BaseAcceleration
         };
-    }
-
-    void Dash(entt::registry &registry, entt::entity playerEntity) {
-        auto &velocity = registry.get<Velocity>(playerEntity);
-        auto &acceleration = registry.get<Acceleration>(playerEntity);
-        auto &dashable = registry.get<Dashable>(playerEntity);
-        
-        if (velocity.Value.length() == 0.0f) {
-            return;
-        }
-
-        if (dashable.Dash(velocity.Value.normalized())) {
-            acceleration.Value = {0.0f, 0.0f};
-        }
     }
 
     void OnCollision(Collision& collision) {
