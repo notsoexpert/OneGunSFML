@@ -27,7 +27,7 @@ namespace Player {
     constexpr float BaseDashDuration = 0.25f;
     constexpr float BaseDashCooldown = 0.8f;
     constexpr std::array<sf::Vector2f, 3> DashAccelerationCurve = {
-        sf::Vector2f{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}
+        sf::Vector2f{0.0f, 0.33f}, {0.0f, 1.0f}, {1.0f, 1.0f}
     };
 
     void Update(entt::registry &registry, entt::entity playerEntity) {
