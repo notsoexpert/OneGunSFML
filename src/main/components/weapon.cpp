@@ -67,6 +67,9 @@ void Weapon::ChangePreset(Weapon::Type newType) {
             CurrentShotSpeedFactor = 0.5f;
             ProjectileType = Projectile::Type::Bullet;
             ProjectileTier = 0U;
+            return;
+        default:
+            return;
     }
 }
 

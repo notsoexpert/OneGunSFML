@@ -95,7 +95,9 @@ namespace Enemy::Comet {
                     CollisionLayer::Player, CollisionLayer::Enemy,
                     CollisionLayer::Obstacle
                 }),
-                collidable.Source
+                collidable.Source,
+                entt::null,
+                0U
             };
             Projectile::Create(setup, Projectile::Type::Ice);
         }

@@ -13,8 +13,8 @@ namespace Enemy {
         entt::registry &Registry;
         sf::Vector2f Position;
         sf::Vector2f Direction;
-        std::optional<CollisionLayer> CollisionLayer;
-        std::optional<uint8_t> CollisionMask;
+        std::optional<CollisionLayer> CLayer;
+        std::optional<uint8_t> CMask;
         entt::entity Source = entt::null;
         entt::entity ThisEntity = entt::null;
     };

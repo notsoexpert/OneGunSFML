@@ -33,11 +33,11 @@ namespace Explosion::Prebomb {
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup{
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             {0.0f, 0.0f}
-        };
+        );
         Explosion::Bomb::Create(explosionSetup);
     }
 

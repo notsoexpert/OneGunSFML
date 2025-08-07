@@ -55,7 +55,7 @@ void CheckCollisions() {
                 if (entity == otherEntity || otherEntity == collidable.Source) {
                     continue;
                 }
-                if (!FilterCollidable(collidable.CollisionMask, otherCollidable.CollisionLayer)) {
+                if (!FilterCollidable(collidable.CMask, otherCollidable.CLayer)) {
                     continue;
                 }
 

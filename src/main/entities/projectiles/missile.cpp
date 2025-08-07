@@ -59,8 +59,8 @@ namespace Projectile::Missile {
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             registry.get<Velocity>(thisEntity).Value,
-            collidable.CollisionLayer,
-            collidable.CollisionMask,
+            collidable.CLayer,
+            collidable.CMask,
             collidable.Source
         };
         Explosion::Missile::Create(explosionSetup);

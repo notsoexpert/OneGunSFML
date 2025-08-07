@@ -45,11 +45,9 @@ namespace Enemy::Fighter {
     void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup{
-            registry,
-            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value
-        };
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
+        registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+        registry.get<Velocity>(thisEntity).Value);
         Explosion::FighterDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});
     }

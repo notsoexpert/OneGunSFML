@@ -47,11 +47,9 @@ namespace Projectile::Bullet {
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace_or_replace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup{
-            registry,
-            registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value
-        };
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
+        registry.get<Renderable>(thisEntity).Sprite.getPosition(),
+        registry.get<Velocity>(thisEntity).Value);
         Explosion::BulletHit::Create(explosionSetup);
     }
 }

@@ -8,7 +8,8 @@ project(OneGunSFMLProject)            # this sets the project name
 # These instructions search the directory tree when cmake is
 # invoked and put all files that match the pattern in the variables 
 # `sources` and `data`.
-file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp src/main/entities/*.hpp src/main/entities/*.cpp src/main/system/*.hpp src/main/system/*.cpp src/main/entities/enemies/*.cpp src/main/entities/explosions/*.cpp)
+file(GLOB_RECURSE sources      src/main/*.cpp src/main/*.hpp src/main/entities/*.hpp src/main/entities/*.cpp src/main/system/*.hpp src/main/system/*.cpp src/main/entities/enemies/*.cpp src/main/entities/explosions/*.cpp src/main/entities/projectiles/*.cpp
+src/main/utils/*.hpp src/main/components/*.hpp src/main/components/*.cpp)
 file(GLOB_RECURSE sources_test src/test/*.cpp)
 file(GLOB_RECURSE data assets/*)
 # You can use set(sources src/main.cpp) etc if you don't want to
@@ -21,16 +22,17 @@ file(GLOB_RECURSE data assets/*)
 # The data is just added to the executable, because in some IDEs (QtCreator) 
 # files are invisible when they are not explicitly part of the project.
 add_executable(OneGunSFML ${sources} ${data})
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OneGunSFML)
 
 target_precompile_headers(OneGunSFML PRIVATE src/main/pch.hpp)
 
-# Just for example add some compiler flags.
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+# MSVC first in case of Clang-CL (incompatible compiler options)
+if(MSVC)
+  target_compile_options(OneGunSFML PUBLIC /std:c++latest /W4 /WX /permissive- /Zc:__cplusplus /MP)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
-elseif(MSVC)
-  target_compile_options(OneGunSFML PUBLIC /std:c++latest /W4 /WX /permissive- /Zc:__cplusplus /MP)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
   target_compile_options(OneGunSFML PUBLIC -std=c++23 -Wall -Wextra -Werror)
 endif()
@@ -68,9 +70,6 @@ add_subdirectory(vendor/SFML)
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/entt)
-#find_package(SFML COMPONENTS window graphics audio REQUIRED)
-#find_package(spdlog REQUIRED)
-#find_package(glm REQUIRED)
 
 target_link_libraries(OneGunSFML PUBLIC
   sfml-window
@@ -80,6 +79,11 @@ target_link_libraries(OneGunSFML PUBLIC
   spdlog
   glm
   EnTT
+)
+
+set_target_properties(OneGunSFML PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:OneGunSFML>"
 )
 
 ###############################################################################

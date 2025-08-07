@@ -33,11 +33,11 @@ namespace Projectile::Bomb {
 
         auto pos = registry.get<Renderable>(thisEntity).Sprite.getPosition();
 
-        Explosion::Setup explosionSetup{
-            registry,
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
+            registry, 
             pos,
             registry.get<Velocity>(thisEntity).Value
-        };
+        );
         Explosion::Prebomb::Create(explosionSetup);
 
         auto boomTickerEntity = registry.create();

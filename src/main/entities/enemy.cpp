@@ -37,10 +37,10 @@ Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect
         setup.ThisEntity, 
         collisionRect, 
         setup.Source, 
-        setup.CollisionLayer.value_or(
+        setup.CLayer.value_or(
             CollisionLayer::Enemy
         ),
-        setup.CollisionMask.value_or(
+        setup.CMask.value_or(
             GetCollisionMask({
                 CollisionLayer::Player, CollisionLayer::PlayerProjectile
             })

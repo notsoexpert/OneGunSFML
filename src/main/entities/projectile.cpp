@@ -66,10 +66,10 @@ namespace Projectile {
             setup.ThisEntity, 
             collisionRect, 
             setup.Source, 
-            setup.CollisionLayer.value_or(
+            setup.CLayer.value_or(
                 CollisionLayer::NeutralProjectile
             ), 
-            setup.CollisionMask.value_or(
+            setup.CMask.value_or(
                 static_cast<uint8_t>(CollisionLayer::Obstacle)
             ),
             OnCollision

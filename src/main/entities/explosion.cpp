@@ -36,10 +36,10 @@ namespace Explosion {
             setup.ThisEntity, 
             collisionRect, 
             setup.Source, 
-            setup.CollisionLayer.value_or(
+            setup.CLayer.value_or(
                 CollisionLayer::NeutralProjectile
             ), 
-            setup.CollisionMask.value_or(
+            setup.CMask.value_or(
                 static_cast<uint8_t>(CollisionLayer::Obstacle)
             ),
             OnCollision
@@ -60,6 +60,18 @@ namespace Explosion {
         }
 
         return damageFactor * sourceWeapon->GetDamage();
+    }
+
+    Setup SetupBasicExplosion(entt::registry& registry, const sf::Vector2f& position, const sf::Vector2f& direction) {
+        return {
+            registry,
+            position,
+            direction,
+            {},
+            {},
+            entt::null,
+            entt::null
+        };
     }
 }
 }

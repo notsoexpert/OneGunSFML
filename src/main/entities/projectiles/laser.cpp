@@ -60,11 +60,11 @@ namespace Projectile::Laser {
         auto &velocity = registry.get<Velocity>(thisEntity);
         auto &collidable = registry.get<Collidable>(thisEntity);
 
-        Explosion::Setup explosionSetup{
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             renderable.Sprite.getPosition(),
             velocity.Value
-        };
+        );
         Explosion::LaserHit::Create(explosionSetup);
         Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier);
 
@@ -81,8 +81,8 @@ namespace Projectile::Laser {
                 registry, 
                 renderable.Sprite.getPosition(), 
                 newDirection, 
-                collidable.CollisionLayer,
-                collidable.CollisionMask,
+                collidable.CLayer,
+                collidable.CMask,
                 collidable.Source
             };
             Projectile::Create(setup, Projectile::Type::Laser);

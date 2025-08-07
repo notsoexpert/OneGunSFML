@@ -88,12 +88,12 @@ namespace Projectile {
         if (Entity::Damage(registry, projectileEntity, otherEntity, damage)){
             burningComponent.BurnClocks[otherEntity].restart();
         }
-
-        Explosion::Setup explosionSetup{
+        
+        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             (registry.get<Renderable>(projectileEntity).Sprite.getPosition() * 0.5f) + (registry.get<Renderable>(otherEntity).Sprite.getPosition() * 0.5f),
             registry.get<Velocity>(projectileEntity).Value
-        };
+        );
         Explosion::BurnHit::Create(explosionSetup);
 
         spdlog::info("Entity {} burned by entity {}", static_cast<int>(otherEntity), static_cast<int>(projectileEntity));
