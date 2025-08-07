@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "win-clang",
+      "displayName": "Windows Clang Build",
+      "generator": "Visual Studio 17 2022",
+      "toolset": "ClangCL",
+      "binaryDir": "${sourceDir}/winclangbuild"
+    },
+    {
+      "name": "msvc",
+      "displayName": "Windows MSVC Build",
+      "generator": "Visual Studio 17 2022",
+      "toolset": "v143",
+      "binaryDir": "${sourceDir}/msvcbuild"
+    },
+    {
+      "name": "clang",
+      "displayName": "Clang Build",
+      "binaryDir": "${sourceDir}/clangbuild",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "gcc",
+      "displayName": "GCC Build",
+      "binaryDir": "${sourceDir}/gccbuild",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    }
+  ]
+}
