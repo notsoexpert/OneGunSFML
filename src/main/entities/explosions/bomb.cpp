@@ -28,7 +28,7 @@ static constexpr sf::Vector2f WaveStartScale = {0.1f, 0.1f};
 static constexpr sf::Vector2f WaveEndScale = {100.0f, 100.0f};
 static constexpr float WaveLifeTimeInSeconds = 1.0f;
 
-void Create(Setup& setup) {
+void Create(Entity::Setup& setup) {
     spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
     
     setup.ThisEntity = Explosion::Create(setup);

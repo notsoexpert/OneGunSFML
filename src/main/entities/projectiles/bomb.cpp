@@ -19,7 +19,7 @@ namespace Projectile::Bomb {
     static constexpr float BoomDelayInSeconds = 0.45f;
     static constexpr uint8_t Specification = Flags::Explode;
 
-    void Create(const Setup& setup) {
+    void Create(const Entity::Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID, TextureRect);
@@ -33,7 +33,7 @@ namespace Projectile::Bomb {
 
         auto pos = registry.get<Renderable>(thisEntity).Sprite.getPosition();
 
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry, 
             pos,
             registry.get<Velocity>(thisEntity).Value

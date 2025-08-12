@@ -35,8 +35,8 @@ namespace Projectile::Laser {
     static constexpr size_t TotalSplits = 2;
     static constexpr float SplitDamageFactor = 0.50f;
 
-    void Create(const Setup& setup) {
-        auto index = setup.Tier;
+    void Create(const Entity::Setup& setup) {
+        auto index = setup.Tier.value_or(0U);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
@@ -60,7 +60,7 @@ namespace Projectile::Laser {
         auto &velocity = registry.get<Velocity>(thisEntity);
         auto &collidable = registry.get<Collidable>(thisEntity);
 
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             renderable.Sprite.getPosition(),
             velocity.Value
@@ -77,12 +77,13 @@ namespace Projectile::Laser {
             sf::Angle rotation = sf::radians(HalfPi / 2.0f * (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f));
             sf::Vector2f newDirection = splitting.OriginalDirection.rotatedBy(rotation).normalized();
 
-            Projectile::Setup setup{
+            Entity::Setup setup{
                 registry, 
                 renderable.Sprite.getPosition(), 
                 newDirection, 
                 collidable.CLayer,
                 collidable.CMask,
+                std::nullopt,
                 collidable.Source
             };
             Projectile::Create(setup, Projectile::Type::Laser);

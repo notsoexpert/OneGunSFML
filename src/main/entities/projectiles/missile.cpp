@@ -31,8 +31,8 @@ namespace Projectile::Missile {
     static constexpr std::array<uint8_t, Tiers> Specification = 
     {Flags::Destruct | Flags::Explode, Flags::Destruct | Flags::Explode | Flags::Home};
 
-    void Create(const Projectile::Setup& setup) {
-        auto index = setup.Tier;
+    void Create(const Entity::Setup& setup) {
+        auto index = setup.Tier.value_or(0U);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
         
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
@@ -55,12 +55,13 @@ namespace Projectile::Missile {
         registry.emplace<Destructing>(thisEntity);
         auto& collidable = registry.get<Collidable>(thisEntity);
 
-        Explosion::Setup explosionSetup{
+        Entity::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             registry.get<Velocity>(thisEntity).Value,
             collidable.CLayer,
             collidable.CMask,
+            std::nullopt,
             collidable.Source
         };
         Explosion::Missile::Create(explosionSetup);

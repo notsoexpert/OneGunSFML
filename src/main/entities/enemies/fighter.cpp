@@ -19,7 +19,7 @@ namespace Enemy::Fighter {
     static constexpr float MoveSpeed = 5.0f;
     static constexpr float OffscreenLifetime = 5.0f;
 
-    void Create(const Setup& setup){
+    void Create(const Entity::Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);
@@ -45,7 +45,7 @@ namespace Enemy::Fighter {
     void Death(entt::registry &registry, entt::entity thisEntity){
         registry.emplace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
         registry.get<Renderable>(thisEntity).Sprite.getPosition(),
         registry.get<Velocity>(thisEntity).Value);
         Explosion::FighterDeath::Create(explosionSetup);

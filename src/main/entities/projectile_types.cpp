@@ -16,7 +16,7 @@
 
 namespace OneGunGame {
 namespace Projectile {
-    static const std::array<std::function<void(const Setup&)>, static_cast<size_t>(Type::Total)> ProjectileSetup = {
+    static const std::array<std::function<void(const Entity::Setup&)>, static_cast<size_t>(Type::Total)> ProjectileSetup = {
         Bullet::Create, Laser::Create, Plasma::Create,
         Missile::Create, Bomb::Create, Ice::Create
     };
@@ -25,7 +25,7 @@ namespace Projectile {
         Missile::Death, Bomb::Death, Ice::Death
     };
 
-    entt::entity Create(Setup& setup, Type type) {
+    entt::entity Create(Entity::Setup& setup, Type type) {
         if (type < Type::Bullet || type >= Type::Total) {
             spdlog::error("Create: Invalid projectile type: {}", static_cast<int>(type));
             return entt::null;
@@ -67,15 +67,15 @@ namespace Projectile {
             collisionMask &= ~static_cast<uint8_t>(CollisionLayer::Enemy);
         }
         
-        Projectile::Setup setup{
+        Entity::Setup setup{
             registry, 
             registry.get<Renderable>(thisEntity).Sprite.getPosition(), 
             fireDirection,
             collisionLayer,
             static_cast<uint8_t>(collisionMask),
+            tierOverride.value_or(weaponComponent->ProjectileTier),
             thisEntity, 
-            entt::null, 
-            tierOverride.value_or(weaponComponent->ProjectileTier)
+            entt::null
         };
         return Projectile::Create(setup, projectileType);
     }
@@ -89,7 +89,7 @@ namespace Projectile {
             burningComponent.BurnClocks[otherEntity].restart();
         }
         
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             (registry.get<Renderable>(projectileEntity).Sprite.getPosition() * 0.5f) + (registry.get<Renderable>(otherEntity).Sprite.getPosition() * 0.5f),
             registry.get<Velocity>(projectileEntity).Value

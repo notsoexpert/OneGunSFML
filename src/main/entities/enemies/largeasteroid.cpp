@@ -22,7 +22,7 @@ static constexpr float MoveSpeed = 1.0f;
 static constexpr float OffscreenLifetime = 5.0f;
 static constexpr size_t DeathAsteroids = 2U;
 
-void Create(const Setup& setup){
+void Create(const Entity::Setup& setup){
     spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
     SetupRenderable(setup, ImageID, TextureRect);
     SetupCollidable(setup, CollisionRect);
@@ -47,19 +47,20 @@ void Death(entt::registry &registry, entt::entity thisEntity){
                 (i / 2 + 1) * (i % 2 == 0 ? 1.0f : -1.0f)
             )
         ).normalized();
-        Enemy::Setup setup{
+        Entity::Setup setup{
             registry, 
             renderable.Sprite.getPosition(), 
             newDirection, 
             collidable.CLayer,
             collidable.CMask,
+            std::nullopt,
             collidable.Source,
             thisEntity
         };
         Enemy::Create(setup, Enemy::Type::Asteroid);
     }
 
-    Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
+    Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
         registry.get<Renderable>(thisEntity).Sprite.getPosition(),
         registry.get<Velocity>(thisEntity).Value);
     Explosion::AsteroidDeath::Create(explosionSetup);

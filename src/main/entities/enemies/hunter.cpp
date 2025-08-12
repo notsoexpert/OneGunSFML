@@ -17,7 +17,7 @@ namespace Enemy::Hunter {
     static constexpr float MoveSpeed = 6.0f;
     static constexpr float OffscreenLifetime = 3.0f;
 
-    void Create(const Setup& setup){
+    void Create(const Entity::Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         SetupRenderable(setup, ImageID, TextureRect);
         SetupCollidable(setup, CollisionRect);

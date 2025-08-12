@@ -2,14 +2,13 @@
 #include "explosion_types.hpp"
 
 #include "systems/onegungame.hpp"
-#include "entities/entity.hpp"
 
 #include "components/collidable.hpp"
 #include "components/transformation.hpp"
 
 namespace OneGunGame {
 namespace Explosion {
-    entt::entity Create(Setup& setup, Type type) 
+    entt::entity Create(Entity::Setup& setup, Type type) 
     {
         if (type < Type::VisualOnly || type >= Type::Total) {
             spdlog::error("Create: Invalid explosion type: {}", static_cast<int>(type));
@@ -19,7 +18,7 @@ namespace Explosion {
         setup.ThisEntity = Explosion::Create(setup);
 
         setup.Registry.emplace<Component>(setup.ThisEntity, type);
-        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Velocity);
+        setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction);
 
         //CollisionLayer mask = GetHitMask(setup.Registry.get<Collidable>(setup.Source).Layer);
         //setup.Registry.emplace<Collidable>(setup.ThisEntity, Specifications.at(type).CollisionRect, setup.Source, 

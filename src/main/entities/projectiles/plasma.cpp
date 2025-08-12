@@ -28,7 +28,7 @@ namespace Projectile::Plasma {
     static constexpr float TargetScale = 3.0f;
     static constexpr uint8_t TargetAlpha = 0U;
 
-    void Create(const Setup& setup) {
+    void Create(const Entity::Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
         auto& renderable = SetupRenderable(setup, ImageID, TextureRect);

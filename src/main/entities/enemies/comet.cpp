@@ -26,7 +26,7 @@ namespace Enemy::Comet {
     static constexpr float TrailFrameTimeInSeconds = 0.03f;
     static constexpr size_t DeathProjectiles = 8U;
 
-    void Create(const Setup& setup){
+    void Create(const Entity::Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         auto& renderable = SetupRenderable(setup, ImageID, TextureRect);
         renderable.Sprite.setScale(DefaultScale);
@@ -39,10 +39,11 @@ namespace Enemy::Comet {
         setup.Registry.emplace<Enemy::Behavior>(setup.ThisEntity, Behavior);
         setup.Registry.emplace<Animation>(setup.ThisEntity, renderable.Sprite.getTextureRect().position, TotalFrames, sf::seconds(FrameTimeInSeconds));
 
-        auto trailSetup = Enemy::Setup{
+        auto trailSetup = Entity::Setup{
             setup.Registry, 
             sf::Vector2f{}, 
             setup.Direction, 
+            std::nullopt,
             std::nullopt,
             std::nullopt,
             setup.Source, 
@@ -86,7 +87,7 @@ namespace Enemy::Comet {
                 )
             ).normalized();
 
-            Projectile::Setup setup{
+            Entity::Setup setup{
                 registry, 
                 renderable.Sprite.getPosition(), 
                 direction, 
@@ -95,9 +96,9 @@ namespace Enemy::Comet {
                     CollisionLayer::Player, CollisionLayer::Enemy,
                     CollisionLayer::Obstacle
                 }),
+                std::nullopt,
                 collidable.Source,
-                entt::null,
-                0U
+                entt::null
             };
             Projectile::Create(setup, Projectile::Type::Ice);
         }

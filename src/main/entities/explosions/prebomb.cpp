@@ -16,7 +16,7 @@ namespace Explosion::Prebomb {
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float LifetimeDuration = TotalFrames * FrameTimeInSeconds;
 
-    void Create(Setup& setup) {
+    void Create(Entity::Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
         setup.ThisEntity = Explosion::Create(setup);
@@ -33,7 +33,7 @@ namespace Explosion::Prebomb {
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
             {0.0f, 0.0f}

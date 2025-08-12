@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "onegungame.hpp"
 
+#include "entities/entity.hpp"
 #include "entities/player.hpp"
 #include "entities/enemy_types.hpp"
 #include "entities/background.hpp"
@@ -75,7 +76,7 @@ void SetupEventHandlers() {
             sf::Vector2f flyDirection = {0.0f, 1.0f};
             flyDirection = flyDirection.rotatedBy(sf::radians(GetData().Random.generateFloat(-HalfPi, HalfPi)));
             
-            Enemy::Setup setup{
+            Entity::Setup setup{
                 GetData().Registry, 
                 spawnPosition, 
                 flyDirection, 
@@ -84,6 +85,7 @@ void SetupEventHandlers() {
                     CollisionLayer::Player, CollisionLayer::PlayerProjectile,
                     CollisionLayer::NeutralProjectile}
                 ),
+                std::nullopt,
                 entt::null, 
                 entt::null
             };

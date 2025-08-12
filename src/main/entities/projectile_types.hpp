@@ -41,31 +41,31 @@ namespace Projectile {
         }
     };
 
-    entt::entity Create(Setup& setup, Type type);
+    entt::entity Create(Entity::Setup& setup, Type type);
     entt::entity Fire(entt::registry &registry, entt::entity playerEntity, std::optional<uint8_t> tierOverride = std::nullopt);
     
     namespace Bullet {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Laser {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Plasma {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Missile {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Bomb {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
     namespace Ice {
-        void Create(const Setup& setup);
+        void Create(const Entity::Setup& setup);
         void Death(entt::registry& registry, entt::entity thisEntity);
     }
 }

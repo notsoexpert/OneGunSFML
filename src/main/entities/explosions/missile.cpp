@@ -17,7 +17,7 @@ namespace Explosion::Missile {
     static constexpr float LifetimeDuration = TotalFrames*FrameTimeInSeconds;
     static constexpr float BaseDamage = 5.0f;
 
-    void Create(Setup& setup) {
+    void Create(Entity::Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
         setup.ThisEntity = Explosion::Create(setup);

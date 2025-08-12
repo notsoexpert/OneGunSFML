@@ -1,7 +1,6 @@
 #include "pch.hpp"
 #include "explosion.hpp"
 
-#include "entities/entity.hpp"
 #include "systems/onegungame.hpp"
 
 #include "entities/projectile_types.hpp"
@@ -14,13 +13,13 @@
 namespace OneGunGame{
 namespace Explosion {
 
-    entt::entity Create(Setup& setup) {   
+    entt::entity Create(Entity::Setup& setup) {   
         entt::entity entity = setup.Registry.create();
 
         return entity;
     }
 
-    Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect) {
+    Renderable& SetupRenderable(const Entity::Setup& setup, Images imageID, const sf::IntRect& textureRect) {
         auto& renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
             GetTexture(imageID), 20);
         renderable.Sprite.setTextureRect(textureRect);
@@ -29,7 +28,7 @@ namespace Explosion {
         return renderable;
     }
 
-    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
+    Collidable& SetupCollidable(const Entity::Setup& setup, const sf::IntRect& collisionRect){
         sf::IntRect centeredRect = collisionRect;
         centeredRect.position -= centeredRect.size / 2;
         return setup.Registry.emplace<Collidable>(
@@ -62,13 +61,14 @@ namespace Explosion {
         return damageFactor * sourceWeapon->GetDamage();
     }
 
-    Setup SetupBasicExplosion(entt::registry& registry, const sf::Vector2f& position, const sf::Vector2f& direction) {
+    Entity::Setup SetupBasicExplosion(entt::registry& registry, const sf::Vector2f& position, const sf::Vector2f& direction) {
         return {
             registry,
             position,
             direction,
-            {},
-            {},
+            std::nullopt,
+            std::nullopt,
+            std::nullopt,
             entt::null,
             entt::null
         };

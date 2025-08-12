@@ -19,12 +19,12 @@ void Update(entt::registry &registry) {
         }
     );
 }
-entt::entity Create(Setup& setup) {
+entt::entity Create(Entity::Setup& setup) {
     setup.ThisEntity = setup.Registry.create();
     
     return setup.ThisEntity;
 }
-Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect){
+Renderable& SetupRenderable(const Entity::Setup& setup, Images imageID, const sf::IntRect& textureRect){
     auto &renderable = setup.Registry.emplace<Renderable>(setup.ThisEntity, 
         GetTexture(imageID), 50);
     renderable.Sprite.setTextureRect(textureRect);
@@ -32,7 +32,7 @@ Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRec
     renderable.Sprite.setPosition(setup.Position);
     return renderable;
 }
-Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
+Collidable& SetupCollidable(const Entity::Setup& setup, const sf::IntRect& collisionRect){
     return setup.Registry.emplace<Collidable>(
         setup.ThisEntity, 
         collisionRect, 
@@ -47,17 +47,17 @@ Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect
         ),
         OnCollision);
 }
-Health& SetupHealth(const Setup& setup, float maxHealth, Callback callback){
+Health& SetupHealth(const Entity::Setup& setup, float maxHealth, Callback callback){
     return setup.Registry.emplace<Health>(setup.ThisEntity, maxHealth, callback);
 }
-Behavior& SetupBehavior(const Setup& setup, Callback callback){
+Behavior& SetupBehavior(const Entity::Setup& setup, Callback callback){
     return setup.Registry.emplace<Behavior>(setup.ThisEntity, callback);
 }
-void SetupMovement(const Setup& setup, float moveSpeed){
+void SetupMovement(const Entity::Setup& setup, float moveSpeed){
     setup.Registry.emplace<Velocity>(setup.ThisEntity, setup.Direction * moveSpeed);
     setup.Registry.emplace<MaxSpeed>(setup.ThisEntity, moveSpeed);
 }
-void SetupOffscreenLifetime(const Setup& setup, float expireTimeInSeconds){
+void SetupOffscreenLifetime(const Entity::Setup& setup, float expireTimeInSeconds){
     setup.Registry.emplace<ScreenTrigger>(setup.ThisEntity, Entity::RemoveOffscreenLifetime, Entity::AddOffscreenLifetime, expireTimeInSeconds);
 }
 void OnCollision(Collision& collision) {

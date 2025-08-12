@@ -8,26 +8,19 @@ struct Collision;
 struct Collidable;
 struct Health;
 
-namespace Projectile {
-    struct Setup {
-        entt::registry &Registry;
-        const sf::Vector2f &Position;
-        const sf::Vector2f &Direction;
-        std::optional<CollisionLayer> CLayer;
-        std::optional<uint8_t> CMask;
-        entt::entity Source = entt::null;
-        entt::entity ThisEntity = entt::null;
-        uint8_t Tier = 0U;
-    };
+namespace Entity {
+    struct Setup;
+}
 
+namespace Projectile {
     void Update(entt::registry& registry);
-    entt::entity Create(Setup& setup);
+    entt::entity Create(Entity::Setup& setup);
     void OnCollision(Collision& collision);
     
-    Renderable& SetupRenderable(const Setup& setup, 
+    Renderable& SetupRenderable(const Entity::Setup& setup, 
         Images imageID, const sf::IntRect& textureRect);
-    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect);
-    void SetupMovement(const Setup& setup, float moveSpeed);
+    Collidable& SetupCollidable(const Entity::Setup& setup, const sf::IntRect& collisionRect);
+    void SetupMovement(const Entity::Setup& setup, float moveSpeed);
         
     float GetProjectileDamage(entt::registry &registry, entt::entity projectileEntity, float damage);
 

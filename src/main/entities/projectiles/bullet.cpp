@@ -29,8 +29,8 @@ namespace Projectile::Bullet {
     static constexpr std::array<uint8_t, Tiers> Specification = 
     {Flags::Destruct, Flags::Destruct, Flags::Destruct};
 
-    void Create(const Setup& setup) {
-        auto index = setup.Tier;
+    void Create(const Entity::Setup& setup) {
+        auto index = setup.Tier.value_or(0U);
         spdlog::trace("Setting up {} at ({}, {})", Name.at(index), setup.Position.x, setup.Position.y);
 
         SetupRenderable(setup, ImageID.at(index), TextureRect.at(index));
@@ -47,7 +47,7 @@ namespace Projectile::Bullet {
     void Death(entt::registry &registry, entt::entity thisEntity) {
         registry.emplace_or_replace<Destructing>(thisEntity);
 
-        Explosion::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
+        Entity::Setup explosionSetup = Explosion::SetupBasicExplosion(registry,
         registry.get<Renderable>(thisEntity).Sprite.getPosition(),
         registry.get<Velocity>(thisEntity).Value);
         Explosion::BulletHit::Create(explosionSetup);

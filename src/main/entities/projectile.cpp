@@ -41,14 +41,14 @@ namespace Projectile {
         );
     }
 
-    entt::entity Create(Setup& setup)
+    entt::entity Create(Entity::Setup& setup)
     {
         entt::entity entity = setup.Registry.create();
 
         return entity;
     }
 
-    Renderable& SetupRenderable(const Setup& setup, Images imageID, const sf::IntRect& textureRect) {
+    Renderable& SetupRenderable(const Entity::Setup& setup, Images imageID, const sf::IntRect& textureRect) {
         auto &renderable = setup.Registry.emplace<Renderable>(
             setup.ThisEntity, 
             GetTexture(imageID), 
@@ -61,7 +61,7 @@ namespace Projectile {
         renderable.Sprite.setPosition(setup.Position);
         return renderable;
     }
-    Collidable& SetupCollidable(const Setup& setup, const sf::IntRect& collisionRect){
+    Collidable& SetupCollidable(const Entity::Setup& setup, const sf::IntRect& collisionRect){
         return setup.Registry.emplace<Collidable>(
             setup.ThisEntity, 
             collisionRect, 
@@ -76,7 +76,7 @@ namespace Projectile {
         );
     }
 
-    void SetupMovement(const Setup& setup, float moveSpeed){
+    void SetupMovement(const Entity::Setup& setup, float moveSpeed){
         setup.Registry.emplace<Velocity>(setup.ThisEntity);
         setup.Registry.emplace<Acceleration>(
             setup.ThisEntity, 

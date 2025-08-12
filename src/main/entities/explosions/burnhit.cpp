@@ -15,7 +15,7 @@ namespace Explosion::BurnHit {
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float LifetimeDuration = TotalFrames*FrameTimeInSeconds;
 
-    void Create(Setup& setup) {
+    void Create(Entity::Setup& setup) {
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
         
         setup.ThisEntity = Explosion::Create(setup);

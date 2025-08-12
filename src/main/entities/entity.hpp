@@ -1,10 +1,23 @@
 #pragma once
 
+#include "systems/constants.hpp"
+
 namespace OneGunGame {
 struct Dashable;
 struct Velocity;
 
 namespace Entity {
+
+    struct Setup {
+        entt::registry &Registry;
+        sf::Vector2f Position;
+        sf::Vector2f Direction;
+        std::optional<CollisionLayer> CLayer;
+        std::optional<uint8_t> CMask;
+        std::optional<uint8_t> Tier;
+        entt::entity Source = entt::null;
+        entt::entity ThisEntity = entt::null;
+    };
 
     void Update(entt::registry &registry);
 
