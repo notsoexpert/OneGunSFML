@@ -55,10 +55,10 @@ struct Dashable {
 
     Dashable(const std::array<sf::Vector2f, 3>& curveControlPoints, 
         float speedMultiplier = 5.0f, float duration = 0.5f, float cooldownInSeconds = 1.0f) :
+        AccelerationCurve(curveControlPoints),
         SpeedMultiplier(speedMultiplier),
         Duration(duration),
-        Cooldown(cooldownInSeconds),
-        AccelerationCurve(curveControlPoints)
+        Cooldown(cooldownInSeconds)
     {}
 
     bool IsDashComplete() {
