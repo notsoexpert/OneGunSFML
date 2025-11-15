@@ -45,7 +45,6 @@ target_compile_definitions(OneGunSFML PRIVATE
 target_include_directories(OneGunSFML PUBLIC src/main)
 target_include_directories(OneGunSFML PUBLIC vendor/SFML/include)
 target_include_directories(OneGunSFML PUBLIC vendor/spdlog/include)
-target_include_directories(OneGunSFML PUBLIC vendor/glm/glm)
 target_include_directories(OneGunSFML PUBLIC vendor/entt/single_include)
 
 
@@ -66,7 +65,6 @@ add_custom_command(
 # that we need to link into the program.
 add_subdirectory(vendor/SFML)
 add_subdirectory(vendor/spdlog)
-add_subdirectory(vendor/glm)
 add_subdirectory(vendor/entt)
 #find_package(SFML COMPONENTS window graphics audio REQUIRED)
 #find_package(spdlog REQUIRED)
@@ -78,7 +76,6 @@ target_link_libraries(OneGunSFML PUBLIC
   sfml-audio
   sfml-system
   spdlog
-  glm
   EnTT
 )
 
