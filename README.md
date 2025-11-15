@@ -1,5 +1,5 @@
-## OneGunSFML
-# A very simple top-down shooter game concept written in C++ with SFML. Build system uses CMake - version 3.20 at the minimum. Written to compile with c++23/latest, though I do not follow all modern C++ best practices.
+# OneGunSFML
+## A very simple top-down shooter game concept written in C++ with SFML. Build system uses CMake - version 3.20 at the minimum. Written to compile with c++23/latest, though I do not follow all modern C++ best practices.
 
 ---
 
