@@ -46,7 +46,9 @@ namespace Projectile::Bullet {
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value
+            registry.get<Velocity>(thisEntity).Value,
+            {},
+            {}
         };
         Explosion::BulletHit::Create(explosionSetup);
     }

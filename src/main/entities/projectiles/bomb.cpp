@@ -32,7 +32,9 @@ namespace Projectile::Bomb {
         Explosion::Setup explosionSetup{
             registry,
             pos,
-            registry.get<Velocity>(thisEntity).Value
+            registry.get<Velocity>(thisEntity).Value,
+            {},
+            {}
         };
         Explosion::Prebomb::Create(explosionSetup);
 

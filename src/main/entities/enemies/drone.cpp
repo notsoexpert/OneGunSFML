@@ -16,9 +16,9 @@ namespace Enemy::Drone {
     static constexpr float MoveSpeed = 2.5f;
     static constexpr float OffscreenLifetime = 5.0f;
 
-    static constexpr float FireDamage = 1.0f;
-    static constexpr float FireRate = 1.0f;
-    static constexpr Projectile::Type FireType = Projectile::Type::Bullet;
+    // static constexpr float FireDamage = 1.0f;
+    // static constexpr float FireRate = 1.0f;
+    // static constexpr Projectile::Type FireType = Projectile::Type::Bullet;
 
     void Create(const Setup& setup){
         spdlog::trace("Setting up {} at ({}, {})", Name, setup.Position.x, setup.Position.y);
@@ -49,7 +49,9 @@ namespace Enemy::Drone {
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value
+            registry.get<Velocity>(thisEntity).Value,
+            {},
+            {}
         };
         Explosion::DroneDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});

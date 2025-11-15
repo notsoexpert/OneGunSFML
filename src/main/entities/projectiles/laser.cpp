@@ -57,7 +57,9 @@ namespace Projectile::Laser {
         Explosion::Setup explosionSetup{
             registry,
             renderable.Sprite.getPosition(),
-            velocity.Value
+            velocity.Value,
+            {},
+            {}
         };
         Explosion::LaserHit::Create(explosionSetup);
         Explosion::LaserHit::SetImageIndex(registry.get<Renderable>(explosionSetup.ThisEntity), component.Tier);

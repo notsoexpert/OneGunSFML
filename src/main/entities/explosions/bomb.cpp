@@ -8,7 +8,7 @@ namespace Explosion::Bomb {
     static constexpr const char* Name = "Bomb";
     static constexpr OneGunGame::Images ImageID = OneGunGame::Images::ExplosionYellow;
     static constexpr sf::IntRect TextureRect = {{512, 384}, {32, 32}};
-    static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
+    //static constexpr sf::IntRect CollisionRect = {{0, 0}, {32, 32}};
     static constexpr size_t TotalFrames = 4U;
     static constexpr float FrameTimeInSeconds = 0.05f;
     static constexpr float LifetimeDuration = TotalFrames * FrameTimeInSeconds;

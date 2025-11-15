@@ -67,6 +67,14 @@ namespace Weapon {
                 weap.BaseShotSpeed = 0.5f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 0U;
+                return;
+            default:
+                weap.BaseDamage = 1.0f;
+                weap.BaseFireRate = 0.5f;
+                weap.BaseShotSpeed = 0.5f;
+                weap.ProjectileType = Projectile::Type::Bullet;
+                weap.ProjectileTier = 0U;
+                return;
         }
     }
 

@@ -33,7 +33,9 @@ namespace Explosion::Prebomb {
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            {0.0f, 0.0f}
+            {0.0f, 0.0f},
+            {},
+            {}
         };
         Explosion::Bomb::Create(explosionSetup);
     }

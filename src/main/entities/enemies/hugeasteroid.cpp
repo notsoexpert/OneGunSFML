@@ -56,7 +56,9 @@ namespace Enemy::HugeAsteroid {
         Explosion::Setup explosionSetup{
             registry,
             registry.get<Renderable>(thisEntity).Sprite.getPosition(),
-            registry.get<Velocity>(thisEntity).Value
+            registry.get<Velocity>(thisEntity).Value,
+            {},
+            {}
         };
         Explosion::AsteroidDeath::Create(explosionSetup);
         registry.get<Renderable>(explosionSetup.ThisEntity).Sprite.setScale({2.0f, 2.0f});
