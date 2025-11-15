@@ -13,29 +13,29 @@ namespace Weapon {
         weap.WeaponType = newType;
         switch (newType) {
             case Type::MainCannon:
-                weap.BaseDamage = 1.0f;
+                weap.BaseDamage = 10.0f;
                 weap.BaseFireRate = 2.0f;
                 weap.BaseShotSpeed = 1.0f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 2U;
                 return;
             case Type::ChainGun:
-                weap.BaseDamage = 0.15f;
-                weap.BaseFireRate = 6.0f;
+                weap.BaseDamage = 1.0f;
+                weap.BaseFireRate = 8.0f;
                 weap.BaseShotSpeed = 1.0f;
                 weap.ProjectileType = Projectile::Type::Bullet;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::Blaster:
-                weap.BaseDamage = 1.0f;
+                weap.BaseDamage = 20.0f;
                 weap.BaseFireRate = 1.5f;
                 weap.BaseShotSpeed = 0.75f;
                 weap.ProjectileType = Projectile::Type::Laser;
                 weap.ProjectileTier = 0U;
                 return;
             case Type::PlasmaThrower:
-                weap.BaseDamage = 1.0f;
-                weap.BaseFireRate = 4.0f;
+                weap.BaseDamage = 2.5f;
+                weap.BaseFireRate = 5.0f;
                 weap.BaseShotSpeed = 0.5f;
                 weap.ProjectileType = Projectile::Type::Plasma;
                 weap.ProjectileTier = 0U;
