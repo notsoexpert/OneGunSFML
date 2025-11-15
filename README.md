@@ -22,3 +22,9 @@ Dependencies:
 Graphics:
  - Background, player ship, enemy ship (triangles), and asteroids made in Paint.NET with shape tools and filters.  
  - Explosions Made by [BDragon1727](https://bdragon1727.itch.io/free-effect-bullet-impact-explosion-32x32)
+
+---
+
+Game Info:
+
+WASD/arrows to move. F key to fire. Q to switch weapons. N to spawn enemies.
